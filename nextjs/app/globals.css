@@ -1,0 +1,466 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0a0f1e;
+  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 1rem;
+  color: #94a3b8;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #1e293b;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+  display: block;
+  text-transform: capitalize;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.clock {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
+}
+
+.zone-billig { color: #22c55e; font-weight: 600; font-size: 0.85rem; }
+.zone-dyr { color: #ef4444; font-weight: 600; font-size: 0.85rem; }
+.zone-normal { color: #f59e0b; font-weight: 600; font-size: 0.85rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition: border-color 0.2s;
+}
+
+.card:hover { border-color: #334155; }
+
+.batteri-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+  grid-column: span 2;
+}
+
+.batteri-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.info-row span:first-child { color: #64748b; }
+.pos { color: #22c55e; }
+.neg { color: #ef4444; }
+.mode { color: #818cf8; font-weight: 600; text-transform: capitalize; }
+
+.card-icon { font-size: 2rem; }
+
+.card-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  font-variant-numeric: tabular-nums;
+}
+
+.unit {
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.card-label { color: #64748b; font-size: 0.85rem; }
+
+.card-bar {
+  height: 6px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.3rem;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.sol { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.net { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+
+.tesla-status {
+  font-size: 1.5rem;
+}
+
+.lader-badge {
+  background: #052e16;
+  color: #22c55e;
+  border: 1px solid #166534;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.standby-badge {
+  background: #1e293b;
+  color: #64748b;
+  border: 1px solid #334155;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  width: fit-content;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  color: #334155;
+  font-size: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid #1e293b;
+}
+
+@media (max-width: 600px) {
+  .batteri-card { grid-column: span 1; flex-direction: column; }
+  .grid { grid-template-columns: 1fr; }
+  h1 { font-size: 1.4rem; }
+  .clock { font-size: 1.4rem; }
+}
+
+/* Plan side */
+.plan-section {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.plan-section h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #e2e8f0;
+}
+
+.plan-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.plan-stat {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: center;
+}
+
+.plan-stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.plan-stat-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.advarsel {
+  background: #450a0a;
+  border: 1px solid #991b1b;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  color: #fca5a5;
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+/* Kalender */
+.kalender {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.kalender-time {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 0.5rem 0.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.kalender-time.lade-time {
+  background: #052e16;
+  border-color: #166534;
+}
+
+.kalender-time.nu-time {
+  border-color: #3b82f6;
+  background: #1e3a5f;
+}
+
+.time-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.lade-ikon {
+  font-size: 0.8rem;
+}
+
+.time-pris {
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.time-pris.zone-billig { color: #22c55e; }
+.time-pris.zone-dyr { color: #ef4444; }
+.time-pris.zone-normal { color: #f59e0b; }
+
+.kalender-legend {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.legend-dot.lade { background: #166534; }
+.legend-dot.nu { background: #3b82f6; }
+
+/* Pris graf */
+.pris-graf {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3rem;
+  height: 260px;
+  padding-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.graf-kolonne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 35px;
+}
+
+.graf-pris {
+  font-size: 0.55rem;
+  color: #64748b;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  height: 35px;
+}
+
+.graf-bar-wrapper {
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+}
+
+.graf-bar {
+  width: 100%;
+  min-width: 20px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+  cursor: pointer;
+}
+
+.graf-bar:hover { opacity: 1 !important; filter: brightness(1.2); }
+
+.graf-time {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.graf-time.nu {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.graf-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* Nav link */
+.nav-link {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+@media (max-width: 600px) {
+  .plan-info { grid-template-columns: repeat(2, 1fr); }
+  .kalender { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* Bil SOC input */
+.bil-input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.bil-input {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  width: 80px;
+}
+
+.bil-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.bil-btn {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bil-btn:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Næste ladning banner */
+.naeste-ladning {
+  background: #052e16;
+  border: 1px solid #166534;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  color: #22c55e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.naeste-ladning.ingen-plan {
+  background: #1e293b;
+  border-color: #334155;
+  color: #64748b;
+}
