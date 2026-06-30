@@ -297,6 +297,57 @@
         ]
     },
     {
+        "id": "naeste-begivenhed-api",
+        "type": "http in",
+        "z": "f8fcc2eca1886938",
+        "name": "Næste begivenhed",
+        "url": "/api/begivenheder",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 380,
+        "wires": [
+            [
+                "naeste-begivenhed-handler"
+            ]
+        ]
+    },
+    {
+        "id": "naeste-begivenhed-handler",
+        "type": "function",
+        "z": "f8fcc2eca1886938",
+        "name": "Byg begivenheder",
+        "func": "const nu = new Date();\nconst time = nu.getHours();\nconst min = nu.getMinutes();\nconst soc = global.get('batteri_soc') || 0;\n\n// Beregn næste begivenhed\nlet naeste = [];\n\n// Næste discharge skift\nif (time >= 6 && time < 16) {\n    const diff = 16 - time;\n    naeste.push({ \n        tid: '16:00', \n        besked: '🔋 Dyre timer starter - discharge 100%', \n        minutter: diff * 60 - min \n    });\n} else if (time >= 16 && time < 22) {\n    const diff = 22 - time;\n    naeste.push({ \n        tid: '22:00', \n        besked: '🌙 Nat - discharge 100% fortsætter til 06:00', \n        minutter: diff * 60 - min \n    });\n} else {\n    // Nat 22-06\n    const minutterTil06 = time >= 22 \n        ? (24 - time + 6) * 60 - min \n        : (6 - time) * 60 - min;\n    naeste.push({ \n        tid: '06:00', \n        besked: '☀️ Dag mode - discharge 0% (sol lader batteri)', \n        minutter: minutterTil06\n    });\n}\n\n// Batteri advarsel\nif (soc <= 15) {\n    naeste.unshift({ \n        tid: 'NU', \n        besked: `⚠️ Batteri lavt (${soc}%) - stopper afladning ved 10%`, \n        minutter: 0 \n    });\n}\n\n// Tesla ladning\nconst priser = global.get('priser') || [];\nconst carSoc = global.get('car_soc') || 50;\nconst goECar = global.get('go_e_car') || 1;\n\nif (goECar > 1) {\n    const kommende = priser.filter(p => {\n        const t = new Date(p.time);\n        const h = t.getHours();\n        const erSenAften = t.getDate() === nu.getDate() && h >= 21;\n        const erNat = t.getDate() !== nu.getDate() && h < 6;\n        return (erSenAften || erNat) && t > nu;\n    }).sort((a, b) => a.pris - b.pris);\n\n    if (kommende.length > 0) {\n        const kwhMangler = Math.max(0, (100 - carSoc) * 0.60);\n        const timerNodvendige = Math.ceil(kwhMangler / 11);\n        const billigste = kommende.slice(0, timerNodvendige)\n            .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());\n        if (billigste.length > 0) {\n            const startTid = new Date(billigste[0].time);\n            const fmt = (d) => d.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });\n            naeste.push({ \n                tid: fmt(startTid), \n                besked: `🚗 Tesla starter ladning (${carSoc}% → 100%)`, \n                minutter: Math.round((startTid.getTime() - nu.getTime()) / 60000) \n            });\n        }\n    }\n}\n\n// Sidst udført\nconst sidst = [\n    { \n        tid: nu.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' }), \n        besked: `⚡ Discharge: ${global.get('discharge_rate') || 0}% | Mode: ${global.get('growatt_kommando') || 'Load first'} | Batteri: ${soc}%` \n    },\n];\n\nmsg.payload = { naeste, sidst };\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 380,
+        "wires": [
+            [
+                "naeste-begivenhed-svar"
+            ]
+        ]
+    },
+    {
+        "id": "naeste-begivenhed-svar",
+        "type": "http response",
+        "z": "f8fcc2eca1886938",
+        "name": "Begivenhed svar",
+        "statusCode": "200",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "x": 690,
+        "y": 380,
+        "wires": []
+    },
+    {
         "id": "mqtt-batteri",
         "type": "mqtt in",
         "z": "900938edd3809de9",
@@ -512,7 +563,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Beslutnings-motor",
-        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst GROWATT_MAL_DAG = 80;\nconst GROWATT_MAL_NAT = 95;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;          // Standard Range 60 kWh\nconst TESLA_MAX_KW = 11;       // Max 11 kW 3-fase\nconst SOL_GRAENSE = 200;\nconst SOL_OVERSKUD_GRAENSE = 500; // Min 500W overskud for at lade Tesla\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erHverdag = nu.getDay() >= 1 && nu.getDay() <= 5;\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\nconst solOverskud = sol - SOL_OVERSKUD_GRAENSE;\nconst erSolOverskud = solOverskud > 0;\n\n// Find billigste nattetimer til Tesla\nconst kommende = priser.filter(p => {\n    const t = new Date(p.time);\n    return t > nu;\n}).slice(0, 8);\n\nconst billigsteTimer = [...kommende]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, 4)\n    .map(p => new Date(p.time).getHours());\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tesla deadline check (hverdage kl 03:00-06:00)\nlet tvingTesla = false;\nif (erHverdag && time >= 3 && time < 6) {\n    const carSoc = global.get('car_soc') || 50;\n    const mangler = (TESLA_MAL - carSoc) * (TESLA_KWH / 100);\n    const timerTilbet = 6 - time;\n    const maxKwh = timerTilbet * TESLA_MAX_KW;\n    if (maxKwh < mangler) {\n        tvingTesla = true;\n        node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}%! Mangler ${mangler.toFixed(1)} kWh, har ${timerTilbet}t × ${TESLA_MAX_KW}kW = ${maxKwh} kWh`);\n    }\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first';\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Dyre aftentimer (16-21) + batteri OK → Battery first\nif (erDyrAften && soc >= GROWATT_AFLAD_MIN) {\n    growattMode = 'battery_first';\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) + Batteri OK (${soc}%) → Battery first`);\n    teslaLad = false;\n}\n\n// REGEL 2: Dyre aftentimer men batteri for lavt → Load first, spar batteri\nelse if (erDyrAften && soc < GROWATT_AFLAD_MIN) {\n    growattMode = 'load_first';\n    beslutning.push(`⚠️ DYR AFTENTID men batteri lavt (${soc}%) → Load first, spar batteri`);\n    teslaLad = false;\n}\n\n// REGEL 3: Sol til stede → Load first\nelse if (erSol) {\n    growattMode = 'load_first';\n    beslutning.push(`☀️ Sol (${sol}W) → Load first, hus får sol, overskud lader batteri`);\n}\n\n// REGEL 4: Ingen sol, billig time → Load first + lad Tesla hvis batteri OK\nelse if (zone === 'billig') {\n    growattMode = 'load_first';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n    if (soc > GROWATT_MAL_DAG && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 10;\n        beslutning.push(`🚗 Tesla lades via net (Growatt ${soc}% > ${GROWATT_MAL_DAG}%)`);\n    }\n}\n\n// REGEL 5: Normal time → Load first\nelse {\n    growattMode = 'load_first';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// REGEL 6: Sol overskud → lad ALTID Tesla uanset pris og batteri niveau\nif (erSolOverskud) {\n    teslaLad = true;\n    teslaAmp = Math.min(16, Math.floor(solOverskud / 230));\n    if (teslaAmp < 6) teslaAmp = 6;\n    beslutning.push(`☀️ Sol overskud ${solOverskud}W → Tesla ${teslaAmp}A (gratis strøm!)`);\n}\n\n// REGEL 7: Tving Tesla hvis deadline\nif (tvingTesla && soc > GROWATT_MIN_SOC) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE! Tesla tvinges til 16A`);\n}\n\n// REGEL 8: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt SOC: ${soc}% | Sol: ${sol}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
+        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 1200;\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erHverdag = nu.getDay() >= 1 && nu.getDay() <= 5;\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Find billigste nattetimer til Tesla\nconst kommende = priser.filter(p => {\n    const t = new Date(p.time);\n    return t > nu;\n}).slice(0, 8);\n\nconst billigsteTimer = [...kommende]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, 4)\n    .map(p => new Date(p.time).getHours());\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tesla deadline check (hverdage kl 03:00-06:00)\nlet tvingTesla = false;\nif (erHverdag && time >= 3 && time < 6) {\n    const carSoc = global.get('car_soc') || 50;\n    const mangler = (TESLA_MAL - carSoc) * (TESLA_KWH / 100);\n    const timerTilbet = 6 - time;\n    const maxKwh = timerTilbet * TESLA_MAX_KW;\n    if (maxKwh < mangler) {\n        tvingTesla = true;\n        node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}%! Mangler ${mangler.toFixed(1)} kWh`);\n    }\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Dyre aftentimer → Load first + afladning tilladt\n// Sol + batteri dækker huset, ingen net køb\nif (erDyrAften) {\n    growattMode = 'load_first';\n    dischargeMode = 'aktiv'; // Tillad afladning i dyre timer\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) → Load first | Batteri + sol dækker huset`);\n    teslaLad = false;\n}\n\n// REGEL 2: Sol til stede → Load first\nelse if (erSol) {\n    growattMode = 'load_first';\n    dischargeMode = 'stop'; // Batteri skal ikke aflade når sol er til stede\n    beslutning.push(`☀️ Sol (${sol}W) → Load first | Hus: ${loadPower}W | Overskud: ${solEfterHus}W`);\n}\n\n// REGEL 3: Billig time → Load first + lad Tesla hvis batteri OK\nelse if (zone === 'billig') {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n    if (soc >= 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 10;\n        beslutning.push(`🚗 Tesla lades via net (Growatt 100%)`);\n    }\n}\n\n// REGEL 4: Normal time → Load first\nelse {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// REGEL 5: Sol overskud → lad Tesla\n// KUN hvis: Growatt = 100% OG sol overskud > 1200W\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 230);\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A = 1380W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline\nif (tvingTesla && soc > GROWATT_MIN_SOC) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -533,8 +584,8 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Styr go-e lader",
-        "func": "const teslaLad = msg.payload.teslaLad;\nconst teslaAmp = msg.payload.teslaAmp;\nconst carStatus = global.get('go_e_car') || 1;\n\n// car status på denne go-e:\n// 1 = ingen bil tilsluttet\n// 2 = bil tilsluttet, venter\n// 3 = lader aktivt\n// 4 = ladning færdig\n\nif (carStatus === 1) {\n    msg.url = `http://192.168.1.222/api/set?frc=0`;\n    node.warn(`🚗 go-e: Ingen bil tilsluttet - auto mode`);\n    return msg;\n}\n\nif (teslaLad) {\n    msg.url = `http://192.168.1.222/api/set?frc=2&amp=${teslaAmp}`;\n    node.warn(`🚗 go-e: Lader ${teslaAmp}A (bil tilsluttet ✅)`);\n} else {\n    msg.url = `http://192.168.1.222/api/set?frc=1`;\n    node.warn(`🚗 go-e: STOP`);\n}\n\nreturn msg;",
-        "outputs": 1,
+        "func": "const teslaLad = msg.payload.teslaLad;\nconst teslaAmp = msg.payload.teslaAmp;\nconst carStatus = global.get('go_e_car') || 1;\nconst sidsteTeslaLad = global.get('sidste_tesla_lad');\n\nconst bilTilsluttet = carStatus === 2 || carStatus === 3 || carStatus === 4;\n\nlet eventMsg = null;\n\nif (!bilTilsluttet) {\n    msg.url = `http://192.168.1.222/api/set?frc=0`;\n    node.warn(`🚗 go-e: Ingen bil tilsluttet (car=${carStatus}) - auto mode`);\n\n    // Log hvis bil frakoblet\n    if (sidsteTeslaLad !== false) {\n        global.set('sidste_tesla_lad', false);\n        eventMsg = { payload: { event: 'tesla_ladning', beskrivelse: `King kong frakoblet laderen` }};\n    }\n    return [msg, eventMsg];\n}\n\nif (teslaLad) {\n    msg.url = `http://192.168.1.222/api/set?frc=2&amp=${teslaAmp}`;\n    node.warn(`🚗 go-e: Lader ${teslaAmp}A (car=${carStatus} ✅)`);\n\n    // Log hvis ladning startet\n    if (!sidsteTeslaLad) {\n        global.set('sidste_tesla_lad', true);\n        eventMsg = { payload: { event: 'tesla_ladning', beskrivelse: `King kong startet ladning ${teslaAmp}A` }};\n    }\n} else {\n    msg.url = `http://192.168.1.222/api/set?frc=1`;\n    node.warn(`🚗 go-e: STOP ladning (car=${carStatus})`);\n\n    // Log hvis ladning stoppet\n    if (sidsteTeslaLad) {\n        global.set('sidste_tesla_lad', false);\n        eventMsg = { payload: { event: 'tesla_ladning', beskrivelse: `King kong stoppet ladning` }};\n    }\n}\n\nreturn [msg, eventMsg];",
+        "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
@@ -545,6 +596,9 @@
         "wires": [
             [
                 "go-e-http"
+            ],
+            [
+                "gem-event"
             ]
         ]
     },
@@ -575,8 +629,8 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Growatt kommando",
-        "func": "const GROWATT_MIN_SOC = 10;\nconst growattMode = msg.payload.growattMode;\nconst soc = msg.payload.soc;\nconst zone = msg.payload.zone;\nconst erDyrAften = zone === 'dyr';\n\n// Work mode kommando\nlet workMode;\nif (growattMode === 'battery_first') {\n    workMode = 'Battery first';\n} else if (growattMode === 'load_first') {\n    workMode = 'Load first';\n} else if (growattMode === 'grid_first') {\n    workMode = 'Grid first';\n} else {\n    workMode = 'Load first'; // fallback\n}\n\n// Discharge rate\nlet dischargeRate = 0; // default stop afladning\n\nif (soc >= 95 && !erDyrAften) {\n    dischargeRate = 0;\n    node.warn(`🔋 Batteri fuld (${soc}%) - venter på dyre timer → discharge: 0%`);\n} else if (growattMode === 'battery_first' && soc > GROWATT_MIN_SOC) {\n    dischargeRate = 100;\n} else {\n    dischargeRate = 0;\n}\n\nglobal.set('growatt_kommando', workMode);\nglobal.set('discharge_rate', dischargeRate);\n\nnode.warn(`⚡ Growatt: ${workMode} | Discharge: ${dischargeRate}%`);\n\nmsg.payload = workMode;\nmsg.topic = 'solar_assistant/inverter_1/work_mode_priority/set';\n\nmsg.discharge = {\n    payload: dischargeRate.toString(),\n    topic: 'solar_assistant/inverter_1/free_mode_discharge_rate/set'\n};\n\nreturn msg;",
-        "outputs": 1,
+        "func": "const GROWATT_MIN_SOC = 10;\nconst growattMode = msg.payload.growattMode;\nconst soc = msg.payload.soc;\nconst time = new Date().getHours();\n\n// ALTID Load first\nconst workMode = 'Load first';\n\n// Discharge logik\nlet dischargeRate = 0;\nlet dischargeAarsag = '';\n\nif (soc <= GROWATT_MIN_SOC) {\n    dischargeRate = 0;\n    dischargeAarsag = `Batteri for lavt (${soc}%)`;\n    node.warn(`🔋 Batteri for lavt (${soc}%) → Ingen afladning`);\n} else if (time >= 6 && time < 16) {\n    dischargeRate = 0;\n    dischargeAarsag = `Dag mode (${time}:00)`;\n    node.warn(`☀️ Dag (06-16) → Spar batteri, sol lader`);\n} else {\n    dischargeRate = 100;\n    dischargeAarsag = `Aften/nat mode (${time}:00)`;\n    node.warn(`🔋 Aften/nat (16-06) → Afladning 100%`);\n}\n\nglobal.set('growatt_kommando', workMode);\nglobal.set('discharge_rate', dischargeRate);\n\nnode.warn(`⚡ Growatt: ${workMode} | Discharge: ${dischargeRate}%`);\n\n// Log event hvis discharge ændret sig\nconst sidsteDischarge = global.get('sidste_discharge_rate');\nlet eventMsg = null;\n\nif (sidsteDischarge !== dischargeRate) {\n    global.set('sidste_discharge_rate', dischargeRate);\n    eventMsg = {\n        payload: {\n            event: 'discharge_skift',\n            beskrivelse: `Discharge ${sidsteDischarge !== undefined ? sidsteDischarge : '?'}% → ${dischargeRate}% (${dischargeAarsag})`\n        }\n    };\n    node.warn(`📝 Event: Discharge skift ${sidsteDischarge}% → ${dischargeRate}%`);\n}\n\nmsg.payload = workMode;\nmsg.topic = 'solar_assistant/inverter_1/work_mode_priority/set';\n\nmsg.discharge = {\n    payload: dischargeRate.toString(),\n    topic: 'solar_assistant/inverter_1/free_mode_discharge_rate/set'\n};\n\nreturn [msg, eventMsg];",
+        "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
@@ -588,6 +642,9 @@
             [
                 "growatt-mqtt-out",
                 "1d100672826f583b"
+            ],
+            [
+                "gem-event"
             ]
         ]
     },
@@ -774,11 +831,99 @@
         ]
     },
     {
+        "id": "gem-event",
+        "type": "function",
+        "z": "d2c1c437030fcf3d",
+        "name": "Gem event til InfluxDB",
+        "func": "const event = msg.payload.event;\nconst beskrivelse = msg.payload.beskrivelse;\n\nif (!event) return null;\n\nconst lineProtocol = `events,type=${event.replace(/ /g,'_')} beskrivelse=\"${beskrivelse}\"`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\nreturn msg;",
+        "outputs": 1,
+        "x": 360,
+        "y": 580,
+        "wires": [
+            [
+                "influx-event-write"
+            ]
+        ]
+    },
+    {
+        "id": "influx-event-write",
+        "type": "http request",
+        "z": "d2c1c437030fcf3d",
+        "name": "Skriv event til InfluxDB",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "x": 610,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "event-log-api",
+        "type": "http in",
+        "z": "d2c1c437030fcf3d",
+        "name": "Event log API",
+        "url": "/api/events",
+        "method": "get",
+        "x": 110,
+        "y": 640,
+        "wires": [
+            [
+                "event-log-handler"
+            ]
+        ]
+    },
+    {
+        "id": "event-log-handler",
+        "type": "function",
+        "z": "d2c1c437030fcf3d",
+        "name": "Hent events",
+        "func": "msg.payload = null;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'application/vnd.flux',\n    'Accept': 'application/csv'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/query?org=energihub';\nmsg.method = 'POST';\nmsg.payload = `from(bucket: \"energi2\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"events\") |> sort(columns: [\"_time\"], desc: true) |> limit(n: 50)`;\nreturn msg;",
+        "outputs": 1,
+        "x": 360,
+        "y": 640,
+        "wires": [
+            [
+                "event-log-svar-handler"
+            ]
+        ]
+    },
+    {
+        "id": "event-log-svar-handler",
+        "type": "http request",
+        "z": "d2c1c437030fcf3d",
+        "name": "Hent events fra InfluxDB",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "x": 360,
+        "y": 700,
+        "wires": [
+            [
+                "event-log-svar"
+            ]
+        ]
+    },
+    {
+        "id": "event-log-svar",
+        "type": "http response",
+        "z": "d2c1c437030fcf3d",
+        "name": "Event log svar",
+        "statusCode": "200",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "x": 610,
+        "y": 700,
+        "wires": []
+    },
+    {
         "id": "forbered-energi",
         "type": "function",
         "z": "77c2a9230595fbfa",
         "name": "Forbered energi data",
-        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst teslaLad = global.get('tesla_lad') || false;\nconst teslaAmp = global.get('tesla_amp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst zone = nuvaerende ? nuvaerende.zone : 'ukendt';\nconst growattMode = global.get('growatt_kommando') || 'Load first';\n\n// Tjek om bil faktisk er tilsluttet\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst laderAktivt = teslaLad && bilTilsluttet;\n\n// InfluxDB line protocol\nconst lineProtocol = `energi,zone=${zone},growatt_mode=${growattMode.replace(/ /g, '_')} batteri_soc=${Number(soc)},sol_power=${Number(sol)},grid_power=${Number(grid)},batteri_power=${Number(batteriPower)},batteri_temp=${Number(temp)},discharge_rate=${Number(dischargeRate)},tesla_lad=${laderAktivt ? 1 : 0},tesla_amp=${Number(teslaAmp)},pris=${Number(pris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst teslaLad = global.get('tesla_lad') || false;\nconst teslaAmp = global.get('tesla_amp') || 0;\nconst loadPower = global.get('load_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst spotpris = nuvaerende ? (nuvaerende.spotpris || 0) : 0;\nconst zone = nuvaerende ? nuvaerende.zone : 'ukendt';\nconst growattMode = global.get('growatt_kommando') || 'Load first';\n\n// Tjek om bil faktisk er tilsluttet\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst laderAktivt = teslaLad && bilTilsluttet;\n\n// InfluxDB line protocol\nconst lineProtocol = `energi,zone=${zone},growatt_mode=${growattMode.replace(/ /g, '_')} batteri_soc=${Number(soc)},sol_power=${Number(sol)},grid_power=${Number(grid)},batteri_power=${Number(batteriPower)},batteri_temp=${Number(temp)},discharge_rate=${Number(dischargeRate)},tesla_lad=${laderAktivt ? 1 : 0},tesla_amp=${Number(teslaAmp)},load_power=${Number(loadPower)},pris=${Number(pris)},spotpris=${Number(spotpris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1110,8 +1255,22 @@
         "type": "inject",
         "z": "ced8b8b6adb174ea",
         "name": "Daglig rapport 08:00",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
         "crontab": "00 08 * * *",
         "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
         "x": 190,
         "y": 560,
         "wires": [
@@ -1133,6 +1292,485 @@
             [
                 "telegram-send"
             ]
+        ]
+    },
+    {
+        "id": "mqtt-pv-energy",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Sol energi total",
+        "topic": "solar_assistant/total/pv_energy/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 140,
+        "wires": [
+            [
+                "gem-pv-energy"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-grid-in",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Net købt total",
+        "topic": "solar_assistant/total/grid_energy_in/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 200,
+        "wires": [
+            [
+                "gem-grid-in"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-grid-out",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Net solgt total",
+        "topic": "solar_assistant/total/grid_energy_out/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 260,
+        "wires": [
+            [
+                "gem-grid-out"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-load-energy",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Hus forbrug total",
+        "topic": "solar_assistant/total/load_energy/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 320,
+        "wires": [
+            [
+                "gem-load-energy"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-bat-in",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Batteri ind total",
+        "topic": "solar_assistant/total/battery_energy_in/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 380,
+        "wires": [
+            [
+                "gem-bat-in"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-bat-out",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Batteri ud total",
+        "topic": "solar_assistant/total/battery_energy_out/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 440,
+        "wires": [
+            [
+                "gem-bat-out"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-load-power",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Hus forbrug W",
+        "topic": "solar_assistant/inverter_1/load_power/state",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "0700ed4de89194aa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 940,
+        "y": 500,
+        "wires": [
+            [
+                "gem-load-power"
+            ]
+        ]
+    },
+    {
+        "id": "gem-pv-energy",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem sol energi",
+        "func": "global.set('pv_energy_total', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gem-grid-in",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem net købt",
+        "func": "global.set('grid_energy_in', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gem-grid-out",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem net solgt",
+        "func": "global.set('grid_energy_out', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gem-load-energy",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem hus forbrug",
+        "func": "global.set('load_energy_total', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gem-bat-in",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem batteri ind",
+        "func": "global.set('battery_energy_in', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gem-bat-out",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem batteri ud",
+        "func": "global.set('battery_energy_out', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gem-load-power",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Gem hus W",
+        "func": "global.set('load_power', parseFloat(msg.payload));\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "statistik-api",
+        "type": "http in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Statistik API",
+        "url": "/api/statistik",
+        "method": "get",
+        "x": 170,
+        "y": 660,
+        "wires": [
+            [
+                "statistik-handler"
+            ]
+        ]
+    },
+    {
+        "id": "statistik-handler",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg statistik",
+        "func": "const pvEnergi = global.get('pv_energy_total') || 0;\nconst gridInd = global.get('grid_energy_in') || 0;\nconst gridUd = global.get('grid_energy_out') || 0;\nconst loadEnergi = global.get('load_energy_total') || 0;\nconst batInd = global.get('battery_energy_in') || 0;\nconst batUd = global.get('battery_energy_out') || 0;\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst load = global.get('load_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst carSoc = global.get('car_soc') || 50;\n\n// Besparelsesberegning\n// Gennemsnitlig dansk elpris inkl afgifter ~2.50 kr/kWh\nconst gennemsnitsElpris = 2.50;\nconst sparetTotal = parseFloat(((pvEnergi - gridInd) * gennemsnitsElpris).toFixed(2));\n\n// Selvforsyningsgrad\nconst selvforsyning = loadEnergi > 0 ? parseFloat(((1 - gridInd / loadEnergi) * 100).toFixed(1)) : 0;\n\n// go-e data\nconst goEWh = global.get('go_e_wh') || 0;\nconst goEAmp = global.get('go_e_amp') || 0;\nconst goECar = global.get('go_e_car') || 1;\n\nmsg.payload = {\n    // Sol\n    pv_energy_total: pvEnergi,\n    sol_power_nu: sol,\n    \n    // Net\n    grid_energy_in: gridInd,\n    grid_energy_out: gridUd,\n    grid_power_nu: grid,\n    \n    // Hus\n    load_energy_total: loadEnergi,\n    load_power_nu: load,\n    \n    // Batteri\n    battery_energy_in: batInd,\n    battery_energy_out: batUd,\n    batteri_soc: soc,\n    \n    // Tesla\n    car_soc: carSoc,\n    go_e_wh_total: goEWh,\n    go_e_amp: goEAmp,\n    go_e_car: goECar,\n    \n    // Beregninger\n    sparet_total: sparetTotal,\n    selvforsyning: selvforsyning,\n    pris_nu: pris,\n    \n    timestamp: new Date().toISOString()\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 420,
+        "y": 660,
+        "wires": [
+            [
+                "statistik-svar"
+            ]
+        ]
+    },
+    {
+        "id": "statistik-svar",
+        "type": "http response",
+        "z": "ced8b8b6adb174ea",
+        "name": "Statistik svar",
+        "statusCode": "200",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "x": 670,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "test-notif-timer",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Kl. 16:00 alarm",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 16 * * *",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 960,
+        "y": 580,
+        "wires": [
+            [
+                "byg-16-notif"
+            ]
+        ]
+    },
+    {
+        "id": "byg-16-notif",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg 16:00 besked",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst pris = global.get('nuvaerende')?.pris || 0;\n\nmsg.payload = `❤️ Dyre timer startet!\\n\\n🔋 Growatt: ${soc}%\\n⚡ Discharge: ${dischargeRate}%\\n☀️ Sol: ${sol}W\\n💰 Pris: ${pris} kr/kWh\\n\\nSystemet bruger nu batteri + sol til huset!`;\nreturn msg;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 580,
+        "wires": [
+            [
+                "969ad2da2c958f57"
+            ]
+        ]
+    },
+    {
+        "id": "test-notif-21",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Kl. 21:00 nat mode",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 21 * * *",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 960,
+        "y": 640,
+        "wires": [
+            [
+                "byg-21-notif"
+            ]
+        ]
+    },
+    {
+        "id": "byg-21-notif",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg 21:00 besked",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst carSoc = global.get('car_soc') || 50;\nconst goECar = global.get('go_e_car') || 1;\n\nmsg.payload = `🌙 Nat mode aktiveret!\\n\\n🔋 Growatt: ${soc}%\\n🚗 King kong: ${carSoc}%\\n${goECar > 1 ? '🔌 Bil tilsluttet ✅' : '❌ Bil IKKE tilsluttet!'}\\n\\nSjekker billigste ladetimer...`;\nreturn msg;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 640,
+        "wires": [
+            [
+                "969ad2da2c958f57"
+            ]
+        ]
+    },
+    {
+        "id": "test-notif-06",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Kl. 06:00 morgen",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 06 * * *",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 960,
+        "y": 700,
+        "wires": [
+            [
+                "byg-06-notif"
+            ]
+        ]
+    },
+    {
+        "id": "byg-06-notif",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg 06:00 besked",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst carSoc = global.get('car_soc') || 50;\nconst sol = global.get('sol_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\n\nconst bilKlar = carSoc >= 95 ? '✅' : '⚠️';\n\nmsg.payload = `🌅 God morgen Christopher!\\n\\n${bilKlar} King kong: ${carSoc}%\\n🔋 Growatt: ${soc}%\\n☀️ Sol: ${sol}W\\n💰 Pris nu: ${pris} kr/kWh\\n\\n${carSoc < 95 ? '⚠️ Bilen er ikke fuldt opladet!' : '✅ Bilen er klar til turen!'}`;\nreturn msg;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 700,
+        "wires": [
+            [
+                "969ad2da2c958f57"
+            ]
+        ]
+    },
+    {
+        "id": "bil-tilsluttet-check",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Bil tilsluttet check",
+        "func": "const goECar = global.get('go_e_car') || 1;\nconst sidsteCar = global.get('go_e_car_sidst') || 1;\n\n// Bil netop tilsluttet?\nif (goECar > 1 && sidsteCar === 1) {\n    const carSoc = global.get('car_soc') || 50;\n    const sol = global.get('sol_power') || 0;\n    const soc = global.get('batteri_soc') || 0;\n    msg.payload = `🚗 King kong er tilsluttet laderen!\\n\\n🔋 Bil SOC: ${carSoc}%\\n🔋 Growatt: ${soc}%\\n☀️ Sol: ${sol}W\\n\\n${soc >= 100 && sol > 1200 ? '⚡ Lader via sol overskud!' : '⏳ Venter på billigste ladetimer'}`;\n    global.set('go_e_car_sidst', goECar);\n    return msg;\n}\n\nglobal.set('go_e_car_sidst', goECar);\nreturn null;",
+        "outputs": 1,
+        "x": 1210,
+        "y": 760,
+        "wires": [
+            [
+                "969ad2da2c958f57"
+            ]
+        ]
+    },
+    {
+        "id": "bil-check-timer",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Check bil hvert min",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 960,
+        "y": 760,
+        "wires": [
+            [
+                "bil-tilsluttet-check"
+            ]
+        ]
+    },
+    {
+        "id": "969ad2da2c958f57",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Send Telegram",
+        "func": "const token = '8716129124:AAHP0rg0PFAEISe0Ml_KyW-AfrykHt_kEKQ';\nconst chatId = '8659008890';\nconst tekst = msg.payload;\n\nmsg.url = `https://api.telegram.org/bot${token}/sendMessage`;\nmsg.payload = { chat_id: chatId, text: tekst, parse_mode: 'HTML' };\nreturn msg;",
+        "outputs": 1,
+        "x": 1420,
+        "y": 660,
+        "wires": [
+            [
+                "ae32692d6a193525"
+            ]
+        ]
+    },
+    {
+        "id": "ae32692d6a193525",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "Telegram API",
+        "method": "POST",
+        "ret": "obj",
+        "url": "",
+        "x": 1510,
+        "y": 760,
+        "wires": [
+            []
         ]
     }
 ]

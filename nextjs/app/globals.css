@@ -464,3 +464,220 @@ footer {
   border-color: #334155;
   color: #64748b;
 }
+
+/* Statistik */
+.stat-sektion {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-sektion h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #e2e8f0;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.stat-kort {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-icon { font-size: 1.5rem; }
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-unit {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+@media (max-width: 600px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Grafer */
+.periode-valg {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.periode-btn {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.periode-btn:hover { border-color: #3b82f6; color: #e2e8f0; }
+.periode-btn.aktiv { background: #3b82f6; border-color: #3b82f6; color: white; }
+
+.grafer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.graf-kort {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 1.2rem;
+}
+
+.graf-bred {
+  grid-column: span 2;
+}
+
+.graf-kort h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 0.8rem;
+}
+
+.graf-container { width: 100%; }
+
+.graf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.graf-label { font-size: 0.85rem; font-weight: 600; }
+.graf-nu { font-size: 1.2rem; font-weight: 700; }
+
+@media (max-width: 600px) {
+  .grafer-grid { grid-template-columns: 1fr; }
+  .graf-bred { grid-column: span 1; }
+}
+
+.kalender-dato-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.kalender-time.fortid-time {
+  opacity: 0.3;
+}
+
+/* Begivenheder boks */
+.begivenheder-boks {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+}
+
+.begivenhed-række {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.begivenhed-række:last-child {
+  border-bottom: none;
+}
+
+.begivenhed-tid {
+  color: #3b82f6;
+  font-weight: 700;
+  min-width: 50px;
+}
+
+.begivenhed-besked {
+  color: #94a3b8;
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+.begivenhed-minutter {
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
+.begivenheder-titel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Log side */
+.log-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.log-række {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.log-ikon { font-size: 1.5rem; }
+
+.log-indhold { flex: 1; }
+
+.log-besked {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.log-tid {
+  color: #64748b;
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.log-type {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}

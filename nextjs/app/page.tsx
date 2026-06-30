@@ -9,8 +9,10 @@ interface EnergiData {
   grid_power: number;
   batteri_power: number;
   batteri_temp: number;
+  discharge_rate: number;
   tesla_lad: number;
   tesla_amp: number;
+  load_power: number;
   pris: number;
   zone: string;
   growatt_mode: string;
@@ -26,7 +28,19 @@ interface NaesteLadning {
   harPlan: boolean;
   startTid?: string;
   slutTid?: string;
+  startDato?: string;
   besked: string;
+}
+
+interface Begivenhed {
+  tid: string;
+  besked: string;
+  minutter?: number;
+}
+
+interface Begivenheder {
+  naeste: Begivenhed[];
+  sidst: Begivenhed[];
 }
 
 interface OverrideStatus {
@@ -61,6 +75,7 @@ export default function Dashboard() {
   const [data, setData] = useState<EnergiData | null>(null);
   const [bil, setBil] = useState<BilData>({ soc: 50, opdateret: null });
   const [naesteLadning, setNaesteLadning] = useState<NaesteLadning>({ harPlan: false, besked: 'Henter...' });
+  const [begivenheder, setBegivenheder] = useState<Begivenheder>({ naeste: [], sidst: [] });
   const [override, setOverride] = useState<OverrideStatus>({ aktiv: false });
   const [overrideLoading, setOverrideLoading] = useState(false);
   const [bilInput, setBilInput] = useState('');
@@ -70,16 +85,18 @@ export default function Dashboard() {
   useEffect(() => {
     const hent = async () => {
       try {
-        const [dataRes, overrideRes, bilRes, ladningRes] = await Promise.all([
+        const [dataRes, overrideRes, bilRes, ladningRes, begivRes] = await Promise.all([
           fetch('/api/data'),
           fetch('/api/override'),
           fetch('/api/bil'),
           fetch('/api/naeste-ladning'),
+          fetch('/api/begivenheder'),
         ]);
         setData(await dataRes.json());
         setOverride(await overrideRes.json());
         setBil(await bilRes.json());
         setNaesteLadning(await ladningRes.json());
+        setBegivenheder(await begivRes.json());
       } catch (e) {}
     };
     hent();
@@ -165,10 +182,43 @@ export default function Dashboard() {
               <span>{data.batteri_temp}°C</span>
             </div>
             <div className="info-row">
+              <span>Discharge</span>
+              <span className={data.discharge_rate > 0 ? 'pos' : ''}>{data.discharge_rate}%</span>
+            </div>
+            <div className="info-row">
+              <span>Hus forbrug</span>
+              <span>{data.load_power}W</span>
+            </div>
+            <div className="info-row">
               <span>Mode</span>
               <span className="mode">{data.growatt_mode.replace(/_/g, ' ')}</span>
             </div>
           </div>
+
+          {/* Begivenheder boks */}
+          {begivenheder.naeste.length > 0 && (
+            <div className="begivenheder-boks">
+              <div className="begivenheder-titel">⏰ Næste begivenheder</div>
+              {begivenheder.naeste.map((b, i) => (
+                <div key={i} className="begivenhed-række">
+                  <span className="begivenhed-tid">{b.tid}</span>
+                  <span className="begivenhed-besked">{b.besked}</span>
+                  {b.minutter && <span className="begivenhed-minutter">om {b.minutter}m</span>}
+                </div>
+              ))}
+              {begivenheder.sidst.length > 0 && (
+                <>
+                  <div className="begivenheder-titel" style={{marginTop:'0.5rem'}}>📋 Senest</div>
+                  {begivenheder.sidst.map((b, i) => (
+                    <div key={i} className="begivenhed-række">
+                      <span className="begivenhed-tid">{b.tid}</span>
+                      <span className="begivenhed-besked">{b.besked}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="card">
@@ -207,7 +257,7 @@ export default function Dashboard() {
           )}
           <div className={`naeste-ladning ${naesteLadning.harPlan ? '' : 'ingen-plan'}`}>
             {naesteLadning.harPlan
-              ? `🕐 Næste ladning: ${naesteLadning.startTid} → ${naesteLadning.slutTid}`
+              ? `🕐 Næste ladning: ${naesteLadning.startTid} → ${naesteLadning.slutTid} (${naesteLadning.startDato || ''})`
               : `⏳ ${naesteLadning.besked}`}
           </div>
           {bil.opdateret && (
@@ -245,8 +295,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{textAlign:"center",marginBottom:"1rem"}}>
+      <div style={{textAlign:"center",marginBottom:"1rem", display:"flex", gap:"1rem", justifyContent:"center", flexWrap:"wrap"}}>
         <Link href="/plan" className="nav-link">📅 Se ladeplan & strømpriser →</Link>
+        <Link href="/statistik" className="nav-link">📊 Statistik & besparelser →</Link>
+        <Link href="/grafer" className="nav-link">📈 Grafer & historik →</Link>
+        <Link href="/log" className="nav-link">📋 Hændelseslog →</Link>
       </div>
 
       <footer>

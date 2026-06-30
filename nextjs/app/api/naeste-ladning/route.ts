@@ -51,6 +51,7 @@ export async function GET() {
     return NextResponse.json({
       harPlan: true,
       startTid: fmt(foerste),
+      startDato: foerste.toLocaleDateString('da-DK', { weekday: 'long', day: 'numeric', month: 'long' }),
       slutTid: fmt(sidst),
       timerNodvendige,
       bilSoc,
