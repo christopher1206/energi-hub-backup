@@ -4,3 +4,4 @@ nodered/node_modules/
 nextjs/node_modules/
 nextjs/.next/
 *.db
+.env
