@@ -1,4 +1,4 @@
-services:
+dservices:
   nodered:
     image: nodered/node-red:latest
     container_name: nodered
@@ -38,7 +38,7 @@ services:
     command: sh -c "npm install && npm run dev"
     environment:
       - TZ=Europe/Copenhagen
-      - INFLUX_URL=http://influxdb:8086
+- INFLUX_URL=http://influxdb:8086
       - INFLUX_ORG=energihub
       - INFLUX_BUCKET=energi2
       - INFLUX_TOKEN=2nmT7NymMwr1UMY3e8V63anZUI5TCWRqlg_0tPD9Y_RkmnbjjkZAZWgXD9hgyano3X8Mke1HXGXiCzmDlmlPvw==

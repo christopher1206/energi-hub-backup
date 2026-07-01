@@ -56,16 +56,14 @@ interface OverrideStatus {
 }
 
 interface DagensTal {
-  dagens_sol_kwh: number;
-  dagens_load_kwh: number;
-  dagens_grid_kob_kwh: number;
-  dagens_grid_solgt_kwh: number;
-  dagens_batteri_ud_kwh: number;
-  dagens_batteri_ind_kwh: number;
-  dagens_tesla_kwh: number;
-  sparet_i_dag: number;
-  selvforsyning_i_dag: number;
-  dagens_grid_kob_kr: number;
+  grid_energy_in: number;
+  grid_energy_out: number;
+  battery_energy_in: number;
+  battery_energy_out: number;
+  go_e_wh_total: number;
+  pv_energy_total: number;
+  sparet_total: number;
+  selvforsyning: number;
 }
 
 function ZoneFarve({ zone }: { zone: string }) {
@@ -115,7 +113,7 @@ export default function Dashboard() {
           fetch('/api/naeste-ladning'),
           fetch('/api/begivenheder'),
           fetch('/api/vejr'),
-          fetch('/api/dagens-tal'),
+          fetch('/api/statistik'),
         ]);
         setData(await dataRes.json());
         setOverride(await overrideRes.json());
@@ -200,47 +198,42 @@ export default function Dashboard() {
           <div className="dagens-tal-grid">
             <div className="dagens-tal-item">
               <span className="dt-icon">🔌</span>
-              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.dagens_grid_kob_kwh.toFixed(1)} kWh</span>
+              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.grid_energy_in.toFixed(1)} kWh</span>
               <span className="dt-label">Købt</span>
             </div>
             <div className="dagens-tal-item">
-              <span className="dt-icon">💸</span>
-              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.dagens_grid_kob_kr.toFixed(2)} kr</span>
-              <span className="dt-label">Købt for</span>
-            </div>
-            <div className="dagens-tal-item">
               <span className="dt-icon">📤</span>
-              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.dagens_grid_solgt_kwh.toFixed(1)} kWh</span>
+              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.grid_energy_out.toFixed(1)} kWh</span>
               <span className="dt-label">Solgt</span>
             </div>
             <div className="dagens-tal-item">
               <span className="dt-icon">☀️</span>
-              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.dagens_sol_kwh.toFixed(1)} kWh</span>
+              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.pv_energy_total.toFixed(1)} kWh</span>
               <span className="dt-label">Sol produceret</span>
             </div>
             <div className="dagens-tal-item">
               <span className="dt-icon">⬆️</span>
-              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.dagens_batteri_ind_kwh.toFixed(1)} kWh</span>
+              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.battery_energy_in.toFixed(1)} kWh</span>
               <span className="dt-label">Batteri ind</span>
             </div>
             <div className="dagens-tal-item">
               <span className="dt-icon">⬇️</span>
-              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.dagens_batteri_ud_kwh.toFixed(1)} kWh</span>
+              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.battery_energy_out.toFixed(1)} kWh</span>
               <span className="dt-label">Batteri ud</span>
             </div>
             <div className="dagens-tal-item">
               <span className="dt-icon">🚗</span>
-              <span className="dt-value" style={{color:'#3b82f6'}}>{dagensTal.dagens_tesla_kwh.toFixed(1)} kWh</span>
+              <span className="dt-value" style={{color:'#3b82f6'}}>{(dagensTal.go_e_wh_total / 1000).toFixed(1)} kWh</span>
               <span className="dt-label">Bil ladet</span>
             </div>
             <div className="dagens-tal-item">
               <span className="dt-icon">💰</span>
-              <span className="dt-value" style={{color: dagensTal.sparet_i_dag >= 0 ? '#22c55e' : '#ef4444'}}>{dagensTal.sparet_i_dag} kr</span>
-              <span className="dt-label">Sparet i dag</span>
+              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.sparet_total} kr</span>
+              <span className="dt-label">Sparet</span>
             </div>
             <div className="dagens-tal-item">
               <span className="dt-icon">📊</span>
-              <span className="dt-value">{dagensTal.selvforsyning_i_dag}%</span>
+              <span className="dt-value">{dagensTal.selvforsyning}%</span>
               <span className="dt-label">Selvforsyning</span>
             </div>
           </div>

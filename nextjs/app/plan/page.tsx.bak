@@ -77,18 +77,9 @@ export default function PlanSide() {
   const nu = new Date();
   const maxPris = Math.max(...priser.map(p => p.pris), 1);
 
-  // Opdel priser i i dag og i morgen - brug eksplicit dato-sammenligning
-  // for at undgå at forældede/gamle datapunkter fejlagtigt regnes som "i morgen"
-  const morgenDato = new Date(nu);
-  morgenDato.setDate(nu.getDate() + 1);
-
-  const erSammeDag = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate();
-
-  const iDagPriser = priser.filter(p => erSammeDag(new Date(p.time), nu));
-  const iMorgenPriser = priser.filter(p => erSammeDag(new Date(p.time), morgenDato));
+  // Opdel priser i i dag og i morgen
+  const iDagPriser = priser.filter(p => new Date(p.time).getDate() === nu.getDate());
+  const iMorgenPriser = priser.filter(p => new Date(p.time).getDate() !== nu.getDate());
 
   const erLadeTime = (time: string) => {
     return ladePlan.timerDatoer.some(t => {

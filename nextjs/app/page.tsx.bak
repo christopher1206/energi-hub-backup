@@ -55,19 +55,6 @@ interface OverrideStatus {
   aktiv: boolean;
 }
 
-interface DagensTal {
-  dagens_sol_kwh: number;
-  dagens_load_kwh: number;
-  dagens_grid_kob_kwh: number;
-  dagens_grid_solgt_kwh: number;
-  dagens_batteri_ud_kwh: number;
-  dagens_batteri_ind_kwh: number;
-  dagens_tesla_kwh: number;
-  sparet_i_dag: number;
-  selvforsyning_i_dag: number;
-  dagens_grid_kob_kr: number;
-}
-
 function ZoneFarve({ zone }: { zone: string }) {
   if (zone === 'billig') return <span className="zone-billig">● BILLIG</span>;
   if (zone === 'dyr') return <span className="zone-dyr">● DYR</span>;
@@ -103,19 +90,17 @@ export default function Dashboard() {
   const [bilInput, setBilInput] = useState('');
   const [bilGemt, setBilGemt] = useState(false);
   const [tid, setTid] = useState('');
-  const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
 
   useEffect(() => {
     const hent = async () => {
       try {
-        const [dataRes, overrideRes, bilRes, ladningRes, begivRes, vejrRes, statRes] = await Promise.all([
+        const [dataRes, overrideRes, bilRes, ladningRes, begivRes, vejrRes] = await Promise.all([
           fetch('/api/data'),
           fetch('/api/override'),
           fetch('/api/bil'),
           fetch('/api/naeste-ladning'),
           fetch('/api/begivenheder'),
           fetch('/api/vejr'),
-          fetch('/api/dagens-tal'),
         ]);
         setData(await dataRes.json());
         setOverride(await overrideRes.json());
@@ -123,7 +108,6 @@ export default function Dashboard() {
         setNaesteLadning(await ladningRes.json());
         setBegivenheder(await begivRes.json());
         setVejr(await vejrRes.json());
-        setDagensTal(await statRes.json());
       } catch (e) {}
     };
     hent();
@@ -191,59 +175,6 @@ export default function Dashboard() {
       {override.aktiv && (
         <div className="override-banner">
           🚨 MANUEL OVERRIDE AKTIV — Tesla lader med 16A — Kører indtil manuelt stop
-        </div>
-      )}
-
-      {dagensTal && (
-        <div className="dagens-tal-boks">
-          <div className="dagens-tal-titel">📊 Dagens tal</div>
-          <div className="dagens-tal-grid">
-            <div className="dagens-tal-item">
-              <span className="dt-icon">🔌</span>
-              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.dagens_grid_kob_kwh.toFixed(1)} kWh</span>
-              <span className="dt-label">Købt</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">💸</span>
-              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.dagens_grid_kob_kr.toFixed(2)} kr</span>
-              <span className="dt-label">Købt for</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">📤</span>
-              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.dagens_grid_solgt_kwh.toFixed(1)} kWh</span>
-              <span className="dt-label">Solgt</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">☀️</span>
-              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.dagens_sol_kwh.toFixed(1)} kWh</span>
-              <span className="dt-label">Sol produceret</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">⬆️</span>
-              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.dagens_batteri_ind_kwh.toFixed(1)} kWh</span>
-              <span className="dt-label">Batteri ind</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">⬇️</span>
-              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.dagens_batteri_ud_kwh.toFixed(1)} kWh</span>
-              <span className="dt-label">Batteri ud</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">🚗</span>
-              <span className="dt-value" style={{color:'#3b82f6'}}>{dagensTal.dagens_tesla_kwh.toFixed(1)} kWh</span>
-              <span className="dt-label">Bil ladet</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">💰</span>
-              <span className="dt-value" style={{color: dagensTal.sparet_i_dag >= 0 ? '#22c55e' : '#ef4444'}}>{dagensTal.sparet_i_dag} kr</span>
-              <span className="dt-label">Sparet i dag</span>
-            </div>
-            <div className="dagens-tal-item">
-              <span className="dt-icon">📊</span>
-              <span className="dt-value">{dagensTal.selvforsyning_i_dag}%</span>
-              <span className="dt-label">Selvforsyning</span>
-            </div>
-          </div>
         </div>
       )}
 

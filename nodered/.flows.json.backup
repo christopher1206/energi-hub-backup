@@ -348,6 +348,64 @@
         "wires": []
     },
     {
+        "id": "hent-vejr",
+        "type": "http request",
+        "z": "f8fcc2eca1886938",
+        "name": "Hent vejr",
+        "method": "GET",
+        "ret": "obj",
+        "url": "https://api.openweathermap.org/data/2.5/forecast?lat=55.48375&lon=9.299174&appid=1908e24a2653afbea4a5cb4b403385e6&units=metric&lang=da&cnt=8",
+        "x": 200,
+        "y": 520,
+        "wires": [
+            [
+                "gem-vejr"
+            ]
+        ]
+    },
+    {
+        "id": "gem-vejr",
+        "type": "function",
+        "z": "f8fcc2eca1886938",
+        "name": "Gem vejr data",
+        "func": "const list = msg.payload.list || [];\nconst dagensTimer = list.slice(0, 4);\n\nconst maxTemp = Math.max(...dagensTimer.map(t => t.main.temp_max));\nconst minTemp = Math.min(...dagensTimer.map(t => t.main.temp_min));\nconst vejrTekst = dagensTimer[0]?.weather[0]?.description || 'ukendt';\nconst skyer = Math.round(dagensTimer.reduce((sum, t) => sum + t.clouds.all, 0) / dagensTimer.length);\nconst solPotentiale = skyer < 30 ? '☀️ Højt solpotentiale' : skyer < 70 ? '⛅ Moderat solpotentiale' : '☁️ Lavt solpotentiale';\n\nglobal.set('vejr_temp_max', Math.round(maxTemp));\nglobal.set('vejr_temp_min', Math.round(minTemp));\nglobal.set('vejr_tekst', vejrTekst);\nglobal.set('vejr_skyer', skyer);\nglobal.set('vejr_sol_potentiale', solPotentiale);\n\nnode.warn(`🌤️ Vejr Lunderskov: ${vejrTekst}, ${Math.round(minTemp)}-${Math.round(maxTemp)}°C, ${skyer}% skyer`);\nreturn null;",
+        "outputs": 1,
+        "x": 450,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "vejr-timer",
+        "type": "inject",
+        "z": "f8fcc2eca1886938",
+        "name": "Hent vejr kl 05:50",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "50 05 * * *",
+        "once": true,
+        "onceDelay": 10,
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 200,
+        "y": 570,
+        "wires": [
+            [
+                "hent-vejr"
+            ]
+        ]
+    },
+    {
         "id": "mqtt-batteri",
         "type": "mqtt in",
         "z": "900938edd3809de9",
@@ -563,7 +621,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Beslutnings-motor",
-        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 1200;\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erHverdag = nu.getDay() >= 1 && nu.getDay() <= 5;\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Find billigste nattetimer til Tesla\nconst kommende = priser.filter(p => {\n    const t = new Date(p.time);\n    return t > nu;\n}).slice(0, 8);\n\nconst billigsteTimer = [...kommende]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, 4)\n    .map(p => new Date(p.time).getHours());\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tesla deadline check (hverdage kl 03:00-06:00)\nlet tvingTesla = false;\nif (erHverdag && time >= 3 && time < 6) {\n    const carSoc = global.get('car_soc') || 50;\n    const mangler = (TESLA_MAL - carSoc) * (TESLA_KWH / 100);\n    const timerTilbet = 6 - time;\n    const maxKwh = timerTilbet * TESLA_MAX_KW;\n    if (maxKwh < mangler) {\n        tvingTesla = true;\n        node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}%! Mangler ${mangler.toFixed(1)} kWh`);\n    }\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Dyre aftentimer → Load first + afladning tilladt\n// Sol + batteri dækker huset, ingen net køb\nif (erDyrAften) {\n    growattMode = 'load_first';\n    dischargeMode = 'aktiv'; // Tillad afladning i dyre timer\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) → Load first | Batteri + sol dækker huset`);\n    teslaLad = false;\n}\n\n// REGEL 2: Sol til stede → Load first\nelse if (erSol) {\n    growattMode = 'load_first';\n    dischargeMode = 'stop'; // Batteri skal ikke aflade når sol er til stede\n    beslutning.push(`☀️ Sol (${sol}W) → Load first | Hus: ${loadPower}W | Overskud: ${solEfterHus}W`);\n}\n\n// REGEL 3: Billig time → Load first + lad Tesla hvis batteri OK\nelse if (zone === 'billig') {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n    if (soc >= 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 10;\n        beslutning.push(`🚗 Tesla lades via net (Growatt 100%)`);\n    }\n}\n\n// REGEL 4: Normal time → Load first\nelse {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// REGEL 5: Sol overskud → lad Tesla\n// KUN hvis: Growatt = 100% OG sol overskud > 1200W\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 230);\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A = 1380W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline\nif (tvingTesla && soc > GROWATT_MIN_SOC) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
+        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 1200;\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erHverdag = nu.getDay() >= 1 && nu.getDay() <= 5;\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Find billigste nattetimer til Tesla\nconst kommende = priser.filter(p => {\n    const t = new Date(p.time);\n    return t > nu;\n}).slice(0, 8);\n\nconst billigsteTimer = [...kommende]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, 4)\n    .map(p => new Date(p.time).getHours());\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tesla deadline check (hverdage kl 03:00-06:00)\nlet tvingTesla = false;\nif (erHverdag && time >= 3 && time < 6) {\n    const carSoc = global.get('car_soc') || 50;\n    const mangler = (TESLA_MAL - carSoc) * (TESLA_KWH / 100);\n    const timerTilbet = 6 - time;\n    const maxKwh = timerTilbet * TESLA_MAX_KW;\n    if (maxKwh < mangler) {\n        tvingTesla = true;\n        node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}%! Mangler ${mangler.toFixed(1)} kWh`);\n    }\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Dyre aftentimer → Load first + afladning tilladt\n// Sol + batteri dækker huset, ingen net køb\nif (erDyrAften) {\n    growattMode = 'load_first';\n    dischargeMode = 'aktiv'; // Tillad afladning i dyre timer\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) → Load first | Batteri + sol dækker huset`);\n    teslaLad = false;\n}\n\n// REGEL 2: Sol til stede → Load first\nelse if (erSol) {\n    growattMode = 'load_first';\n    dischargeMode = 'stop'; // Batteri skal ikke aflade når sol er til stede\n    beslutning.push(`☀️ Sol (${sol}W) → Load first | Hus: ${loadPower}W | Overskud: ${solEfterHus}W`);\n}\n\n// REGEL 3: Billig time → Load first + lad Tesla i billige nattetimer\n// (uafhængig af Growatt SOC - billig nettstrøm skal udnyttes uanset batteristatus)\nelse if (zone === 'billig') {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n\n    const carSocNu = global.get('car_soc') || 50;\n    const goECarNu = global.get('go_e_car') || 1;\n    const bilTilsluttetNu = goECarNu > 1;\n\n    if (bilTilsluttetNu && carSocNu < 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 16;\n        beslutning.push(`🚗 Tesla lader via billig nettstrøm (${pris} kr/kWh, ${carSocNu}% → 100%)`);\n    } else if (bilTilsluttetNu && carSocNu >= 100) {\n        beslutning.push(`🚗 Tesla allerede fuldt opladet (${carSocNu}%)`);\n    } else if (!bilTilsluttetNu) {\n        beslutning.push(`🚗 Tesla ikke tilsluttet - springer billig nat-ladning over`);\n    }\n}\n\n// REGEL 4: Normal time → Load first\nelse {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// REGEL 5: Sol overskud → lad Tesla\n// KUN hvis: Growatt = 100% OG sol overskud > 1200W\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 230);\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A = 1380W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline\nif (tvingTesla && soc > GROWATT_MIN_SOC) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -584,7 +642,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Styr go-e lader",
-        "func": "const teslaLad = msg.payload.teslaLad;\nconst teslaAmp = msg.payload.teslaAmp;\nconst carStatus = global.get('go_e_car') || 1;\nconst sidsteTeslaLad = global.get('sidste_tesla_lad');\n\nconst bilTilsluttet = carStatus === 2 || carStatus === 3 || carStatus === 4;\n\nlet eventMsg = null;\n\nif (!bilTilsluttet) {\n    msg.url = `http://192.168.1.222/api/set?frc=0`;\n    node.warn(`🚗 go-e: Ingen bil tilsluttet (car=${carStatus}) - auto mode`);\n\n    // Log hvis bil frakoblet\n    if (sidsteTeslaLad !== false) {\n        global.set('sidste_tesla_lad', false);\n        eventMsg = { payload: { event: 'tesla_ladning', beskrivelse: `King kong frakoblet laderen` }};\n    }\n    return [msg, eventMsg];\n}\n\nif (teslaLad) {\n    msg.url = `http://192.168.1.222/api/set?frc=2&amp=${teslaAmp}`;\n    node.warn(`🚗 go-e: Lader ${teslaAmp}A (car=${carStatus} ✅)`);\n\n    // Log hvis ladning startet\n    if (!sidsteTeslaLad) {\n        global.set('sidste_tesla_lad', true);\n        eventMsg = { payload: { event: 'tesla_ladning', beskrivelse: `King kong startet ladning ${teslaAmp}A` }};\n    }\n} else {\n    msg.url = `http://192.168.1.222/api/set?frc=1`;\n    node.warn(`🚗 go-e: STOP ladning (car=${carStatus})`);\n\n    // Log hvis ladning stoppet\n    if (sidsteTeslaLad) {\n        global.set('sidste_tesla_lad', false);\n        eventMsg = { payload: { event: 'tesla_ladning', beskrivelse: `King kong stoppet ladning` }};\n    }\n}\n\nreturn [msg, eventMsg];",
+        "func": "const teslaLad = msg.payload.teslaLad;\nconst teslaAmp = msg.payload.teslaAmp;\n\nif (teslaLad) {\n    msg.url = `http://192.168.1.222/api/set?frc=2&amp=${teslaAmp}`;\n    node.warn(`🚗 go-e: Lader ${teslaAmp}A`);\n} else {\n    msg.url = `http://192.168.1.222/api/set?frc=1`;\n    node.warn(`🚗 go-e: STOP ladning`);\n}\n\nreturn msg;",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
@@ -709,8 +767,8 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Override handler",
-        "func": "const aktiv = msg.payload.aktiv;\n\nif (aktiv) {\n    global.set('override_aktiv', true);\n    global.set('override_slut', null); // Ingen timeout!\n    node.warn(`🚨 OVERRIDE AKTIV - kører indtil manuelt stop!`);\n    msg.payload = { success: true, besked: 'Override aktiv indtil manuelt stop' };\n} else {\n    global.set('override_aktiv', false);\n    global.set('override_slut', null);\n    node.warn('✅ Override deaktiveret');\n    msg.payload = { success: true, besked: 'Override deaktiveret' };\n}\n\nreturn msg;",
-        "outputs": 1,
+        "func": "const aktiv = msg.payload.aktiv;\nlet eventMsg = null;\n\nif (aktiv) {\n    global.set('override_aktiv', true);\n    global.set('override_slut', null);\n    node.warn(`🚨 OVERRIDE AKTIV - kører indtil manuelt stop!`);\n    msg.payload = { success: true, besked: 'Override aktiv indtil manuelt stop' };\n    eventMsg = { payload: { event: 'override', beskrivelse: '🚨 Manuel override aktiveret - Tesla tvinges til 16A' } };\n} else {\n    global.set('override_aktiv', false);\n    global.set('override_slut', null);\n    node.warn('✅ Override deaktiveret');\n    msg.payload = { success: true, besked: 'Override deaktiveret' };\n    eventMsg = { payload: { event: 'override', beskrivelse: '✅ Manuel override deaktiveret' } };\n}\n\nreturn [msg, eventMsg];",
+        "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
@@ -721,6 +779,9 @@
         "wires": [
             [
                 "override-svar"
+            ],
+            [
+                "gem-event"
             ]
         ]
     },
@@ -923,7 +984,7 @@
         "type": "function",
         "z": "77c2a9230595fbfa",
         "name": "Forbered energi data",
-        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst teslaLad = global.get('tesla_lad') || false;\nconst teslaAmp = global.get('tesla_amp') || 0;\nconst loadPower = global.get('load_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst spotpris = nuvaerende ? (nuvaerende.spotpris || 0) : 0;\nconst zone = nuvaerende ? nuvaerende.zone : 'ukendt';\nconst growattMode = global.get('growatt_kommando') || 'Load first';\n\n// Tjek om bil faktisk er tilsluttet\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst laderAktivt = teslaLad && bilTilsluttet;\n\n// InfluxDB line protocol\nconst lineProtocol = `energi,zone=${zone},growatt_mode=${growattMode.replace(/ /g, '_')} batteri_soc=${Number(soc)},sol_power=${Number(sol)},grid_power=${Number(grid)},batteri_power=${Number(batteriPower)},batteri_temp=${Number(temp)},discharge_rate=${Number(dischargeRate)},tesla_lad=${laderAktivt ? 1 : 0},tesla_amp=${Number(teslaAmp)},load_power=${Number(loadPower)},pris=${Number(pris)},spotpris=${Number(spotpris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst teslaLad = global.get('tesla_lad') || false;\nconst teslaAmp = global.get('tesla_amp') || 0;\nconst loadPower = global.get('load_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst spotpris = nuvaerende ? (nuvaerende.spotpris || 0) : 0;\nconst zone = nuvaerende ? nuvaerende.zone : 'ukendt';\nconst growattMode = global.get('growatt_kommando') || 'Load first';\n\n// Tjek om bil faktisk er tilsluttet\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst laderAktivt = teslaLad && bilTilsluttet;\n\n// InfluxDB line protocol\nconst lineProtocol = `energi,zone=${zone},growatt_mode=${growattMode.replace(/ /g, '_')} batteri_soc=${Number(soc)},sol_power=${Number(sol)},grid_power=${Number(grid)},batteri_power=${Number(batteriPower)},batteri_temp=${Number(temp)},discharge_rate=${Number(dischargeRate)},tesla_lad=${laderAktivt ? 1 : 0},tesla_amp=${Number(teslaAmp)},load_power=${Number(loadPower)},pris=${Number(pris)},spotpris=${Number(spotpris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token 2nmT7NymMwr1UMY3e8V63anZUI5TCWRqlg_0tPD9Y_RkmnbjjkZAZWgXD9hgyano3X8Mke1HXGXiCzmDlmlPvw==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1284,8 +1345,13 @@
         "type": "function",
         "z": "ced8b8b6adb174ea",
         "name": "Byg daglig rapport",
-        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst carSoc = global.get('car_soc') || 50;\nconst zone = nuvaerende ? nuvaerende.zone.toUpperCase() : 'UKENDT';\n\nconst nu = new Date();\nconst dato = nu.toLocaleDateString('da-DK', { weekday: 'long', day: 'numeric', month: 'long' });\n\nmsg.payload = `⚡ <b>Energi Hub - Godmorgen!</b>\\n📅 ${dato}\\n\\n🔋 Growatt batteri: ${soc}%\\n☀️ Sol produktion: ${sol}W\\n💰 Strømpris nu: ${pris} kr/kWh (${zone})\\n🚗 King kong: ${carSoc}%\\n\\nHav en god dag! 🌞`;\nreturn msg;",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst carSoc = global.get('car_soc') || 50;\nconst zone = nuvaerende ? nuvaerende.zone.toUpperCase() : 'UKENDT';\n\nconst vejrTekst = global.get('vejr_tekst') || 'ukendt';\nconst vejrMin = global.get('vejr_temp_min');\nconst vejrMax = global.get('vejr_temp_max');\nconst skyer = global.get('vejr_skyer');\nconst solPotentiale = global.get('vejr_sol_potentiale') || '';\n\nconst nu = new Date();\nconst dato = nu.toLocaleDateString('da-DK', { weekday: 'long', day: 'numeric', month: 'long' });\n\nconst vejrLinje = vejrMin !== undefined\n    ? `🌤️ Vejr: ${vejrTekst}, ${vejrMin}-${vejrMax}°C (${skyer}% skyer)\\n${solPotentiale}\\n`\n    : '';\n\nmsg.payload = `⚡ <b>Energi Hub - Godmorgen!</b>\\n📅 ${dato}\\n\\n🔋 Growatt batteri: ${soc}%\\n☀️ Sol produktion: ${sol}W\\n${vejrLinje}💰 Strømpris nu: ${pris} kr/kWh (${zone})\\n🚗 King kong: ${carSoc}%\\n\\nHav en god dag! 🌞`;\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 440,
         "y": 560,
         "wires": [
@@ -1772,5 +1838,48 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "vejr-api",
+        "type": "http in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Vejr API",
+        "url": "/api/vejr",
+        "method": "get",
+        "x": 150,
+        "y": 760,
+        "wires": [
+            [
+                "vejr-handler"
+            ]
+        ]
+    },
+    {
+        "id": "vejr-handler",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg vejr svar",
+        "func": "msg.payload = {\n    tekst: global.get('vejr_tekst') || 'ukendt',\n    tempMin: global.get('vejr_temp_min'),\n    tempMax: global.get('vejr_temp_max'),\n    skyer: global.get('vejr_skyer'),\n    solPotentiale: global.get('vejr_sol_potentiale') || ''\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 400,
+        "y": 760,
+        "wires": [
+            [
+                "vejr-svar"
+            ]
+        ]
+    },
+    {
+        "id": "vejr-svar",
+        "type": "http response",
+        "z": "ced8b8b6adb174ea",
+        "name": "Vejr svar",
+        "statusCode": "200",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "x": 650,
+        "y": 760,
+        "wires": []
     }
 ]

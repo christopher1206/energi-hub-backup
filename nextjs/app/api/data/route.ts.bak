@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-const INFLUX_URL = process.env.INFLUX_URL || 'http://influxdb:8086';
-const INFLUX_TOKEN = `Token ${process.env.INFLUX_TOKEN || ''}`;
-const INFLUX_ORG = process.env.INFLUX_ORG || 'energihub';
-const INFLUX_BUCKET = process.env.INFLUX_BUCKET || 'energi2';
+const INFLUX_URL = 'http://192.168.1.253:8086';
+const INFLUX_TOKEN = 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==';
+const INFLUX_ORG = 'energihub';
+const INFLUX_BUCKET = 'energi2';
 
 async function queryInflux(flux: string) {
   const res = await fetch(`${INFLUX_URL}/api/v2/query?org=${INFLUX_ORG}`, {

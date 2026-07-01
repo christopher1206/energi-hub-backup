@@ -47,7 +47,7 @@
                             "tabs": [
                                 "explorer"
                             ],
-                            "hidden": false,
+                            "hidden": true,
                             "active": "explorer"
                         },
                         "bottom": {
@@ -61,6 +61,6 @@
                 }
             }
         },
-        "menu-menu-item-left-sidebar": true
+        "menu-menu-item-left-sidebar": false
     }
 }
