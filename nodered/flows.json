@@ -896,7 +896,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Gem event til InfluxDB",
-        "func": "const event = msg.payload.event;\nconst beskrivelse = msg.payload.beskrivelse;\n\nif (!event) return null;\n\nconst lineProtocol = `events,type=${event.replace(/ /g,'_')} beskrivelse=\"${beskrivelse}\"`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\nreturn msg;",
+        "func": "const event = msg.payload.event;\nconst beskrivelse = msg.payload.beskrivelse;\n\nif (!event) return null;\n\nconst lineProtocol = `events,type=${event.replace(/ /g,'_')} beskrivelse=\"${beskrivelse}\"`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token ' + env.get('INFLUX_TOKEN'),\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\nreturn msg;",
         "outputs": 1,
         "x": 360,
         "y": 580,
@@ -940,7 +940,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Hent events",
-        "func": "msg.payload = null;\nmsg.headers = {\n    'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',\n    'Content-Type': 'application/vnd.flux',\n    'Accept': 'application/csv'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/query?org=energihub';\nmsg.method = 'POST';\nmsg.payload = `from(bucket: \"energi2\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"events\") |> sort(columns: [\"_time\"], desc: true) |> limit(n: 50)`;\nreturn msg;",
+        "func": "msg.payload = null;\nmsg.headers = {\n    'Authorization': 'Token ' + env.get('INFLUX_TOKEN'),\n    'Content-Type': 'application/vnd.flux',\n    'Accept': 'application/csv'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/query?org=energihub';\nmsg.method = 'POST';\nmsg.payload = `from(bucket: \"energi2\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"events\") |> sort(columns: [\"_time\"], desc: true) |> limit(n: 50)`;\nreturn msg;",
         "outputs": 1,
         "x": 360,
         "y": 640,
@@ -984,7 +984,7 @@
         "type": "function",
         "z": "77c2a9230595fbfa",
         "name": "Forbered energi data",
-        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst teslaLad = global.get('tesla_lad') || false;\nconst teslaAmp = global.get('tesla_amp') || 0;\nconst loadPower = global.get('load_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst spotpris = nuvaerende ? (nuvaerende.spotpris || 0) : 0;\nconst zone = nuvaerende ? nuvaerende.zone : 'ukendt';\nconst growattMode = global.get('growatt_kommando') || 'Load first';\n\n// Tjek om bil faktisk er tilsluttet\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst laderAktivt = teslaLad && bilTilsluttet;\n\n// InfluxDB line protocol\nconst lineProtocol = `energi,zone=${zone},growatt_mode=${growattMode.replace(/ /g, '_')} batteri_soc=${Number(soc)},sol_power=${Number(sol)},grid_power=${Number(grid)},batteri_power=${Number(batteriPower)},batteri_temp=${Number(temp)},discharge_rate=${Number(dischargeRate)},tesla_lad=${laderAktivt ? 1 : 0},tesla_amp=${Number(teslaAmp)},load_power=${Number(loadPower)},pris=${Number(pris)},spotpris=${Number(spotpris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token 2nmT7NymMwr1UMY3e8V63anZUI5TCWRqlg_0tPD9Y_RkmnbjjkZAZWgXD9hgyano3X8Mke1HXGXiCzmDlmlPvw==',\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
+        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst dischargeRate = global.get('discharge_rate') || 0;\nconst teslaLad = global.get('tesla_lad') || false;\nconst teslaAmp = global.get('tesla_amp') || 0;\nconst loadPower = global.get('load_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst spotpris = nuvaerende ? (nuvaerende.spotpris || 0) : 0;\nconst zone = nuvaerende ? nuvaerende.zone : 'ukendt';\nconst growattMode = global.get('growatt_kommando') || 'Load first';\n\n// Tjek om bil faktisk er tilsluttet\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst laderAktivt = teslaLad && bilTilsluttet;\n\n// InfluxDB line protocol\nconst lineProtocol = `energi,zone=${zone},growatt_mode=${growattMode.replace(/ /g, '_')} batteri_soc=${Number(soc)},sol_power=${Number(sol)},grid_power=${Number(grid)},batteri_power=${Number(batteriPower)},batteri_temp=${Number(temp)},discharge_rate=${Number(dischargeRate)},tesla_lad=${laderAktivt ? 1 : 0},tesla_amp=${Number(teslaAmp)},load_power=${Number(loadPower)},pris=${Number(pris)},spotpris=${Number(spotpris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n    'Authorization': 'Token ' + env.get('INFLUX_TOKEN'),\n    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1004,7 +1004,7 @@
         "type": "function",
         "z": "77c2a9230595fbfa",
         "name": "Forbered prisdata",
-        "func": "const priser = global.get('priser') || [];\nif (priser.length === 0) return null;\n\nconst nu = new Date();\nconst nuvaerende = priser.find(p => {\n    const t = new Date(p.time);\n    return t.getHours() === nu.getHours() && \n           t.getDate() === nu.getDate();\n});\n\nif (!nuvaerende) return null;\n\n// InfluxDB line protocol format\nconst lineProtocol = `strompris,zone=${nuvaerende.zone} pris=${Number(nuvaerende.pris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n'Authorization': 'Token A-Dni7i_eROyYjhmdcxTc8lLce2gXNzOldul2k2sWY-HMkqZVcE8U9_XvjNqSg4z_0QfbWq6nnTEHCEjtF1K9w==',    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
+        "func": "const priser = global.get('priser') || [];\nif (priser.length === 0) return null;\n\nconst nu = new Date();\nconst nuvaerende = priser.find(p => {\n    const t = new Date(p.time);\n    return t.getHours() === nu.getHours() && \n           t.getDate() === nu.getDate();\n});\n\nif (!nuvaerende) return null;\n\n// InfluxDB line protocol format\nconst lineProtocol = `strompris,zone=${nuvaerende.zone} pris=${Number(nuvaerende.pris)}`;\n\nmsg.payload = lineProtocol;\nmsg.headers = {\n'Authorization': 'Token ' + env.get('INFLUX_TOKEN'),    'Content-Type': 'text/plain'\n};\nmsg.url = 'http://192.168.1.253:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1143,8 +1143,13 @@
         "type": "function",
         "z": "ced8b8b6adb174ea",
         "name": "Gem bil SOC",
-        "func": "const soc = parseFloat(msg.payload.soc);\n\nif (isNaN(soc) || soc < 0 || soc > 100) {\n    msg.payload = { success: false, besked: 'Ugyldig SOC værdi' };\n    return msg;\n}\n\nglobal.set('car_soc', soc);\nglobal.set('car_soc_opdateret', new Date().toISOString());\n\nnode.warn(`🚗 Bil SOC sat til: ${soc}%`);\nmsg.payload = { success: true, soc, besked: `Bil SOC sat til ${soc}%` };\nreturn msg;",
+        "func": "const soc = parseFloat(msg.payload.soc);\nif (isNaN(soc) || soc < 0 || soc > 100) {\n    msg.payload = { success: false, besked: 'Ugyldig SOC værdi' };\n    return msg;\n}\nglobal.set('car_soc', soc);\nglobal.set('car_soc_opdateret', new Date().toISOString());\n// Gem go-e wh som nulpunkt for beregning\nglobal.set('car_soc_goe_wh_nulpunkt', global.get('go_e_wh') || 0);\nnode.warn(`🚗 Bil SOC sat til: ${soc}% (go-e nulpunkt: ${global.get('go_e_wh') || 0} Wh)`);\nmsg.payload = { success: true, soc, besked: `Bil SOC sat til ${soc}%` };\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 400,
         "y": 140,
         "wires": [
@@ -1186,8 +1191,13 @@
         "type": "function",
         "z": "ced8b8b6adb174ea",
         "name": "Bil SOC status",
-        "func": "const soc = global.get('car_soc') || 50;\nconst opdateret = global.get('car_soc_opdateret') || null;\nmsg.payload = { soc, opdateret };\nreturn msg;",
+        "func": "const gemtSoc = global.get('car_soc') || 50;\nconst opdateret = global.get('car_soc_opdateret') || null;\nconst goeWh = global.get('go_e_wh') || 0;\nconst nulpunkt = global.get('car_soc_goe_wh_nulpunkt') || goeWh;\n\n// Beregn tilføjet % siden sidst kendte SOC\n// 60 kWh batteri = 60000 Wh = 100%, så 1% = 600 Wh\nconst tilfoejt = Math.max(0, goeWh - nulpunkt);\nconst beregnetSoc = Math.min(100, Math.round(gemtSoc + (tilfoejt / 600)));\n\nnode.warn(`🚗 Bil SOC: gemt=${gemtSoc}% + ladet=${tilfoejt.toFixed(0)}Wh = beregnet=${beregnetSoc}%`);\n\nmsg.payload = { \n    soc: beregnetSoc, \n    opdateret,\n    gemt_soc: gemtSoc,\n    tilfoejt_kwh: parseFloat((tilfoejt / 1000).toFixed(2))\n};\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 400,
         "y": 200,
         "wires": [
@@ -1259,8 +1269,8 @@
         "name": "Send Telegram",
         "func": "const token = '8716129124:AAHP0rg0PFAEISe0Ml_KyW-AfrykHt_kEKQ';\nconst chatId = '8659008890';\nconst tekst = msg.payload;\n\nmsg.url = `https://api.telegram.org/bot${token}/sendMessage`;\nmsg.payload = { chat_id: chatId, text: tekst, parse_mode: 'HTML' };\nreturn msg;",
         "outputs": 1,
-        "x": 440,
-        "y": 440,
+        "x": 460,
+        "y": 400,
         "wires": [
             [
                 "telegram-http"
@@ -1289,7 +1299,7 @@
         "func": "const soc = global.get('batteri_soc') || 0;\nconst carSoc = global.get('car_soc') || 50;\nconst overrideAktiv = global.get('override_aktiv') || false;\nconst nuvaerende = global.get('nuvaerende');\nconst sol = global.get('sol_power') || 0;\nconst go_e_car = global.get('go_e_car') || 1;\n\nconst beskeder = [];\n\n// Batteri kritisk lavt\nif (soc <= 15) {\n    const sidst = global.get('alarm_batteri_lavt') || 0;\n    if (Date.now() - sidst > 3600000) { // Max 1 gang per time\n        beskeder.push(`⚠️ Growatt batteri LAVT: ${soc}%`);\n        global.set('alarm_batteri_lavt', Date.now());\n    }\n}\n\n// Batteri fuldt - klar til dyre timer\nif (soc >= 95) {\n    const sidst = global.get('alarm_batteri_fuld') || 0;\n    if (Date.now() - sidst > 7200000) { // Max 1 gang per 2 timer\n        beskeder.push(`✅ Growatt batteri FULDT: ${soc}% - Klar til dyre timer!`);\n        global.set('alarm_batteri_fuld', Date.now());\n    }\n}\n\n// Bil tilsluttet\nif (go_e_car === 2 || go_e_car === 3) {\n    const sidst = global.get('alarm_bil_tilsluttet') || 0;\n    if (Date.now() - sidst > 3600000) {\n        beskeder.push(`🚗 King kong tilsluttet laderen!`);\n        global.set('alarm_bil_tilsluttet', Date.now());\n    }\n}\n\n// Høj sol produktion\nif (sol > 5000) {\n    const sidst = global.get('alarm_sol_hoj') || 0;\n    if (Date.now() - sidst > 7200000) {\n        beskeder.push(`☀️ Høj sol produktion: ${sol}W!`);\n        global.set('alarm_sol_hoj', Date.now());\n    }\n}\n\nif (beskeder.length === 0) return null;\n\nmsg.payload = beskeder.join('\\n');\nreturn msg;",
         "outputs": 1,
         "x": 190,
-        "y": 440,
+        "y": 380,
         "wires": [
             [
                 "telegram-send"
@@ -1303,8 +1313,8 @@
         "name": "Check hvert 5. min",
         "repeat": "300",
         "once": false,
-        "x": 190,
-        "y": 500,
+        "x": 160,
+        "y": 480,
         "wires": [
             [
                 "alarm-check"
@@ -1345,7 +1355,7 @@
         "type": "function",
         "z": "ced8b8b6adb174ea",
         "name": "Byg daglig rapport",
-        "func": "const soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst pris = nuvaerende ? nuvaerende.pris : 0;\nconst carSoc = global.get('car_soc') || 50;\nconst zone = nuvaerende ? nuvaerende.zone.toUpperCase() : 'UKENDT';\n\nconst vejrTekst = global.get('vejr_tekst') || 'ukendt';\nconst vejrMin = global.get('vejr_temp_min');\nconst vejrMax = global.get('vejr_temp_max');\nconst skyer = global.get('vejr_skyer');\nconst solPotentiale = global.get('vejr_sol_potentiale') || '';\n\nconst nu = new Date();\nconst dato = nu.toLocaleDateString('da-DK', { weekday: 'long', day: 'numeric', month: 'long' });\n\nconst vejrLinje = vejrMin !== undefined\n    ? `🌤️ Vejr: ${vejrTekst}, ${vejrMin}-${vejrMax}°C (${skyer}% skyer)\\n${solPotentiale}\\n`\n    : '';\n\nmsg.payload = `⚡ <b>Energi Hub - Godmorgen!</b>\\n📅 ${dato}\\n\\n🔋 Growatt batteri: ${soc}%\\n☀️ Sol produktion: ${sol}W\\n${vejrLinje}💰 Strømpris nu: ${pris} kr/kWh (${zone})\\n🚗 King kong: ${carSoc}%\\n\\nHav en god dag! 🌞`;\nreturn msg;",
+        "func": "msg.url = 'http://192.168.1.253:3000/api/dagens-tal';\nmsg.method = 'GET';\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1356,7 +1366,7 @@
         "y": 560,
         "wires": [
             [
-                "telegram-send"
+                "cf47cf47aea112ae"
             ]
         ]
     },
@@ -1881,5 +1891,49 @@
         "x": 650,
         "y": 760,
         "wires": []
+    },
+    {
+        "id": "cf47cf47aea112ae",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "Hent dagens tal",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.1.253:3000/api/dagens-tal",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 660,
+        "y": 560,
+        "wires": [
+            [
+                "aa99c999295283cc"
+            ]
+        ]
+    },
+    {
+        "id": "aa99c999295283cc",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg rapport fra API",
+        "func": "const data = msg.payload;\nconst soc = global.get('batteri_soc') || 0;\nconst carSoc = global.get('car_soc') || 50;\nconst vejrTekst = global.get('vejr_tekst') || 'ukendt';\nconst vejrMin = global.get('vejr_temp_min') || '?';\nconst vejrMax = global.get('vejr_temp_max') || '?';\n\nif (!data || data.fejl) {\n    msg.payload = '📊 <b>Daglig rapport</b>\\n\\nKunne ikke hente data fra API';\n    return msg;\n}\n\nmsg.payload = '📊 <b>Daglig energi rapport</b>\\n\\n' +\n    '☀️ Sol produceret: ' + data.dagens_sol_kwh + ' kWh\\n' +\n    '🔌 Købt fra net: ' + data.dagens_grid_kob_kwh + ' kWh (' + data.dagens_grid_kob_kr + ' kr)\\n' +\n    '📤 Solgt til net: ' + data.dagens_grid_solgt_kwh + ' kWh\\n' +\n    '⬆️ Batteri ladet: ' + data.dagens_batteri_ind_kwh + ' kWh\\n' +\n    '⬇️ Batteri afladet: ' + data.dagens_batteri_ud_kwh + ' kWh\\n' +\n    '🚗 Tesla ladet: ' + data.dagens_tesla_kwh + ' kWh\\n' +\n    '💰 Sparet i dag: ' + data.sparet_i_dag + ' kr\\n' +\n    '📊 Selvforsyning: ' + data.selvforsyning_i_dag + '%\\n\\n' +\n    '🔋 Growatt nu: ' + soc + '%\\n' +\n    '🚗 King kong: ' + carSoc + '%\\n' +\n    '🌤️ Vejr: ' + vejrTekst + ' ' + vejrMin + '-' + vejrMax + '°C';\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 500,
+        "wires": [
+            [
+                "telegram-send"
+            ]
+        ]
     }
 ]

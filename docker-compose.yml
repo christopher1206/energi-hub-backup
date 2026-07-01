@@ -9,6 +9,7 @@ services:
       - ./nodered:/data
     environment:
       - TZ=Europe/Copenhagen
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
 
   influxdb:
     image: influxdb:2.7
