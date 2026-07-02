@@ -18,6 +18,7 @@ interface EnergiData {
   zone: string;
   growatt_mode: string;
   timestamp: string;
+  spotpris?: number;
 }
 
 interface BilData {
@@ -116,20 +117,14 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setTid(new Date().toLocaleTimeString('da-DK'));
-    }, 1000);
+    const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
 
   const toggleOverride = async () => {
     setOverrideLoading(true);
     try {
-      await fetch('/api/override', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ aktiv: !override.aktiv }),
-      });
+      await fetch('/api/override', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ aktiv: !override.aktiv }) });
       const res = await fetch('/api/override');
       setOverride(await res.json());
     } catch (e) {}
@@ -140,11 +135,7 @@ export default function Dashboard() {
     const soc = parseFloat(bilInput);
     if (isNaN(soc) || soc < 0 || soc > 100) return;
     try {
-      await fetch('/api/bil', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ soc }),
-      });
+      await fetch('/api/bil', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ soc }) });
       setBil({ soc, opdateret: new Date().toISOString() });
       setBilInput('');
       setBilGemt(true);
@@ -152,17 +143,12 @@ export default function Dashboard() {
     } catch (e) {}
   };
 
-  if (!data) return (
-    <div className="loading">
-      <div className="spinner" />
-      <p>Henter data...</p>
-    </div>
-  );
-
-  const dataWithPris = { ...data };
+  if (!data) return <div className="loading"><div className="spinner" /><p>Henter data...</p></div>;
 
   return (
     <div className="dashboard">
+
+      {/* Header */}
       <header>
         <div className="header-left">
           <h1>⚡ Energi Hub</h1>
@@ -174,102 +160,119 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* Kompakt kontrol-bjælke */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap',
+        background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px',
+        padding: '0.6rem 1rem', marginBottom: '1rem'
+      }}>
+        {/* Tesla SOC */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1.1rem' }}>🚗</span>
+          <span style={{ fontSize: '0.85rem', color: '#64748b' }}>King Kong</span>
+          <span style={{ fontSize: '1rem', fontWeight: 700, color: '#3b82f6' }}>{bil.soc}%</span>
+          {data.tesla_lad ? (
+            <span style={{ fontSize: '0.75rem', background: '#1d4ed8', color: '#93c5fd', padding: '2px 8px', borderRadius: '6px' }}>⚡ LADER {data.tesla_amp}A</span>
+          ) : (
+            <span style={{ fontSize: '0.75rem', background: '#1e293b', color: '#475569', padding: '2px 8px', borderRadius: '6px' }}>⏸ STANDBY</span>
+          )}
+        </div>
+
+        {/* Separator */}
+        <div style={{ width: '1px', height: '24px', background: '#1e293b' }} />
+
+        {/* Næste ladning */}
+        <div style={{ fontSize: '0.8rem', color: naesteLadning.harPlan ? '#22c55e' : '#64748b', flex: 1, minWidth: '200px' }}>
+          {naesteLadning.harPlan
+            ? `🕐 ${naesteLadning.startTid} → ${naesteLadning.slutTid} (${naesteLadning.startDato || ''})`
+            : `⏳ ${naesteLadning.besked}`}
+        </div>
+
+        {/* Separator */}
+        <div style={{ width: '1px', height: '24px', background: '#1e293b' }} />
+
+        {/* Bil % input */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Opdater bil %</span>
+          <input
+            type="number" min="0" max="100" placeholder="76"
+            value={bilInput}
+            onChange={e => setBilInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && gemBilSoc()}
+            style={{
+              width: '60px', padding: '4px 8px', background: '#1e293b', border: '1px solid #334155',
+              borderRadius: '8px', color: '#f1f5f9', fontSize: '0.85rem', textAlign: 'center'
+            }}
+          />
+          <button onClick={gemBilSoc} style={{
+            padding: '4px 12px', background: bilGemt ? '#166534' : '#1d4ed8',
+            border: 'none', borderRadius: '8px', color: 'white', fontSize: '0.8rem', cursor: 'pointer'
+          }}>
+            {bilGemt ? '✅' : 'Gem'}
+          </button>
+        </div>
+
+        {/* Separator */}
+        <div style={{ width: '1px', height: '24px', background: '#1e293b' }} />
+
+        {/* Override knap */}
+        <button
+          onClick={toggleOverride}
+          disabled={overrideLoading}
+          style={{
+            padding: '5px 14px', cursor: 'pointer', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600,
+            border: override.aktiv ? '1px solid #ef4444' : '1px solid #334155',
+            background: override.aktiv ? '#7f1d1d' : '#1e293b',
+            color: override.aktiv ? '#fca5a5' : '#94a3b8',
+          }}
+        >
+          {overrideLoading ? '...' : override.aktiv ? '⏹ Stop override' : '🚨 Tving ladning'}
+        </button>
+
+        {/* Navigation */}
+        <div style={{ display: 'flex', gap: '0.4rem', marginLeft: 'auto' }}>
+          <Link href="/plan" style={{ fontSize: '0.75rem', color: '#64748b', textDecoration: 'none', padding: '4px 8px', background: '#1e293b', borderRadius: '6px' }}>📅 Plan</Link>
+          <Link href="/statistik" style={{ fontSize: '0.75rem', color: '#64748b', textDecoration: 'none', padding: '4px 8px', background: '#1e293b', borderRadius: '6px' }}>📊 Statistik</Link>
+          <Link href="/grafer" style={{ fontSize: '0.75rem', color: '#64748b', textDecoration: 'none', padding: '4px 8px', background: '#1e293b', borderRadius: '6px' }}>📈 Grafer</Link>
+          <Link href="/log" style={{ fontSize: '0.75rem', color: '#64748b', textDecoration: 'none', padding: '4px 8px', background: '#1e293b', borderRadius: '6px' }}>📋 Log</Link>
+        </div>
+      </div>
+
       {override.aktiv && (
         <div className="override-banner">
           🚨 MANUEL OVERRIDE AKTIV — Tesla lader med 16A — Kører indtil manuelt stop
         </div>
       )}
 
-      {/* Live energiflow — fylder hele bredden */}
+      {/* Live energiflow */}
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⚡ Live energiflow</div>
-        <EnergiFlow data={dataWithPris} dagensTal={dagensTal} vejr={vejr} />
+        <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} />
       </div>
 
-      {/* Kompakt info-række under flow */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-
-        {/* Begivenheder */}
-        <div className="card" style={{ padding: '1rem' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⏰ Næste begivenheder</div>
-          {begivenheder.naeste.length > 0 ? begivenheder.naeste.map((b, i) => (
-            <div key={i} className="begivenhed-række">
-              <span className="begivenhed-tid">{b.tid}</span>
-              <span className="begivenhed-besked">{b.besked}</span>
-              {b.minutter && <span className="begivenhed-minutter">om {b.minutter}m</span>}
-            </div>
-          )) : <div style={{ color: '#475569', fontSize: '0.8rem' }}>Ingen planlagte begivenheder</div>}
-          {begivenheder.sidst.length > 0 && (
-            <>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', margin: '0.5rem 0 0.25rem' }}>📋 Senest</div>
-              {begivenheder.sidst.map((b, i) => (
-                <div key={i} className="begivenhed-række">
-                  <span className="begivenhed-tid">{b.tid}</span>
-                  <span className="begivenhed-besked">{b.besked}</span>
-                </div>
-              ))}
-            </>
-          )}
-          {/* Growatt status */}
-          <div style={{ borderTop: '1px solid #1e293b', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
-            <div className="info-row"><span>Mode</span><span className="mode">{data.growatt_mode.replace(/_/g, ' ')}</span></div>
-            <div className="info-row"><span>Temp</span><span>{data.batteri_temp}°C</span></div>
-            <div className="info-row"><span>Discharge</span><span>{data.discharge_rate}%</span></div>
+      {/* Begivenheder — kompakt enkelt kort */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.4rem' }}>⏰ Næste begivenheder</div>
+            {begivenheder.naeste.length > 0 ? begivenheder.naeste.map((b, i) => (
+              <div key={i} className="begivenhed-række">
+                <span className="begivenhed-tid">{b.tid}</span>
+                <span className="begivenhed-besked">{b.besked}</span>
+                {b.minutter && <span className="begivenhed-minutter">om {b.minutter}m</span>}
+              </div>
+            )) : <div style={{ color: '#475569', fontSize: '0.8rem' }}>Ingen planlagte begivenheder</div>}
+          </div>
+          <div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.4rem' }}>📋 Senest</div>
+            {begivenheder.sidst.map((b, i) => (
+              <div key={i} className="begivenhed-række">
+                <span className="begivenhed-tid">{b.tid}</span>
+                <span className="begivenhed-besked">{b.besked}</span>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Tesla */}
-        <div className="card tesla-card" style={{ padding: '1rem' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>🚗 King Kong — Tesla Model Y</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#3b82f6' }}>{bil.soc}%</div>
-          {data.tesla_lad ? (
-            <div className="lader-badge">⚡ LADER {data.tesla_amp}A</div>
-          ) : (
-            <div className="standby-badge">⏸ STANDBY</div>
-          )}
-          <div className={`naeste-ladning ${naesteLadning.harPlan ? '' : 'ingen-plan'}`} style={{ marginTop: '0.5rem' }}>
-            {naesteLadning.harPlan
-              ? `🕐 ${naesteLadning.startTid} → ${naesteLadning.slutTid} (${naesteLadning.startDato || ''})`
-              : `⏳ ${naesteLadning.besked}`}
-          </div>
-          {bil.opdateret && (
-            <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.3rem' }}>
-              Opdateret: {new Date(bil.opdateret).toLocaleTimeString('da-DK')}
-            </div>
-          )}
-          <div className="bil-input-row" style={{ marginTop: '0.75rem' }}>
-            <input
-              type="number" min="0" max="100" placeholder="Bil % nu"
-              value={bilInput}
-              onChange={e => setBilInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && gemBilSoc()}
-              className="bil-input"
-            />
-            <button onClick={gemBilSoc} className="bil-btn">
-              {bilGemt ? '✅' : 'Gem'}
-            </button>
-          </div>
-        </div>
-
-        {/* Override + navigation */}
-        <div className="card" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>🎛️ Manuel styring</div>
-          <button
-            className={`override-btn ${override.aktiv ? 'override-aktiv' : ''}`}
-            onClick={toggleOverride}
-            disabled={overrideLoading}
-            style={{ width: '100%' }}
-          >
-            {overrideLoading ? '...' : override.aktiv ? '⏹ Stop override' : '🚨 Tving ladning'}
-          </button>
-          <div style={{ borderTop: '1px solid #1e293b', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <Link href="/plan" className="nav-link" style={{ textAlign: 'center' }}>📅 Ladeplan & priser</Link>
-            <Link href="/statistik" className="nav-link" style={{ textAlign: 'center' }}>📊 Statistik</Link>
-            <Link href="/grafer" className="nav-link" style={{ textAlign: 'center' }}>📈 Grafer</Link>
-            <Link href="/log" className="nav-link" style={{ textAlign: 'center' }}>📋 Hændelseslog</Link>
-          </div>
-        </div>
-
       </div>
 
       <footer>

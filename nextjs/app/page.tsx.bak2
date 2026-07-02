@@ -1,0 +1,404 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import EnergiFlow from './components/EnergiFlow';
+
+interface EnergiData {
+  batteri_soc: number;
+  sol_power: number;
+  grid_power: number;
+  batteri_power: number;
+  batteri_temp: number;
+  discharge_rate: number;
+  tesla_lad: number;
+  tesla_amp: number;
+  load_power: number;
+  pris: number;
+  zone: string;
+  growatt_mode: string;
+  timestamp: string;
+}
+
+interface BilData {
+  soc: number;
+  opdateret: string | null;
+}
+
+interface NaesteLadning {
+  harPlan: boolean;
+  startTid?: string;
+  slutTid?: string;
+  startDato?: string;
+  besked: string;
+}
+
+interface Begivenhed {
+  tid: string;
+  besked: string;
+  minutter?: number;
+}
+
+interface Begivenheder {
+  naeste: Begivenhed[];
+  sidst: Begivenhed[];
+}
+
+interface Vejr {
+  tekst: string;
+  tempMin: number | null;
+  tempMax: number | null;
+  skyer: number | null;
+  solPotentiale: string;
+}
+
+interface OverrideStatus {
+  aktiv: boolean;
+}
+
+interface DagensTal {
+  dagens_sol_kwh: number;
+  dagens_load_kwh: number;
+  dagens_grid_kob_kwh: number;
+  dagens_grid_solgt_kwh: number;
+  dagens_batteri_ud_kwh: number;
+  dagens_batteri_ind_kwh: number;
+  dagens_tesla_kwh: number;
+  sparet_i_dag: number;
+  selvforsyning_i_dag: number;
+  dagens_grid_kob_kr: number;
+}
+
+function ZoneFarve({ zone }: { zone: string }) {
+  if (zone === 'billig') return <span className="zone-billig">● BILLIG</span>;
+  if (zone === 'dyr') return <span className="zone-dyr">● DYR</span>;
+  if (zone === 'override') return <span className="zone-override">● OVERRIDE</span>;
+  return <span className="zone-normal">● NORMAL</span>;
+}
+
+function BatteriRing({ pct }: { pct: number }) {
+  const r = 54;
+  const circ = 2 * Math.PI * r;
+  const fill = (pct / 100) * circ;
+  const color = pct > 50 ? '#22c55e' : pct > 20 ? '#f59e0b' : '#ef4444';
+  return (
+    <svg width="140" height="140" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r={r} fill="none" stroke="#1e293b" strokeWidth="12" />
+      <circle cx="70" cy="70" r={r} fill="none" stroke={color} strokeWidth="12"
+        strokeDasharray={`${fill} ${circ}`} strokeLinecap="round"
+        transform="rotate(-90 70 70)" />
+      <text x="70" y="65" textAnchor="middle" fill="white" fontSize="22" fontWeight="bold">{pct}%</text>
+      <text x="70" y="85" textAnchor="middle" fill="#94a3b8" fontSize="11">BATTERI</text>
+    </svg>
+  );
+}
+
+export default function Dashboard() {
+  const [data, setData] = useState<EnergiData | null>(null);
+  const [bil, setBil] = useState<BilData>({ soc: 50, opdateret: null });
+  const [naesteLadning, setNaesteLadning] = useState<NaesteLadning>({ harPlan: false, besked: 'Henter...' });
+  const [begivenheder, setBegivenheder] = useState<Begivenheder>({ naeste: [], sidst: [] });
+  const [vejr, setVejr] = useState<Vejr>({ tekst: '', tempMin: null, tempMax: null, skyer: null, solPotentiale: '' });
+  const [override, setOverride] = useState<OverrideStatus>({ aktiv: false });
+  const [overrideLoading, setOverrideLoading] = useState(false);
+  const [bilInput, setBilInput] = useState('');
+  const [bilGemt, setBilGemt] = useState(false);
+  const [tid, setTid] = useState('');
+  const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
+
+  useEffect(() => {
+    const hent = async () => {
+      try {
+        const [dataRes, overrideRes, bilRes, ladningRes, begivRes, vejrRes, statRes] = await Promise.all([
+          fetch('/api/data'),
+          fetch('/api/override'),
+          fetch('/api/bil'),
+          fetch('/api/naeste-ladning'),
+          fetch('/api/begivenheder'),
+          fetch('/api/vejr'),
+          fetch('/api/dagens-tal'),
+        ]);
+        setData(await dataRes.json());
+        setOverride(await overrideRes.json());
+        setBil(await bilRes.json());
+        setNaesteLadning(await ladningRes.json());
+        setBegivenheder(await begivRes.json());
+        setVejr(await vejrRes.json());
+        setDagensTal(await statRes.json());
+      } catch (e) {}
+    };
+    hent();
+    const interval = setInterval(hent, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setTid(new Date().toLocaleTimeString('da-DK'));
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const toggleOverride = async () => {
+    setOverrideLoading(true);
+    try {
+      await fetch('/api/override', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aktiv: !override.aktiv }),
+      });
+      const res = await fetch('/api/override');
+      setOverride(await res.json());
+    } catch (e) {}
+    setOverrideLoading(false);
+  };
+
+  const gemBilSoc = async () => {
+    const soc = parseFloat(bilInput);
+    if (isNaN(soc) || soc < 0 || soc > 100) return;
+    try {
+      await fetch('/api/bil', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ soc }),
+      });
+      setBil({ soc, opdateret: new Date().toISOString() });
+      setBilInput('');
+      setBilGemt(true);
+      setTimeout(() => setBilGemt(false), 3000);
+    } catch (e) {}
+  };
+
+  if (!data) return (
+    <div className="loading">
+      <div className="spinner" />
+      <p>Henter data...</p>
+    </div>
+  );
+
+  return (
+    <div className="dashboard">
+      <header>
+        <div className="header-left">
+          <h1>⚡ Energi Hub</h1>
+          <span className="subtitle">Mikkelsen • {new Date().toLocaleDateString('da-DK', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+        </div>
+        <div className="header-right">
+          <span className="clock">{tid}</span>
+          <ZoneFarve zone={data.zone} />
+        </div>
+      </header>
+
+      {override.aktiv && (
+        <div className="override-banner">
+          🚨 MANUEL OVERRIDE AKTIV — Tesla lader med 16A — Kører indtil manuelt stop
+        </div>
+      )}
+
+      <div className="card" style={{gridColumn: 'span 2', padding: '1rem'}}>
+        <div style={{fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem'}}>⚡ Live energiflow</div>
+        <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} />
+      </div>
+
+      {dagensTal && (
+        <div className="dagens-tal-boks">
+          <div className="dagens-tal-titel">📊 Dagens tal</div>
+          <div className="dagens-tal-grid">
+            <div className="dagens-tal-item">
+              <span className="dt-icon">🔌</span>
+              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.dagens_grid_kob_kwh.toFixed(1)} kWh</span>
+              <span className="dt-label">Købt</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">💸</span>
+              <span className="dt-value" style={{color:'#ef4444'}}>{dagensTal.dagens_grid_kob_kr.toFixed(2)} kr</span>
+              <span className="dt-label">Købt for</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">📤</span>
+              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.dagens_grid_solgt_kwh.toFixed(1)} kWh</span>
+              <span className="dt-label">Solgt</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">☀️</span>
+              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.dagens_sol_kwh.toFixed(1)} kWh</span>
+              <span className="dt-label">Sol produceret</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">⬆️</span>
+              <span className="dt-value" style={{color:'#22c55e'}}>{dagensTal.dagens_batteri_ind_kwh.toFixed(1)} kWh</span>
+              <span className="dt-label">Batteri ind</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">⬇️</span>
+              <span className="dt-value" style={{color:'#f59e0b'}}>{dagensTal.dagens_batteri_ud_kwh.toFixed(1)} kWh</span>
+              <span className="dt-label">Batteri ud</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">🚗</span>
+              <span className="dt-value" style={{color:'#3b82f6'}}>{dagensTal.dagens_tesla_kwh.toFixed(1)} kWh</span>
+              <span className="dt-label">Bil ladet</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">💰</span>
+              <span className="dt-value" style={{color: dagensTal.sparet_i_dag >= 0 ? '#22c55e' : '#ef4444'}}>{dagensTal.sparet_i_dag} kr</span>
+              <span className="dt-label">Sparet i dag</span>
+            </div>
+            <div className="dagens-tal-item">
+              <span className="dt-icon">📊</span>
+              <span className="dt-value">{dagensTal.selvforsyning_i_dag}%</span>
+              <span className="dt-label">Selvforsyning</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid">
+        <div className="card batteri-card">
+          <BatteriRing pct={Math.round(data.batteri_soc)} />
+          <div className="batteri-info">
+            <div className="info-row">
+              <span>Effekt</span>
+              <span className={data.batteri_power > 0 ? 'pos' : data.batteri_power < 0 ? 'neg' : ''}>
+                {data.batteri_power > 0 ? '↑' : data.batteri_power < 0 ? '↓' : '—'} {Math.abs(data.batteri_power)}W
+              </span>
+            </div>
+            <div className="info-row">
+              <span>Temperatur</span>
+              <span>{data.batteri_temp}°C</span>
+            </div>
+            <div className="info-row">
+              <span>Discharge</span>
+              <span className={data.discharge_rate > 0 ? 'pos' : ''}>{data.discharge_rate}%</span>
+            </div>
+            <div className="info-row">
+              <span>Hus forbrug</span>
+              <span>{data.load_power}W</span>
+            </div>
+            <div className="info-row">
+              <span>Mode</span>
+              <span className="mode">{data.growatt_mode.replace(/_/g, ' ')}</span>
+            </div>
+          </div>
+
+          {/* Begivenheder boks */}
+          {begivenheder.naeste.length > 0 && (
+            <div className="begivenheder-boks">
+              <div className="begivenheder-titel">⏰ Næste begivenheder</div>
+              {begivenheder.naeste.map((b, i) => (
+                <div key={i} className="begivenhed-række">
+                  <span className="begivenhed-tid">{b.tid}</span>
+                  <span className="begivenhed-besked">{b.besked}</span>
+                  {b.minutter && <span className="begivenhed-minutter">om {b.minutter}m</span>}
+                </div>
+              ))}
+              {begivenheder.sidst.length > 0 && (
+                <>
+                  <div className="begivenheder-titel" style={{marginTop:'0.5rem'}}>📋 Senest</div>
+                  {begivenheder.sidst.map((b, i) => (
+                    <div key={i} className="begivenhed-række">
+                      <span className="begivenhed-tid">{b.tid}</span>
+                      <span className="begivenhed-besked">{b.besked}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="card">
+          <div className="card-icon">☀️</div>
+          <div className="card-value">{data.sol_power}<span className="unit">W</span></div>
+          <div className="card-label">Sol produktion</div>
+          <div className="card-bar">
+            <div className="bar-fill sol" style={{ width: `${Math.min(100, (data.sol_power / 6000) * 100)}%` }} />
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-icon">{data.grid_power > 0 ? '🔌' : '📤'}</div>
+          <div className="card-value">{Math.abs(data.grid_power)}<span className="unit">W</span></div>
+          <div className="card-label">{data.grid_power > 0 ? 'Køber fra net' : 'Sælger til net'}</div>
+          <div className="card-bar">
+            <div className="bar-fill net" style={{ width: `${Math.min(100, (Math.abs(data.grid_power) / 5000) * 100)}%` }} />
+          </div>
+        </div>
+
+        <div className="card pris-card">
+          <div className="card-icon">💰</div>
+          <div className="card-value">{data.pris.toFixed(2)}<span className="unit"> kr/kWh</span></div>
+          <div className="card-label">Nuværende pris</div>
+          <ZoneFarve zone={data.zone} />
+        </div>
+
+        <div className="card tesla-card">
+          <div className="card-icon">🚗</div>
+          <div className="card-value tesla-status">{bil.soc}%</div>
+          <div className="card-label">King kong — Tesla Model Y</div>
+          {data.tesla_lad ? (
+            <div className="lader-badge">⚡ LADER {data.tesla_amp}A</div>
+          ) : (
+            <div className="standby-badge">⏸ STANDBY</div>
+          )}
+          <div className={`naeste-ladning ${naesteLadning.harPlan ? '' : 'ingen-plan'}`}>
+            {naesteLadning.harPlan
+              ? `🕐 Næste ladning: ${naesteLadning.startTid} → ${naesteLadning.slutTid} (${naesteLadning.startDato || ''})`
+              : `⏳ ${naesteLadning.besked}`}
+          </div>
+          {bil.opdateret && (
+            <div style={{fontSize:'0.7rem', color:'#64748b', marginTop:'0.3rem'}}>
+              Opdateret: {new Date(bil.opdateret).toLocaleTimeString('da-DK')}
+            </div>
+          )}
+          <div className="bil-input-row">
+            <input
+              type="number"
+              min="0"
+              max="100"
+              placeholder="Bil % nu"
+              value={bilInput}
+              onChange={e => setBilInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && gemBilSoc()}
+              className="bil-input"
+            />
+            <button onClick={gemBilSoc} className="bil-btn">
+              {bilGemt ? '✅' : 'Gem'}
+            </button>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-icon">🌤️</div>
+          <div className="card-value">{vejr.tempMin}-{vejr.tempMax}<span className="unit">°C</span></div>
+          <div className="card-label">{vejr.tekst} • Lunderskov</div>
+          <div style={{fontSize:'0.8rem', color:'#94a3b8', marginTop:'0.3rem'}}>{vejr.solPotentiale}</div>
+        </div>
+
+        <div className="card override-card">
+          <div className="card-icon">🎛️</div>
+          <div className="card-label">Manuel styring</div>
+          <button
+            className={`override-btn ${override.aktiv ? 'override-aktiv' : ''}`}
+            onClick={toggleOverride}
+            disabled={overrideLoading}
+          >
+            {overrideLoading ? '...' : override.aktiv ? '⏹ Stop override' : '🚨 Tving ladning'}
+          </button>
+        </div>
+      </div>
+
+      <div style={{textAlign:"center",marginBottom:"1rem", display:"flex", gap:"1rem", justifyContent:"center", flexWrap:"wrap"}}>
+        <Link href="/plan" className="nav-link">📅 Se ladeplan & strømpriser →</Link>
+        <Link href="/statistik" className="nav-link">📊 Statistik & besparelser →</Link>
+        <Link href="/grafer" className="nav-link">📈 Grafer & historik →</Link>
+        <Link href="/log" className="nav-link">📋 Hændelseslog →</Link>
+      </div>
+
+      <footer>
+        <span>Sidst opdateret: {new Date(data.timestamp).toLocaleTimeString('da-DK')}</span>
+        <span>Opdaterer hvert 30. sekund</span>
+      </footer>
+    </div>
+  );
+}
