@@ -149,6 +149,7 @@ export default function GraferSide() {
   const [batteri, setBatteri] = useState<DataPunkt[]>([]);
   const [pris, setPris] = useState<DataPunkt[]>([]);
   const [load, setLoad] = useState<DataPunkt[]>([]);
+  const [opvask, setOpvask] = useState<DataPunkt[]>([]);
   const [loading, setLoading] = useState(true);
   const [periode, setPeriode] = useState('24h');
 
@@ -156,18 +157,20 @@ export default function GraferSide() {
     const hent = async () => {
       setLoading(true);
       try {
-        const [solRes, gridRes, batteriRes, prisRes, loadRes] = await Promise.all([
+        const [solRes, gridRes, batteriRes, prisRes, loadRes, opvaskRes] = await Promise.all([
           fetch(`/api/historik?felt=sol_power&periode=${periode}`),
           fetch(`/api/historik?felt=grid_power&periode=${periode}`),
           fetch(`/api/historik?felt=batteri_soc&periode=${periode}`),
           fetch(`/api/historik?felt=pris&periode=${periode}`),
           fetch(`/api/historik?felt=load_power&periode=${periode}`),
+          fetch(`/api/historik?felt=apower&maaling=opvaskemaskine&periode=${periode}`),
         ]);
         setSol(await solRes.json());
         setGrid(await gridRes.json());
         setBatteri(await batteriRes.json());
         setPris(await prisRes.json());
         setLoad(await loadRes.json());
+        setOpvask(await opvaskRes.json());
       } catch (e) {}
       setLoading(false);
     };
@@ -219,6 +222,10 @@ export default function GraferSide() {
           <div className="graf-kort">
             <h3>🏠 Husforbrug</h3>
             <GrafLinje data={load} farve="#8b5cf6" label="Hus" enhed="W" />
+          </div>
+          <div className="graf-kort">
+            <h3>🍽️ Opvaskemaskine</h3>
+            <GrafLinje data={opvask} farve="#06b6d4" label="Opvask" enhed="W" />
           </div>
           <div className="graf-kort graf-bred">
             <h3>💰 Strømpris (inkl. afgifter)</h3>

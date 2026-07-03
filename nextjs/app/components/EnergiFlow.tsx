@@ -41,6 +41,17 @@ interface Vejr {
 
 interface Partikel { id: number; progress: number; speed: number; }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
+
 function usePartikler(aktiv: boolean, watt: number) {
   const [partikler, setPartikler] = useState<Partikel[]>([]);
   const animRef = useRef<number>(0);
@@ -84,33 +95,48 @@ function WattLabel({ x, y, tekst, farve }: { x: number; y: number; tekst: string
   );
 }
 
-function Node({ cx, cy, w, h, farve, aktiv, emoji, titel, vaerdi, stats }: {
+function Node({ cx, cy, w, h, farve, aktiv, emoji, titel, vaerdi, stats, compact }: {
   cx: number; cy: number; w: number; h: number;
   farve: string; aktiv: boolean;
   emoji: string; titel: string; vaerdi: string;
   stats: { label: string; value: string; farve?: string }[];
+  compact?: boolean;
 }) {
   const x = cx - w/2; const y = cy - h/2;
+  const fs = compact ? { titel: 13, vaerdi: 20, stat: 12, emoji: 26 } : { titel: 10, vaerdi: 15, stat: 9, emoji: 20 };
   return (
     <g>
       <rect x={x} y={y} width={w} height={h} rx="14" fill={aktiv ? `${farve}15` : '#0c1627'} stroke={aktiv ? farve : '#1e293b'} strokeWidth="1.5" />
-      <text x={cx} y={y+22} textAnchor="middle" fontSize="20">{emoji}</text>
-      <text x={cx} y={y+38} textAnchor="middle" fontSize="10" fill="#64748b">{titel}</text>
-      <text x={cx} y={y+56} textAnchor="middle" fontSize="15" fontWeight="700" fill={aktiv ? farve : '#475569'}>{vaerdi}</text>
-      <line x1={x+12} y1={y+63} x2={x+w-12} y2={y+63} stroke="#1e293b" strokeWidth="0.8" />
+      <text x={cx} y={y+26} textAnchor="middle" fontSize={fs.emoji}>{emoji}</text>
+      <text x={cx} y={y+46} textAnchor="middle" fontSize={fs.titel} fill="#64748b">{titel}</text>
+      <text x={cx} y={y+68} textAnchor="middle" fontSize={fs.vaerdi} fontWeight="700" fill={aktiv ? farve : '#475569'}>{vaerdi}</text>
+      <line x1={x+14} y1={y+78} x2={x+w-14} y2={y+78} stroke="#1e293b" strokeWidth="0.8" />
       {stats.map((s, i) => (
         <g key={i}>
-          <text x={x+12} y={y+76+i*16} fontSize="9" fill="#475569">{s.label}</text>
-          <text x={x+w-12} y={y+76+i*16} textAnchor="end" fontSize="9" fontWeight="600" fill={s.farve || '#94a3b8'}>{s.value}</text>
+          <text x={x+14} y={y+96+i*(compact ? 22 : 16)} fontSize={fs.stat} fill="#475569">{s.label}</text>
+          <text x={x+w-14} y={y+96+i*(compact ? 22 : 16)} textAnchor="end" fontSize={fs.stat} fontWeight="600" fill={s.farve || '#94a3b8'}>{s.value}</text>
         </g>
       ))}
     </g>
   );
 }
 
-function InfoBar({ pris, spotpris, zone, vejr }: { pris: number; spotpris?: number; zone: string; vejr: Vejr }) {
+function InfoBar({ pris, spotpris, zone, vejr, width, compact }: { pris: number; spotpris?: number; zone: string; vejr: Vejr; width: number; compact?: boolean; }) {
   const zoneFarve = zone === 'billig' ? '#22c55e' : zone === 'dyr' ? '#ef4444' : '#f59e0b';
   const zoneEmoji = zone === 'billig' ? '💚' : zone === 'dyr' ? '🔴' : '🟡';
+
+  if (compact) {
+    return (
+      <g>
+        <rect x="10" y="8" width={width-20} height="60" rx="10" fill="#0c1627" stroke="#1e293b" strokeWidth="1" />
+        <text x="26" y="32" fontSize="15" fontWeight="700" fill={zoneFarve}>{zoneEmoji} {pris.toFixed(2)} kr/kWh</text>
+        <text x={width-26} y="32" textAnchor="end" fontSize="13" fill="#64748b">{zone.toUpperCase()}</text>
+        <text x="26" y="55" fontSize="12" fill="#64748b">🌤️ {vejr.tekst}, {vejr.tempMin}–{vejr.tempMax}°C</text>
+        {spotpris !== undefined && <text x={width-26} y="55" textAnchor="end" fontSize="11" fill="#475569">spot: {spotpris.toFixed(2)}</text>}
+      </g>
+    );
+  }
+
   return (
     <g>
       <rect x="10" y="8" width="780" height="36" rx="10" fill="#0c1627" stroke="#1e293b" strokeWidth="1" />
@@ -131,6 +157,7 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
   dagensTal: DagensTal | null;
   vejr: Vejr;
 }) {
+  const isMobile = useIsMobile();
   const { sol_power: sol, grid_power: grid, batteri_power: bat, batteri_soc: soc, load_power: load, tesla_lad: teslaLad, tesla_amp: teslaAmp, pris, zone } = data;
   const d = dagensTal;
 
@@ -144,14 +171,33 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
   const batFarve = batLaderAktiv ? '#22c55e' : batAfladesAktiv ? '#f59e0b' : soc > 50 ? '#22c55e' : soc > 20 ? '#f59e0b' : '#ef4444';
   const gridFarve = gridKobAktiv ? '#ef4444' : '#22c55e';
 
-  const SOL:   [number,number] = [150, 170];
-  const NET:   [number,number] = [650, 170];
-  const HUS:   [number,number] = [400, 290];
-  const BAT:   [number,number] = [150, 415];
-  const TESLA: [number,number] = [650, 415];
+  const desktopLayout = {
+    viewBox: '0 0 800 545',
+    SOL:   [150, 190] as [number,number],
+    NET:   [650, 190] as [number,number],
+    HUS:   [400, 310] as [number,number],
+    BAT:   [150, 435] as [number,number],
+    TESLA: [650, 435] as [number,number],
+    nodeW: { sol: 170, net: 170, hus: 180, bat: 170, tesla: 170 },
+  };
 
-  const edge = (fra: [number,number], til: [number,number], m=75): [[number,number],[number,number]] => {
+  const mobilLayout = {
+    viewBox: '0 0 380 1180',
+    SOL:   [190, 175] as [number,number],
+    HUS:   [190, 400] as [number,number],
+    BAT:   [190, 640] as [number,number],
+    NET:   [190, 880] as [number,number],
+    TESLA: [190, 1090] as [number,number],
+    nodeW: { sol: 320, net: 320, hus: 330, bat: 320, tesla: 320 },
+  };
+
+  const L = isMobile ? mobilLayout : desktopLayout;
+  const { SOL, NET, HUS, BAT, TESLA } = L;
+  const infoBarWidth = isMobile ? 380 : 800;
+
+  const edge = (fra: [number,number], til: [number,number], m=isMobile ? 60 : 75): [[number,number],[number,number]] => {
     const dx=til[0]-fra[0]; const dy=til[1]-fra[1]; const len=Math.sqrt(dx*dx+dy*dy);
+    if (len === 0) return [fra, til];
     return [[fra[0]+dx/len*m, fra[1]+dy/len*m],[til[0]-dx/len*m, til[1]-dy/len*m]];
   };
 
@@ -165,8 +211,8 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
   const mid = (a: [number,number], b: [number,number]): [number,number] => [(a[0]+b[0])/2, (a[1]+b[1])/2];
 
   return (
-    <svg viewBox="0 0 800 545" style={{ width: '100%', height: 'auto' }}>
-      <InfoBar pris={pris} spotpris={data.spotpris} zone={zone} vejr={vejr} />
+    <svg viewBox={L.viewBox} style={{ width: '100%', height: 'auto', display: 'block' }}>
+      <InfoBar pris={pris} spotpris={data.spotpris} zone={zone} vejr={vejr} width={infoBarWidth} compact={isMobile} />
 
       <Pil fra={s2h_f} til={s2h_t} watt={sol} farve="#f59e0b" aktiv={solAktiv} />
       <Pil fra={n2h_f} til={n2h_t} watt={grid} farve="#ef4444" aktiv={gridKobAktiv} />
@@ -175,20 +221,20 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
       <Pil fra={b2h_f} til={b2h_t} watt={Math.abs(bat)} farve="#f59e0b" aktiv={batAfladesAktiv} />
       <Pil fra={h2e_f} til={h2e_t} watt={teslaAmp*230*3} farve="#3b82f6" aktiv={teslaAktiv} />
 
-      {solAktiv && <WattLabel x={mid(SOL,HUS)[0]-20} y={mid(SOL,HUS)[1]-14} tekst={`${sol}W`} farve="#f59e0b" />}
-      {gridKobAktiv && <WattLabel x={mid(NET,HUS)[0]+20} y={mid(NET,HUS)[1]-14} tekst={`${grid}W`} farve="#ef4444" />}
-      {gridSolgtAktiv && <WattLabel x={mid(HUS,NET)[0]+20} y={mid(HUS,NET)[1]-14} tekst={`${Math.abs(grid)}W`} farve="#22c55e" />}
-      {batLaderAktiv && <WattLabel x={mid(HUS,BAT)[0]-24} y={mid(HUS,BAT)[1]+12} tekst={`${bat}W`} farve="#22c55e" />}
-      {batAfladesAktiv && <WattLabel x={mid(BAT,HUS)[0]-24} y={mid(BAT,HUS)[1]+12} tekst={`${Math.abs(bat)}W`} farve="#f59e0b" />}
-      {teslaAktiv && <WattLabel x={mid(HUS,TESLA)[0]+24} y={mid(HUS,TESLA)[1]+12} tekst={`${teslaKw}kW`} farve="#3b82f6" />}
+      {solAktiv && <WattLabel x={mid(SOL,HUS)[0]-(isMobile?0:20)} y={mid(SOL,HUS)[1]-14} tekst={`${sol}W`} farve="#f59e0b" />}
+      {gridKobAktiv && <WattLabel x={mid(NET,HUS)[0]+(isMobile?0:20)} y={mid(NET,HUS)[1]-14} tekst={`${grid}W`} farve="#ef4444" />}
+      {gridSolgtAktiv && <WattLabel x={mid(HUS,NET)[0]+(isMobile?0:20)} y={mid(HUS,NET)[1]-14} tekst={`${Math.abs(grid)}W`} farve="#22c55e" />}
+      {batLaderAktiv && <WattLabel x={mid(HUS,BAT)[0]-(isMobile?0:24)} y={mid(HUS,BAT)[1]+12} tekst={`${bat}W`} farve="#22c55e" />}
+      {batAfladesAktiv && <WattLabel x={mid(BAT,HUS)[0]-(isMobile?0:24)} y={mid(BAT,HUS)[1]+12} tekst={`${Math.abs(bat)}W`} farve="#f59e0b" />}
+      {teslaAktiv && <WattLabel x={mid(HUS,TESLA)[0]+(isMobile?0:24)} y={mid(HUS,TESLA)[1]+12} tekst={`${teslaKw}kW`} farve="#3b82f6" />}
 
-      <Node cx={SOL[0]} cy={SOL[1]} w={170} h={120} farve="#f59e0b" aktiv={solAktiv}
+      <Node cx={SOL[0]} cy={SOL[1]} w={L.nodeW.sol} h={isMobile?150:120} farve="#f59e0b" aktiv={solAktiv} compact={isMobile}
         emoji="☀️" titel="Sol produktion" vaerdi={`${sol} W`}
         stats={[
           { label: 'I dag', value: d ? `${d.dagens_sol_kwh} kWh` : '–', farve: '#f59e0b' },
         ]} />
 
-      <Node cx={NET[0]} cy={NET[1]} w={170} h={135} farve={gridFarve} aktiv={gridKobAktiv || gridSolgtAktiv}
+      <Node cx={NET[0]} cy={NET[1]} w={L.nodeW.net} h={isMobile?190:135} farve={gridFarve} aktiv={gridKobAktiv || gridSolgtAktiv} compact={isMobile}
         emoji={gridSolgtAktiv ? '📤' : '🔌'} titel={gridKobAktiv ? 'Køber' : gridSolgtAktiv ? 'Sælger' : 'Net'}
         vaerdi={`${Math.abs(grid)} W`}
         stats={[
@@ -197,7 +243,7 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
           { label: 'Betalt', value: d ? `${d.dagens_grid_kob_kr} kr` : '–', farve: '#f59e0b' },
         ]} />
 
-      <Node cx={HUS[0]} cy={HUS[1]} w={180} h={140} farve="#8b5cf6" aktiv={true}
+      <Node cx={HUS[0]} cy={HUS[1]} w={L.nodeW.hus} h={isMobile?190:140} farve="#8b5cf6" aktiv={true} compact={isMobile}
         emoji="🏠" titel="Hus forbrug" vaerdi={`${load} W`}
         stats={[
           { label: 'Forbrug i dag', value: d ? `${d.dagens_load_kwh} kWh` : '–', farve: '#8b5cf6' },
@@ -205,7 +251,7 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
           { label: 'Netto', value: d ? `${d.sparet_i_dag} kr` : '–', farve: d && d.sparet_i_dag >= 0 ? '#22c55e' : '#ef4444' },
         ]} />
 
-      <Node cx={BAT[0]} cy={BAT[1]} w={170} h={150} farve={batFarve} aktiv={batLaderAktiv || batAfladesAktiv}
+      <Node cx={BAT[0]} cy={BAT[1]} w={L.nodeW.bat} h={isMobile?210:150} farve={batFarve} aktiv={batLaderAktiv || batAfladesAktiv} compact={isMobile}
         emoji="🔋" titel={batLaderAktiv ? 'Lader' : batAfladesAktiv ? 'Aflader' : 'Batteri'}
         vaerdi={`${Math.round(soc)}%`}
         stats={[
@@ -215,7 +261,7 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
           { label: 'Ind/Ud i dag', value: d ? `${d.dagens_batteri_ind_kwh}/${d.dagens_batteri_ud_kwh} kWh` : '–', farve: '#22c55e' },
         ]} />
 
-      <Node cx={TESLA[0]} cy={TESLA[1]} w={170} h={120} farve="#3b82f6" aktiv={teslaAktiv}
+      <Node cx={TESLA[0]} cy={TESLA[1]} w={L.nodeW.tesla} h={isMobile?150:120} farve="#3b82f6" aktiv={teslaAktiv} compact={isMobile}
         emoji="🚗" titel={teslaAktiv ? `Lader ${teslaAmp}A` : 'King Kong'}
         vaerdi={teslaAktiv ? `${teslaKw} kW` : 'Standby'}
         stats={[

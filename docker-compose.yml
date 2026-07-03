@@ -43,3 +43,32 @@ services:
       - INFLUX_ORG=energihub
       - INFLUX_BUCKET=energi2
       - INFLUX_TOKEN=2nmT7NymMwr1UMY3e8V63anZUI5TCWRqlg_0tPD9Y_RkmnbjjkZAZWgXD9hgyano3X8Mke1HXGXiCzmDlmlPvw==
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: always
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    environment:
+      - TZ=Europe/Copenhagen
+
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    container_name: zigbee2mqtt
+    restart: always
+    depends_on:
+      - mosquitto
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./zigbee2mqtt/data:/app/data
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/serial/by-id/usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_d0132071d478f0119fc8f0eba7772636-if00-port0:/dev/ttyUSB0
+    environment:
+      - TZ=Europe/Copenhagen

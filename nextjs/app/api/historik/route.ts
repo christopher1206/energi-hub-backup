@@ -38,11 +38,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const periode = searchParams.get('periode') || '24h';
   const felt = searchParams.get('felt') || 'sol_power';
+  const maaling = searchParams.get('maaling') || 'energi';
   try {
     const flux = `
 from(bucket: "${INFLUX_BUCKET}")
   |> range(start: -${periode})
-  |> filter(fn: (r) => r._measurement == "energi")
+  |> filter(fn: (r) => r._measurement == "${maaling}")
   |> filter(fn: (r) => r._field == "${felt}")
   |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)
   |> yield(name: "mean")

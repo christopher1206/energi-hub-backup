@@ -70,6 +70,35 @@ interface DagensTal {
   dagens_grid_kob_kr: number;
 }
 
+interface OpvaskemaskineData {
+  apower: number;
+  voltage: number;
+  current: number;
+  temp_c: number;
+  output: boolean;
+  dagens_kwh: number;
+  timestamp: string;
+}
+
+interface UdendorsLysEnhed {
+  state: boolean;
+  brightness: number;
+  linkquality: number;
+}
+
+interface UdendorsLysData {
+  lys_carport: UdendorsLysEnhed;
+  lys_terrasse: UdendorsLysEnhed;
+  timestamp: string;
+}
+
+interface LysAutomatikData {
+  sunrise: string | null;
+  sunset: string | null;
+  sidste_haendelse: { tid: string; beskrivelse: string } | null;
+  timestamp: string;
+}
+
 function ZoneFarve({ zone }: { zone: string }) {
   if (zone === 'billig') return <span className="zone-billig">● BILLIG</span>;
   if (zone === 'dyr') return <span className="zone-dyr">● DYR</span>;
@@ -89,6 +118,7 @@ export default function Dashboard() {
   const [bilGemt, setBilGemt] = useState(false);
   const [tid, setTid] = useState('');
   const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
+  const [opvask, setOpvask] = useState<OpvaskemaskineData | null>(null);
 
   useEffect(() => {
     const hent = async () => {
@@ -117,6 +147,44 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const hentOpvask = async () => {
+      try {
+        const res = await fetch('/api/opvaskemaskine');
+        setOpvask(await res.json());
+      } catch (e) {}
+    };
+    hentOpvask();
+    const interval = setInterval(hentOpvask, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentLys = async () => {
+      try {
+        const res = await fetch('/api/udendors-lys');
+        const d: UdendorsLysData = await res.json();
+        setUdendorsLys(d);
+        setSliderVaerdi({ lys_carport: d.lys_carport.brightness, lys_terrasse: d.lys_terrasse.brightness });
+      } catch (e) {}
+    };
+    hentLys();
+    const interval = setInterval(hentLys, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentAutomatik = async () => {
+      try {
+        const res = await fetch('/api/lys-automatik');
+        setLysAutomatik(await res.json());
+      } catch (e) {}
+    };
+    hentAutomatik();
+    const interval = setInterval(hentAutomatik, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
@@ -141,6 +209,52 @@ export default function Dashboard() {
       setBilGemt(true);
       setTimeout(() => setBilGemt(false), 3000);
     } catch (e) {}
+  };
+
+  const [opvaskLoading, setOpvaskLoading] = useState(false);
+  const [udendorsLys, setUdendorsLys] = useState<UdendorsLysData | null>(null);
+  const [lysLoading, setLysLoading] = useState<{ lys_carport: boolean; lys_terrasse: boolean }>({ lys_carport: false, lys_terrasse: false });
+  const [sliderVaerdi, setSliderVaerdi] = useState<{ lys_carport: number; lys_terrasse: number }>({ lys_carport: 254, lys_terrasse: 254 });
+  const [lysAutomatik, setLysAutomatik] = useState<LysAutomatikData | null>(null);
+
+  const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
+    if (!udendorsLys) return;
+    setLysLoading(prev => ({ ...prev, [sted]: true }));
+    try {
+      await fetch('/api/udendors-lys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sted, state: !udendorsLys[sted].state }),
+      });
+      const res = await fetch('/api/udendors-lys');
+      setUdendorsLys(await res.json());
+    } catch (e) {}
+    setLysLoading(prev => ({ ...prev, [sted]: false }));
+  };
+
+  const sendLysstyrke = async (sted: 'lys_carport' | 'lys_terrasse', vaerdi: number) => {
+    try {
+      await fetch('/api/udendors-lys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sted, brightness: vaerdi }),
+      });
+    } catch (e) {}
+  };
+
+  const toggleOpvask = async () => {
+    if (!opvask) return;
+    setOpvaskLoading(true);
+    try {
+      await fetch('/api/opvaskemaskine', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ on: !opvask.output }),
+      });
+      const res = await fetch('/api/opvaskemaskine');
+      setOpvask(await res.json());
+    } catch (e) {}
+    setOpvaskLoading(false);
   };
 
   if (!data) return <div className="loading"><div className="spinner" /><p>Henter data...</p></div>;
@@ -195,7 +309,7 @@ export default function Dashboard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Opdater bil %</span>
           <input
-            type="number" min="0" max="100" placeholder="76"
+            type="number" min="0" max="100" placeholder={String(bil.soc)}
             value={bilInput}
             onChange={e => setBilInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && gemBilSoc()}
@@ -248,6 +362,125 @@ export default function Dashboard() {
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⚡ Live energiflow</div>
         <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} />
+      </div>
+
+      {/* Opvaskemaskine - live forbrug */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>🍽️ Opvaskemaskine</div>
+        {opvask ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{
+                width: '10px', height: '10px', borderRadius: '50%',
+                background: opvask.apower > 5 ? '#22c55e' : opvask.output ? '#eab308' : '#475569',
+                display: 'inline-block'
+              }} />
+              <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+                {opvask.apower > 5 ? 'Kører' : opvask.output ? 'Tændt (standby)' : 'Slukket'}
+              </span>
+            </div>
+            <div>
+              <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#f1f5f9' }}>{opvask.apower.toFixed(1)}</span>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', marginLeft: '4px' }}>W</span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              I dag: <span style={{ color: '#cbd5e1', fontWeight: 600 }}>{opvask.dagens_kwh.toFixed(2)} kWh</span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              {opvask.voltage.toFixed(0)} V · {opvask.current.toFixed(2)} A · {opvask.temp_c.toFixed(0)}°C
+            </div>
+            <button
+              onClick={toggleOpvask}
+              disabled={opvaskLoading}
+              style={{
+                marginLeft: 'auto', padding: '5px 14px', cursor: 'pointer', borderRadius: '8px',
+                fontSize: '0.8rem', fontWeight: 600,
+                border: opvask.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                background: opvask.output ? '#7f1d1d' : '#14532d',
+                color: opvask.output ? '#fca5a5' : '#86efac',
+              }}
+            >
+              {opvaskLoading ? '...' : opvask.output ? '⏻ Sluk' : '⏻ Tænd'}
+            </button>
+          </div>
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
+        )}
+      </div>
+
+      {/* Udendørs lys - carport og terrasse */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>💡 Udendørs lys</div>
+        {udendorsLys ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            {(['lys_carport', 'lys_terrasse'] as const).map(sted => (
+              <div key={sted} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+                    {sted === 'lys_carport' ? '🚗 Carport' : '🌳 Terrasse'}
+                  </span>
+                  <button
+                    onClick={() => toggleLys(sted)}
+                    disabled={lysLoading[sted]}
+                    style={{
+                      padding: '4px 12px', cursor: 'pointer', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600,
+                      border: udendorsLys[sted].state ? '1px solid #ef4444' : '1px solid #22c55e',
+                      background: udendorsLys[sted].state ? '#7f1d1d' : '#14532d',
+                      color: udendorsLys[sted].state ? '#fca5a5' : '#86efac',
+                    }}
+                  >
+                    {lysLoading[sted] ? '...' : udendorsLys[sted].state ? 'Sluk' : 'Tænd'}
+                  </button>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{
+                    width: '8px', height: '8px', borderRadius: '50%',
+                    background: udendorsLys[sted].state ? '#22c55e' : '#475569',
+                    display: 'inline-block'
+                  }} />
+                  <span style={{ fontSize: '0.75rem', color: udendorsLys[sted].state ? '#86efac' : '#64748b', fontWeight: 600 }}>
+                    {udendorsLys[sted].state ? 'TÆNDT' : 'SLUKKET'}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={254}
+                  value={sliderVaerdi[sted]}
+                  onChange={e => setSliderVaerdi(prev => ({ ...prev, [sted]: parseInt(e.target.value) }))}
+                  onMouseUp={e => sendLysstyrke(sted, parseInt((e.target as HTMLInputElement).value))}
+                  onTouchEnd={e => sendLysstyrke(sted, parseInt((e.target as HTMLInputElement).value))}
+                  style={{ width: '100%' }}
+                />
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                  Lysstyrke: {Math.round((sliderVaerdi[sted] / 254) * 100)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
+        )}
+        {lysAutomatik && (
+          <div style={{
+            marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px solid #1e293b',
+            display: 'flex', flexWrap: 'wrap', gap: '0.4rem 1rem', fontSize: '0.75rem', color: '#64748b'
+          }}>
+            <span>🌅 Solopgang: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sunrise ?? '–'}</strong></span>
+            <span>🌇 Solnedgang: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sunset ?? '–'}</strong></span>
+            <span>🌙 Nat-stop: <strong style={{ color: '#94a3b8' }}>23:58</strong></span>
+            <span>☀️ Morgen-tænd: <strong style={{ color: '#94a3b8' }}>05:30*</strong></span>
+            {lysAutomatik.sidste_haendelse && (
+              <span style={{ width: '100%' }}>
+                Seneste automatik: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sidste_haendelse.beskrivelse}</strong>
+                {' '}kl. {new Date(lysAutomatik.sidste_haendelse.tid).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+            <span style={{ width: '100%', fontSize: '0.65rem', color: '#475569' }}>
+              *springes over hvis solen allerede er stået op
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Begivenheder — kompakt enkelt kort */}

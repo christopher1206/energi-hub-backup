@@ -1,0 +1,672 @@
+0 verbose cli /usr/local/bin/node /usr/src/node-red/node_modules/npm/bin/npm-cli.js
+1 info using npm@11.16.0
+2 info using node@v24.16.0
+3 silly config load:file:/usr/src/node-red/node_modules/npm/npmrc
+4 silly config load:file:/data/.npmrc
+5 silly config load:file:/usr/src/node-red/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install node-red-contrib-sun-position@3.0.1
+8 verbose argv "install" "--no-audit" "--no-update-notifier" "--no-fund" "--save" "--save-prefix" "~" "--omit" "dev" "--engine-strict" "--" "node-red-contrib-sun-position@3.0.1"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2026-07-02T19_44_33_899Z-
+10 verbose logfile /data/.npm/_logs/2026-07-02T19_44_33_899Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+13 silly idealTree buildDeps
+14 silly fetch manifest node-red-contrib-sun-position@3.0.1
+15 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-sun-position cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-sun-position 352ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-sun-position set size:undefined disposed:false
+18 silly placeDep ROOT node-red-contrib-sun-position@3.0.1 OK for: node-red-project@0.0.1 want: 3.0.1
+19 silly fetch manifest suncalc3@^2.0.5
+20 silly packumentCache full:https://registry.npmjs.org/suncalc3 cache-miss
+21 silly fetch manifest lodash.clonedeep@^4.5.0
+22 silly packumentCache full:https://registry.npmjs.org/lodash.clonedeep cache-miss
+23 silly fetch manifest lodash.isequal@^4.5.0
+24 silly packumentCache full:https://registry.npmjs.org/lodash.isequal cache-miss
+25 silly fetch manifest cronosjs@^1.7.1
+26 silly packumentCache full:https://registry.npmjs.org/cronosjs cache-miss
+27 http fetch GET 200 https://registry.npmjs.org/lodash.isequal 63ms (cache miss)
+28 silly packumentCache full:https://registry.npmjs.org/lodash.isequal set size:undefined disposed:false
+29 http fetch GET 200 https://registry.npmjs.org/lodash.clonedeep 64ms (cache miss)
+30 silly packumentCache full:https://registry.npmjs.org/lodash.clonedeep set size:undefined disposed:false
+31 http fetch GET 200 https://registry.npmjs.org/suncalc3 202ms (cache miss)
+32 silly packumentCache full:https://registry.npmjs.org/suncalc3 set size:undefined disposed:false
+33 http fetch GET 200 https://registry.npmjs.org/cronosjs 240ms (cache miss)
+34 silly packumentCache full:https://registry.npmjs.org/cronosjs set size:undefined disposed:false
+35 silly placeDep ROOT cronosjs@1.7.1 OK for: node-red-contrib-sun-position@3.0.1 want: ^1.7.1
+36 silly placeDep ROOT lodash.clonedeep@4.5.0 OK for: node-red-contrib-sun-position@3.0.1 want: ^4.5.0
+37 silly placeDep ROOT lodash.isequal@4.5.0 OK for: node-red-contrib-sun-position@3.0.1 want: ^4.5.0
+38 silly placeDep ROOT suncalc3@2.0.5 OK for: node-red-contrib-sun-position@3.0.1 want: ^2.0.5
+39 silly reify moves {}
+40 http cache suncalc3@https://registry.npmjs.org/suncalc3/-/suncalc3-2.0.5.tgz 0ms (cache hit)
+41 http cache lodash.isequal@https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz 0ms (cache hit)
+42 http cache cronosjs@https://registry.npmjs.org/cronosjs/-/cronosjs-1.7.1.tgz 0ms (cache hit)
+43 http cache lodash.clonedeep@https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz 0ms (cache hit)
+44 http cache zmq@https://registry.npmjs.org/zmq/-/zmq-2.15.3.tgz 0ms (cache hit)
+45 http cache which-typed-array@https://registry.npmjs.org/which-typed-array/-/which-typed-array-1.1.22.tgz 0ms (cache hit)
+46 http cache verror@https://registry.npmjs.org/verror/-/verror-1.10.0.tgz 0ms (cache hit)
+47 http cache which@https://registry.npmjs.org/which/-/which-1.3.1.tgz 0ms (cache hit)
+48 http cache node-red-contrib-sun-position@https://registry.npmjs.org/node-red-contrib-sun-position/-/node-red-contrib-sun-position-3.0.1.tgz 0ms (cache hit)
+49 http cache url-template@https://registry.npmjs.org/url-template/-/url-template-2.0.8.tgz 0ms (cache hit)
+50 http cache util-extend@https://registry.npmjs.org/util-extend/-/util-extend-1.0.3.tgz 0ms (cache hit)
+51 http cache uri-js@https://registry.npmjs.org/uri-js/-/uri-js-4.4.1.tgz 0ms (cache hit)
+52 http cache typed-array-buffer@https://registry.npmjs.org/typed-array-buffer/-/typed-array-buffer-1.0.3.tgz 0ms (cache hit)
+53 http cache unzip-response@https://registry.npmjs.org/unzip-response/-/unzip-response-1.0.2.tgz 0ms (cache hit)
+54 http cache tweetnacl@https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.5.tgz 0ms (cache hit)
+55 http cache type@https://registry.npmjs.org/type/-/type-2.7.3.tgz 0ms (cache hit)
+56 http cache tunnel-agent@https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.6.0.tgz 0ms (cache hit)
+57 http cache to-buffer@https://registry.npmjs.org/to-buffer/-/to-buffer-1.2.2.tgz 0ms (cache hit)
+58 http cache tough-cookie@https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.5.0.tgz 0ms (cache hit)
+59 http cache tar-fs@https://registry.npmjs.org/tar-fs/-/tar-fs-1.16.6.tgz 0ms (cache hit)
+60 http cache tar-stream@https://registry.npmjs.org/tar-stream/-/tar-stream-1.6.2.tgz 0ms (cache hit)
+61 http cache tar@https://registry.npmjs.org/tar/-/tar-2.2.2.tgz 0ms (cache hit)
+62 http cache strip-json-comments@https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-2.0.1.tgz 0ms (cache hit)
+63 http cache sshpk@https://registry.npmjs.org/sshpk/-/sshpk-1.18.0.tgz 0ms (cache hit)
+64 http cache simple-mime@https://registry.npmjs.org/simple-mime/-/simple-mime-0.1.0.tgz 0ms (cache hit)
+65 http cache snappy@https://registry.npmjs.org/snappy/-/snappy-5.0.5.tgz 0ms (cache hit)
+66 http cache simple-get@https://registry.npmjs.org/simple-get/-/simple-get-1.4.3.tgz 0ms (cache hit)
+67 http cache safer-buffer@https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz 0ms (cache hit)
+68 http cache rimraf@https://registry.npmjs.org/rimraf/-/rimraf-2.7.1.tgz 0ms (cache hit)
+69 http cache request@https://registry.npmjs.org/request/-/request-2.88.2.tgz 0ms (cache hit)
+70 http cache rc@https://registry.npmjs.org/rc/-/rc-1.2.8.tgz 0ms (cache hit)
+71 http cache qs@https://registry.npmjs.org/qs/-/qs-6.5.5.tgz 0ms (cache hit)
+72 http cache psl@https://registry.npmjs.org/psl/-/psl-1.15.0.tgz 0ms (cache hit)
+73 http cache possible-typed-array-names@https://registry.npmjs.org/possible-typed-array-names/-/possible-typed-array-names-1.1.0.tgz 0ms (cache hit)
+74 http cache performance-now@https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz 0ms (cache hit)
+75 http cache path-array@https://registry.npmjs.org/path-array/-/path-array-1.0.1.tgz 0ms (cache hit)
+76 http cache prebuild@https://registry.npmjs.org/prebuild/-/prebuild-4.5.0.tgz 0ms (cache hit)
+77 http cache os-tmpdir@https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz 0ms (cache hit)
+78 http cache osenv@https://registry.npmjs.org/osenv/-/osenv-0.1.5.tgz 0ms (cache hit)
+79 http cache os-homedir@https://registry.npmjs.org/os-homedir/-/os-homedir-1.0.2.tgz 0ms (cache hit)
+80 http cache oauth-sign@https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.9.0.tgz 0ms (cache hit)
+81 http cache nopt@https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz 0ms (cache hit)
+82 http cache npmlog@https://registry.npmjs.org/npmlog/-/npmlog-2.0.4.tgz 0ms (cache hit)
+83 http cache noop-logger@https://registry.npmjs.org/noop-logger/-/noop-logger-0.1.1.tgz 0ms (cache hit)
+84 http cache node-ninja@https://registry.npmjs.org/node-ninja/-/node-ninja-1.0.2.tgz 0ms (cache hit)
+85 http cache node-gyp@https://registry.npmjs.org/node-gyp/-/node-gyp-3.8.0.tgz 0ms (cache hit)
+86 http cache next-tick@https://registry.npmjs.org/next-tick/-/next-tick-1.1.0.tgz 0ms (cache hit)
+87 http cache mkdirp@https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.6.tgz 0ms (cache hit)
+88 http cache mime-types@https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz 0ms (cache hit)
+89 http cache mime-db@https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz 0ms (cache hit)
+90 http cache lodash.padend@https://registry.npmjs.org/lodash.padend/-/lodash.padend-4.6.1.tgz 0ms (cache hit)
+91 http cache lodash.padstart@https://registry.npmjs.org/lodash.padstart/-/lodash.padstart-4.6.1.tgz 0ms (cache hit)
+92 http cache lodash.pad@https://registry.npmjs.org/lodash.pad/-/lodash.pad-4.5.1.tgz 0ms (cache hit)
+93 http cache jsprim@https://registry.npmjs.org/jsprim/-/jsprim-1.4.2.tgz 0ms (cache hit)
+94 http cache leveldown@https://registry.npmjs.org/leveldown/-/leveldown-1.4.6.tgz 0ms (cache hit)
+95 http cache jsonist@https://registry.npmjs.org/jsonist/-/jsonist-2.1.2.tgz 0ms (cache hit)
+96 http cache json-stringify-safe@https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz 0ms (cache hit)
+97 http cache json-schema-traverse@https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz 0ms (cache hit)
+98 http cache json-schema@https://registry.npmjs.org/json-schema/-/json-schema-0.4.0.tgz 0ms (cache hit)
+99 http cache jsbn@https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz 0ms (cache hit)
+100 http cache isstream@https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz 0ms (cache hit)
+101 http cache isexe@https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz 0ms (cache hit)
+102 http cache is-typedarray@https://registry.npmjs.org/is-typedarray/-/is-typedarray-1.0.0.tgz 0ms (cache hit)
+103 http cache is-typed-array@https://registry.npmjs.org/is-typed-array/-/is-typed-array-1.1.15.tgz 0ms (cache hit)
+104 http cache is-callable@https://registry.npmjs.org/is-callable/-/is-callable-1.2.7.tgz 0ms (cache hit)
+105 http cache ini@https://registry.npmjs.org/ini/-/ini-1.3.8.tgz 0ms (cache hit)
+106 http cache hyperquest@https://registry.npmjs.org/hyperquest/-/hyperquest-2.1.3.tgz 0ms (cache hit)
+107 http cache has-unicode@https://registry.npmjs.org/has-unicode/-/has-unicode-2.0.1.tgz 0ms (cache hit)
+108 http cache http-signature@https://registry.npmjs.org/http-signature/-/http-signature-1.2.0.tgz 0ms (cache hit)
+109 http cache har-validator@https://registry.npmjs.org/har-validator/-/har-validator-5.1.5.tgz 0ms (cache hit)
+110 http cache has-tostringtag@https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.2.tgz 0ms (cache hit)
+111 http cache har-schema@https://registry.npmjs.org/har-schema/-/har-schema-2.0.0.tgz 0ms (cache hit)
+112 http cache graceful-fs@https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz 0ms (cache hit)
+113 http cache github-from-package@https://registry.npmjs.org/github-from-package/-/github-from-package-0.0.0.tgz 0ms (cache hit)
+114 http cache ghutils@https://registry.npmjs.org/ghutils/-/ghutils-3.2.6.tgz 0ms (cache hit)
+115 http cache ghrepos@https://registry.npmjs.org/ghrepos/-/ghrepos-2.1.0.tgz 0ms (cache hit)
+116 http cache ghreleases@https://registry.npmjs.org/ghreleases/-/ghreleases-1.0.7.tgz 0ms (cache hit)
+117 http cache getpass@https://registry.npmjs.org/getpass/-/getpass-0.1.7.tgz 0ms (cache hit)
+118 http cache gauge@https://registry.npmjs.org/gauge/-/gauge-1.2.7.tgz 0ms (cache hit)
+119 http cache fstream@https://registry.npmjs.org/fstream/-/fstream-1.0.12.tgz 0ms (cache hit)
+120 http cache fs-ext@https://registry.npmjs.org/fs-ext/-/fs-ext-0.5.0.tgz 0ms (cache hit)
+121 http cache fs-constants@https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz 0ms (cache hit)
+122 http cache form-data@https://registry.npmjs.org/form-data/-/form-data-2.3.3.tgz 0ms (cache hit)
+123 http cache forever-agent@https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz 0ms (cache hit)
+124 http cache for-each@https://registry.npmjs.org/for-each/-/for-each-0.3.5.tgz 0ms (cache hit)
+125 http cache fast-json-stable-stringify@https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz 0ms (cache hit)
+126 http cache fast-future@https://registry.npmjs.org/fast-future/-/fast-future-1.0.2.tgz 0ms (cache hit)
+127 http cache fast-deep-equal@https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz 0ms (cache hit)
+128 http cache extsprintf@https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz 0ms (cache hit)
+129 http cache ext@https://registry.npmjs.org/ext/-/ext-1.7.0.tgz 0ms (cache hit)
+130 http cache expand-template@https://registry.npmjs.org/expand-template/-/expand-template-1.1.1.tgz 0ms (cache hit)
+131 http cache execspawn@https://registry.npmjs.org/execspawn/-/execspawn-1.0.1.tgz 0ms (cache hit)
+132 http cache event-emitter@https://registry.npmjs.org/event-emitter/-/event-emitter-0.3.5.tgz 0ms (cache hit)
+133 http cache esniff@https://registry.npmjs.org/esniff/-/esniff-2.0.1.tgz 0ms (cache hit)
+134 http cache es6-symbol@https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.1.4.tgz 0ms (cache hit)
+135 http cache es5-ext@https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.64.tgz 0ms (cache hit)
+136 http cache ecc-jsbn@https://registry.npmjs.org/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz 0ms (cache hit)
+137 http cache es6-iterator@https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.3.tgz 0ms (cache hit)
+138 http cache duplexer2@https://registry.npmjs.org/duplexer2/-/duplexer2-0.0.2.tgz 0ms (cache hit)
+139 http cache delegates@https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz 0ms (cache hit)
+140 http cache delayed-stream@https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz 0ms (cache hit)
+141 http cache deep-extend@https://registry.npmjs.org/deep-extend/-/deep-extend-0.6.0.tgz 0ms (cache hit)
+142 http cache dashdash@https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz 0ms (cache hit)
+143 http cache d@https://registry.npmjs.org/d/-/d-1.0.2.tgz 0ms (cache hit)
+144 http cache combined-stream@https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz 0ms (cache hit)
+145 http cache chownr@https://registry.npmjs.org/chownr/-/chownr-1.1.4.tgz 0ms (cache hit)
+146 http cache caseless@https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz 0ms (cache hit)
+147 http cache buffer-fill@https://registry.npmjs.org/buffer-fill/-/buffer-fill-1.0.0.tgz 0ms (cache hit)
+148 http cache buffer-alloc-unsafe@https://registry.npmjs.org/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz 0ms (cache hit)
+149 http cache buffer-alloc@https://registry.npmjs.org/buffer-alloc/-/buffer-alloc-1.2.0.tgz 0ms (cache hit)
+150 http cache block-stream@https://registry.npmjs.org/block-stream/-/block-stream-0.0.9.tgz 0ms (cache hit)
+151 http cache bindings@https://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz 0ms (cache hit)
+152 http cache aws4@https://registry.npmjs.org/aws4/-/aws4-1.13.2.tgz 0ms (cache hit)
+153 http cache bcrypt-pbkdf@https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz 0ms (cache hit)
+154 http cache aws-sign2@https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.7.0.tgz 1ms (cache hit)
+155 http cache available-typed-arrays@https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.7.tgz 0ms (cache hit)
+156 http cache asynckit@https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz 0ms (cache hit)
+157 http cache asn1@https://registry.npmjs.org/asn1/-/asn1-0.2.6.tgz 0ms (cache hit)
+158 http cache assert-plus@https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz 0ms (cache hit)
+159 http cache array-index@https://registry.npmjs.org/array-index/-/array-index-1.0.0.tgz 0ms (cache hit)
+160 http cache are-we-there-yet@https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.1.7.tgz 0ms (cache hit)
+161 http cache ajv@https://registry.npmjs.org/ajv/-/ajv-6.15.0.tgz 0ms (cache hit)
+162 http cache ansi@https://registry.npmjs.org/ansi/-/ansi-0.3.1.tgz 0ms (cache hit)
+163 http cache abbrev@https://registry.npmjs.org/abbrev/-/abbrev-1.1.1.tgz 0ms (cache hit)
+164 http cache after@https://registry.npmjs.org/after/-/after-0.8.2.tgz 0ms (cache hit)
+165 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+166 http cache core-util-is@https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz 0ms (cache hit)
+167 http cache isarray@https://registry.npmjs.org/isarray/-/isarray-2.0.5.tgz 0ms (cache hit)
+168 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz 0ms (cache hit)
+169 http cache safe-buffer@https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz 0ms (cache hit)
+170 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz 0ms (cache hit)
+171 http cache node-gyp@https://registry.npmjs.org/node-gyp/-/node-gyp-3.4.0.tgz 0ms (cache hit)
+172 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+173 http cache uuid@https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz 0ms (cache hit)
+174 http cache semver@https://registry.npmjs.org/semver/-/semver-5.3.0.tgz 0ms (cache hit)
+175 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz 0ms (cache hit)
+176 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+177 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz 0ms (cache hit)
+178 http cache bl@https://registry.npmjs.org/bl/-/bl-3.0.1.tgz 0ms (cache hit)
+179 http cache through2@https://registry.npmjs.org/through2/-/through2-0.6.5.tgz 0ms (cache hit)
+180 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.34.tgz 0ms (cache hit)
+181 http cache isarray@https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz 0ms (cache hit)
+182 http cache buffer-from@https://registry.npmjs.org/buffer-from/-/buffer-from-0.1.2.tgz 0ms (cache hit)
+183 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz 0ms (cache hit)
+184 http cache safe-buffer@https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz 0ms (cache hit)
+185 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz 0ms (cache hit)
+186 silly tarball no local data for suncalc3@https://registry.npmjs.org/suncalc3/-/suncalc3-2.0.5.tgz. Extracting by manifest.
+187 silly tarball no local data for lodash.isequal@https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz. Extracting by manifest.
+188 silly tarball no local data for cronosjs@https://registry.npmjs.org/cronosjs/-/cronosjs-1.7.1.tgz. Extracting by manifest.
+189 silly tarball no local data for lodash.clonedeep@https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz. Extracting by manifest.
+190 silly tarball no local data for node-red-contrib-sun-position@https://registry.npmjs.org/node-red-contrib-sun-position/-/node-red-contrib-sun-position-3.0.1.tgz. Extracting by manifest.
+191 warn deprecated osenv@0.1.5: This package is no longer supported.
+192 warn deprecated npmlog@2.0.4: This package is no longer supported.
+193 warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+194 warn deprecated are-we-there-yet@1.1.7: This package is no longer supported.
+195 warn deprecated har-validator@5.1.5: this library is no longer supported
+196 warn deprecated gauge@1.2.7: This package is no longer supported.
+197 http fetch GET 200 https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz 284ms (cache miss)
+198 http fetch GET 200 https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz 287ms (cache miss)
+199 warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+200 http fetch GET 200 https://registry.npmjs.org/suncalc3/-/suncalc3-2.0.5.tgz 301ms (cache miss)
+201 warn deprecated uuid@3.4.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+202 warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+203 warn deprecated fstream@1.0.12: This package is no longer supported.
+204 warn deprecated prebuild@4.5.0: No longer maintained (alternatives available)
+205 http fetch GET 200 https://registry.npmjs.org/cronosjs/-/cronosjs-1.7.1.tgz 331ms (cache miss)
+206 warn deprecated tar@2.2.2: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+207 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-sun-position/-/node-red-contrib-sun-position-3.0.1.tgz 456ms (cache miss)
+208 warn deprecated leveldown@1.4.6: Superseded by classic-level (https://github.com/Level/community#faq)
+209 info run fs-ext@0.5.0 install node_modules/fs-ext node-gyp configure build
+210 info run leveldown@1.4.6 install node_modules/leveldown prebuild --install
+211 info run snappy@5.0.5 install node_modules/snappy ./node_modules/.bin/node-gyp rebuild
+212 info run zmq@2.15.3 install node_modules/zmq node-gyp rebuild
+213 info run fs-ext@0.5.0 install { code: 1, signal: null }
+214 verbose reify failed optional dependency /data/node_modules/fs-ext
+215 silly reify mark deleted [ '/data/node_modules/fs-ext' ]
+216 info run zmq@2.15.3 install { code: 1, signal: null }
+217 verbose reify failed optional dependency /data/node_modules/zmq
+218 silly reify mark deleted [ '/data/node_modules/zmq' ]
+219 verbose reify failed optional dependency /data/node_modules/zmq/node_modules/nan
+220 silly reify mark deleted [ '/data/node_modules/zmq/node_modules/nan' ]
+221 info run snappy@5.0.5 install { code: 1, signal: null }
+222 verbose reify failed optional dependency /data/node_modules/snappy
+223 silly reify mark deleted [ '/data/node_modules/snappy' ]
+224 verbose reify failed optional dependency /data/node_modules/snappy/node_modules/nan
+225 silly reify mark deleted [ '/data/node_modules/snappy/node_modules/nan' ]
+226 verbose reify failed optional dependency /data/node_modules/snappy/node_modules/node-gyp
+227 silly reify mark deleted [
+227 silly reify   '/data/node_modules/snappy/node_modules/node-gyp',
+227 silly reify   '/data/node_modules/snappy/node_modules/.bin/node-gyp'
+227 silly reify ]
+228 info run leveldown@1.4.6 install { code: 2, signal: null }
+229 verbose reify failed optional dependency /data/node_modules/leveldown
+230 silly reify mark deleted [ '/data/node_modules/leveldown' ]
+231 verbose reify failed optional dependency /data/node_modules/bindings
+232 silly reify mark deleted [ '/data/node_modules/bindings' ]
+233 verbose reify failed optional dependency /data/node_modules/fast-future
+234 silly reify mark deleted [ '/data/node_modules/fast-future' ]
+235 verbose reify failed optional dependency /data/node_modules/leveldown/node_modules/nan
+236 silly reify mark deleted [ '/data/node_modules/leveldown/node_modules/nan' ]
+237 verbose reify failed optional dependency /data/node_modules/prebuild
+238 silly reify mark deleted [ '/data/node_modules/prebuild', '/data/node_modules/.bin/prebuild' ]
+239 verbose reify failed optional dependency /data/node_modules/execspawn
+240 silly reify mark deleted [ '/data/node_modules/execspawn' ]
+241 verbose reify failed optional dependency /data/node_modules/expand-template
+242 silly reify mark deleted [ '/data/node_modules/expand-template' ]
+243 verbose reify failed optional dependency /data/node_modules/ghreleases
+244 silly reify mark deleted [ '/data/node_modules/ghreleases' ]
+245 verbose reify failed optional dependency /data/node_modules/github-from-package
+246 silly reify mark deleted [ '/data/node_modules/github-from-package' ]
+247 verbose reify failed optional dependency /data/node_modules/mkdirp
+248 silly reify mark deleted [ '/data/node_modules/mkdirp', '/data/node_modules/.bin/mkdirp' ]
+249 verbose reify failed optional dependency /data/node_modules/node-gyp
+250 silly reify mark deleted [ '/data/node_modules/node-gyp', '/data/node_modules/.bin/node-gyp' ]
+251 verbose reify failed optional dependency /data/node_modules/node-ninja
+252 silly reify mark deleted [
+252 silly reify   '/data/node_modules/node-ninja',
+252 silly reify   '/data/node_modules/.bin/node-ninja'
+252 silly reify ]
+253 verbose reify failed optional dependency /data/node_modules/noop-logger
+254 silly reify mark deleted [ '/data/node_modules/noop-logger' ]
+255 verbose reify failed optional dependency /data/node_modules/npmlog
+256 silly reify mark deleted [ '/data/node_modules/npmlog' ]
+257 verbose reify failed optional dependency /data/node_modules/os-homedir
+258 silly reify mark deleted [ '/data/node_modules/os-homedir' ]
+259 verbose reify failed optional dependency /data/node_modules/rc
+260 silly reify mark deleted [ '/data/node_modules/rc', '/data/node_modules/.bin/rc' ]
+261 verbose reify failed optional dependency /data/node_modules/simple-get
+262 silly reify mark deleted [ '/data/node_modules/simple-get' ]
+263 verbose reify failed optional dependency /data/node_modules/tar-fs
+264 silly reify mark deleted [ '/data/node_modules/tar-fs' ]
+265 verbose reify failed optional dependency /data/node_modules/tar-stream
+266 silly reify mark deleted [ '/data/node_modules/tar-stream' ]
+267 verbose reify failed optional dependency /data/node_modules/util-extend
+268 silly reify mark deleted [ '/data/node_modules/util-extend' ]
+269 verbose reify failed optional dependency /data/node_modules/after
+270 silly reify mark deleted [ '/data/node_modules/after' ]
+271 verbose reify failed optional dependency /data/node_modules/ghrepos
+272 silly reify mark deleted [ '/data/node_modules/ghrepos' ]
+273 verbose reify failed optional dependency /data/node_modules/ghutils
+274 silly reify mark deleted [ '/data/node_modules/ghutils' ]
+275 verbose reify failed optional dependency /data/node_modules/simple-mime
+276 silly reify mark deleted [ '/data/node_modules/simple-mime' ]
+277 verbose reify failed optional dependency /data/node_modules/url-template
+278 silly reify mark deleted [ '/data/node_modules/url-template' ]
+279 verbose reify failed optional dependency /data/node_modules/fstream
+280 silly reify mark deleted [ '/data/node_modules/fstream' ]
+281 verbose reify failed optional dependency /data/node_modules/graceful-fs
+282 silly reify mark deleted [ '/data/node_modules/graceful-fs' ]
+283 verbose reify failed optional dependency /data/node_modules/nopt
+284 silly reify mark deleted [ '/data/node_modules/nopt', '/data/node_modules/.bin/nopt' ]
+285 verbose reify failed optional dependency /data/node_modules/osenv
+286 silly reify mark deleted [ '/data/node_modules/osenv' ]
+287 verbose reify failed optional dependency /data/node_modules/request
+288 silly reify mark deleted [ '/data/node_modules/request' ]
+289 verbose reify failed optional dependency /data/node_modules/rimraf
+290 silly reify mark deleted [ '/data/node_modules/rimraf', '/data/node_modules/.bin/rimraf' ]
+291 verbose reify failed optional dependency /data/node_modules/node-gyp/node_modules/semver
+292 silly reify mark deleted [
+292 silly reify   '/data/node_modules/node-gyp/node_modules/semver',
+292 silly reify   '/data/node_modules/node-gyp/node_modules/.bin/semver'
+292 silly reify ]
+293 verbose reify failed optional dependency /data/node_modules/tar
+294 silly reify mark deleted [ '/data/node_modules/tar' ]
+295 verbose reify failed optional dependency /data/node_modules/which
+296 silly reify mark deleted [ '/data/node_modules/which', '/data/node_modules/.bin/which' ]
+297 verbose reify failed optional dependency /data/node_modules/path-array
+298 silly reify mark deleted [ '/data/node_modules/path-array' ]
+299 verbose reify failed optional dependency /data/node_modules/ansi
+300 silly reify mark deleted [ '/data/node_modules/ansi' ]
+301 verbose reify failed optional dependency /data/node_modules/are-we-there-yet
+302 silly reify mark deleted [ '/data/node_modules/are-we-there-yet' ]
+303 verbose reify failed optional dependency /data/node_modules/gauge
+304 silly reify mark deleted [ '/data/node_modules/gauge' ]
+305 verbose reify failed optional dependency /data/node_modules/deep-extend
+306 silly reify mark deleted [ '/data/node_modules/deep-extend' ]
+307 verbose reify failed optional dependency /data/node_modules/ini
+308 silly reify mark deleted [ '/data/node_modules/ini' ]
+309 verbose reify failed optional dependency /data/node_modules/strip-json-comments
+310 silly reify mark deleted [ '/data/node_modules/strip-json-comments' ]
+311 verbose reify failed optional dependency /data/node_modules/unzip-response
+312 silly reify mark deleted [ '/data/node_modules/unzip-response' ]
+313 verbose reify failed optional dependency /data/node_modules/chownr
+314 silly reify mark deleted [ '/data/node_modules/chownr' ]
+315 verbose reify failed optional dependency /data/node_modules/buffer-alloc
+316 silly reify mark deleted [ '/data/node_modules/buffer-alloc' ]
+317 verbose reify failed optional dependency /data/node_modules/fs-constants
+318 silly reify mark deleted [ '/data/node_modules/fs-constants' ]
+319 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/readable-stream
+320 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/readable-stream' ]
+321 verbose reify failed optional dependency /data/node_modules/to-buffer
+322 silly reify mark deleted [ '/data/node_modules/to-buffer' ]
+323 verbose reify failed optional dependency /data/node_modules/jsonist
+324 silly reify mark deleted [ '/data/node_modules/jsonist' ]
+325 verbose reify failed optional dependency /data/node_modules/abbrev
+326 silly reify mark deleted [ '/data/node_modules/abbrev' ]
+327 verbose reify failed optional dependency /data/node_modules/os-tmpdir
+328 silly reify mark deleted [ '/data/node_modules/os-tmpdir' ]
+329 verbose reify failed optional dependency /data/node_modules/aws-sign2
+330 silly reify mark deleted [ '/data/node_modules/aws-sign2' ]
+331 verbose reify failed optional dependency /data/node_modules/aws4
+332 silly reify mark deleted [ '/data/node_modules/aws4' ]
+333 verbose reify failed optional dependency /data/node_modules/caseless
+334 silly reify mark deleted [ '/data/node_modules/caseless' ]
+335 verbose reify failed optional dependency /data/node_modules/combined-stream
+336 silly reify mark deleted [ '/data/node_modules/combined-stream' ]
+337 verbose reify failed optional dependency /data/node_modules/forever-agent
+338 silly reify mark deleted [ '/data/node_modules/forever-agent' ]
+339 verbose reify failed optional dependency /data/node_modules/form-data
+340 silly reify mark deleted [ '/data/node_modules/form-data' ]
+341 verbose reify failed optional dependency /data/node_modules/har-validator
+342 silly reify mark deleted [ '/data/node_modules/har-validator' ]
+343 verbose reify failed optional dependency /data/node_modules/http-signature
+344 silly reify mark deleted [ '/data/node_modules/http-signature' ]
+345 verbose reify failed optional dependency /data/node_modules/is-typedarray
+346 silly reify mark deleted [ '/data/node_modules/is-typedarray' ]
+347 verbose reify failed optional dependency /data/node_modules/isstream
+348 silly reify mark deleted [ '/data/node_modules/isstream' ]
+349 verbose reify failed optional dependency /data/node_modules/json-stringify-safe
+350 silly reify mark deleted [ '/data/node_modules/json-stringify-safe' ]
+351 verbose reify failed optional dependency /data/node_modules/mime-types
+352 silly reify mark deleted [ '/data/node_modules/mime-types' ]
+353 verbose reify failed optional dependency /data/node_modules/oauth-sign
+354 silly reify mark deleted [ '/data/node_modules/oauth-sign' ]
+355 verbose reify failed optional dependency /data/node_modules/performance-now
+356 silly reify mark deleted [ '/data/node_modules/performance-now' ]
+357 verbose reify failed optional dependency /data/node_modules/qs
+358 silly reify mark deleted [ '/data/node_modules/qs' ]
+359 verbose reify failed optional dependency /data/node_modules/tough-cookie
+360 silly reify mark deleted [ '/data/node_modules/tough-cookie' ]
+361 verbose reify failed optional dependency /data/node_modules/tunnel-agent
+362 silly reify mark deleted [ '/data/node_modules/tunnel-agent' ]
+363 verbose reify failed optional dependency /data/node_modules/request/node_modules/uuid
+364 silly reify mark deleted [
+364 silly reify   '/data/node_modules/request/node_modules/uuid',
+364 silly reify   '/data/node_modules/request/node_modules/.bin/uuid'
+364 silly reify ]
+365 verbose reify failed optional dependency /data/node_modules/block-stream
+366 silly reify mark deleted [ '/data/node_modules/block-stream' ]
+367 verbose reify failed optional dependency /data/node_modules/isexe
+368 silly reify mark deleted [ '/data/node_modules/isexe' ]
+369 verbose reify failed optional dependency /data/node_modules/array-index
+370 silly reify mark deleted [ '/data/node_modules/array-index' ]
+371 verbose reify failed optional dependency /data/node_modules/delegates
+372 silly reify mark deleted [ '/data/node_modules/delegates' ]
+373 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/readable-stream
+374 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/readable-stream' ]
+375 verbose reify failed optional dependency /data/node_modules/has-unicode
+376 silly reify mark deleted [ '/data/node_modules/has-unicode' ]
+377 verbose reify failed optional dependency /data/node_modules/lodash.pad
+378 silly reify mark deleted [ '/data/node_modules/lodash.pad' ]
+379 verbose reify failed optional dependency /data/node_modules/lodash.padend
+380 silly reify mark deleted [ '/data/node_modules/lodash.padend' ]
+381 verbose reify failed optional dependency /data/node_modules/lodash.padstart
+382 silly reify mark deleted [ '/data/node_modules/lodash.padstart' ]
+383 verbose reify failed optional dependency /data/node_modules/buffer-alloc-unsafe
+384 silly reify mark deleted [ '/data/node_modules/buffer-alloc-unsafe' ]
+385 verbose reify failed optional dependency /data/node_modules/buffer-fill
+386 silly reify mark deleted [ '/data/node_modules/buffer-fill' ]
+387 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/safe-buffer
+388 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/safe-buffer' ]
+389 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/string_decoder
+390 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/string_decoder' ]
+391 verbose reify failed optional dependency /data/node_modules/to-buffer/node_modules/isarray
+392 silly reify mark deleted [ '/data/node_modules/to-buffer/node_modules/isarray' ]
+393 verbose reify failed optional dependency /data/node_modules/typed-array-buffer
+394 silly reify mark deleted [ '/data/node_modules/typed-array-buffer' ]
+395 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/bl
+396 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/bl' ]
+397 verbose reify failed optional dependency /data/node_modules/hyperquest
+398 silly reify mark deleted [ '/data/node_modules/hyperquest' ]
+399 verbose reify failed optional dependency /data/node_modules/delayed-stream
+400 silly reify mark deleted [ '/data/node_modules/delayed-stream' ]
+401 verbose reify failed optional dependency /data/node_modules/asynckit
+402 silly reify mark deleted [ '/data/node_modules/asynckit' ]
+403 verbose reify failed optional dependency /data/node_modules/ajv
+404 silly reify mark deleted [ '/data/node_modules/ajv' ]
+405 verbose reify failed optional dependency /data/node_modules/har-schema
+406 silly reify mark deleted [ '/data/node_modules/har-schema' ]
+407 verbose reify failed optional dependency /data/node_modules/assert-plus
+408 silly reify mark deleted [ '/data/node_modules/assert-plus' ]
+409 verbose reify failed optional dependency /data/node_modules/jsprim
+410 silly reify mark deleted [ '/data/node_modules/jsprim' ]
+411 verbose reify failed optional dependency /data/node_modules/sshpk
+412 silly reify mark deleted [
+412 silly reify   '/data/node_modules/sshpk',
+412 silly reify   '/data/node_modules/.bin/sshpk-conv',
+412 silly reify   '/data/node_modules/.bin/sshpk-sign',
+412 silly reify   '/data/node_modules/.bin/sshpk-verify'
+412 silly reify ]
+413 verbose reify failed optional dependency /data/node_modules/mime-db
+414 silly reify mark deleted [ '/data/node_modules/mime-db' ]
+415 verbose reify failed optional dependency /data/node_modules/psl
+416 silly reify mark deleted [ '/data/node_modules/psl' ]
+417 verbose reify failed optional dependency /data/node_modules/es6-symbol
+418 silly reify mark deleted [ '/data/node_modules/es6-symbol' ]
+419 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/safe-buffer
+420 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/safe-buffer' ]
+421 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/string_decoder
+422 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/string_decoder' ]
+423 verbose reify failed optional dependency /data/node_modules/is-typed-array
+424 silly reify mark deleted [ '/data/node_modules/is-typed-array' ]
+425 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/readable-stream
+426 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/readable-stream' ]
+427 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/buffer-from
+428 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/buffer-from' ]
+429 verbose reify failed optional dependency /data/node_modules/duplexer2
+430 silly reify mark deleted [ '/data/node_modules/duplexer2' ]
+431 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/through2
+432 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/through2' ]
+433 verbose reify failed optional dependency /data/node_modules/fast-deep-equal
+434 silly reify mark deleted [ '/data/node_modules/fast-deep-equal' ]
+435 verbose reify failed optional dependency /data/node_modules/fast-json-stable-stringify
+436 silly reify mark deleted [ '/data/node_modules/fast-json-stable-stringify' ]
+437 verbose reify failed optional dependency /data/node_modules/json-schema-traverse
+438 silly reify mark deleted [ '/data/node_modules/json-schema-traverse' ]
+439 verbose reify failed optional dependency /data/node_modules/uri-js
+440 silly reify mark deleted [ '/data/node_modules/uri-js' ]
+441 verbose reify failed optional dependency /data/node_modules/extsprintf
+442 silly reify mark deleted [ '/data/node_modules/extsprintf' ]
+443 verbose reify failed optional dependency /data/node_modules/json-schema
+444 silly reify mark deleted [ '/data/node_modules/json-schema' ]
+445 verbose reify failed optional dependency /data/node_modules/verror
+446 silly reify mark deleted [ '/data/node_modules/verror' ]
+447 verbose reify failed optional dependency /data/node_modules/asn1
+448 silly reify mark deleted [ '/data/node_modules/asn1' ]
+449 verbose reify failed optional dependency /data/node_modules/bcrypt-pbkdf
+450 silly reify mark deleted [ '/data/node_modules/bcrypt-pbkdf' ]
+451 verbose reify failed optional dependency /data/node_modules/dashdash
+452 silly reify mark deleted [ '/data/node_modules/dashdash' ]
+453 verbose reify failed optional dependency /data/node_modules/ecc-jsbn
+454 silly reify mark deleted [ '/data/node_modules/ecc-jsbn' ]
+455 verbose reify failed optional dependency /data/node_modules/getpass
+456 silly reify mark deleted [ '/data/node_modules/getpass' ]
+457 verbose reify failed optional dependency /data/node_modules/jsbn
+458 silly reify mark deleted [ '/data/node_modules/jsbn' ]
+459 verbose reify failed optional dependency /data/node_modules/safer-buffer
+460 silly reify mark deleted [ '/data/node_modules/safer-buffer' ]
+461 verbose reify failed optional dependency /data/node_modules/tweetnacl
+462 silly reify mark deleted [ '/data/node_modules/tweetnacl' ]
+463 verbose reify failed optional dependency /data/node_modules/d
+464 silly reify mark deleted [ '/data/node_modules/d' ]
+465 verbose reify failed optional dependency /data/node_modules/ext
+466 silly reify mark deleted [ '/data/node_modules/ext' ]
+467 verbose reify failed optional dependency /data/node_modules/which-typed-array
+468 silly reify mark deleted [ '/data/node_modules/which-typed-array' ]
+469 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/string_decoder
+470 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/string_decoder' ]
+471 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/readable-stream
+472 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/readable-stream' ]
+473 verbose reify failed optional dependency /data/node_modules/verror/node_modules/core-util-is
+474 silly reify mark deleted [ '/data/node_modules/verror/node_modules/core-util-is' ]
+475 verbose reify failed optional dependency /data/node_modules/es5-ext
+476 silly reify mark deleted [ '/data/node_modules/es5-ext' ]
+477 verbose reify failed optional dependency /data/node_modules/type
+478 silly reify mark deleted [ '/data/node_modules/type' ]
+479 verbose reify failed optional dependency /data/node_modules/available-typed-arrays
+480 silly reify mark deleted [ '/data/node_modules/available-typed-arrays' ]
+481 verbose reify failed optional dependency /data/node_modules/for-each
+482 silly reify mark deleted [ '/data/node_modules/for-each' ]
+483 verbose reify failed optional dependency /data/node_modules/has-tostringtag
+484 silly reify mark deleted [ '/data/node_modules/has-tostringtag' ]
+485 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/isarray
+486 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/isarray' ]
+487 verbose reify failed optional dependency /data/node_modules/es6-iterator
+488 silly reify mark deleted [ '/data/node_modules/es6-iterator' ]
+489 verbose reify failed optional dependency /data/node_modules/esniff
+490 silly reify mark deleted [ '/data/node_modules/esniff' ]
+491 verbose reify failed optional dependency /data/node_modules/next-tick
+492 silly reify mark deleted [ '/data/node_modules/next-tick' ]
+493 verbose reify failed optional dependency /data/node_modules/possible-typed-array-names
+494 silly reify mark deleted [ '/data/node_modules/possible-typed-array-names' ]
+495 verbose reify failed optional dependency /data/node_modules/is-callable
+496 silly reify mark deleted [ '/data/node_modules/is-callable' ]
+497 verbose reify failed optional dependency /data/node_modules/event-emitter
+498 silly reify mark deleted [ '/data/node_modules/event-emitter' ]
+499 silly ADD node_modules/suncalc3
+500 silly ADD node_modules/lodash.isequal
+501 silly ADD node_modules/lodash.clonedeep
+502 silly ADD node_modules/cronosjs
+503 silly ADD node_modules/node-red-contrib-sun-position
+504 silly ADD
+505 silly ADD node_modules/nan
+506 silly ADD
+507 silly ADD
+508 silly ADD
+509 silly ADD node_modules/core-util-is
+510 silly ADD
+511 silly ADD
+512 silly ADD
+513 silly ADD
+514 silly ADD
+515 silly ADD
+516 silly ADD
+517 silly ADD
+518 silly ADD
+519 silly ADD
+520 silly ADD node_modules/isarray
+521 silly ADD
+522 silly ADD node_modules/string_decoder
+523 silly ADD node_modules/safe-buffer
+524 silly ADD node_modules/readable-stream
+525 silly ADD
+526 silly ADD
+527 silly ADD
+528 silly ADD
+529 silly ADD
+530 silly ADD node_modules/node-gyp
+531 silly ADD node_modules/nan
+532 silly ADD
+533 silly ADD
+534 silly ADD
+535 silly ADD
+536 silly ADD
+537 silly ADD node_modules/uuid
+538 silly ADD
+539 silly ADD
+540 silly ADD
+541 silly ADD
+542 silly ADD
+543 silly ADD
+544 silly ADD
+545 silly ADD
+546 silly ADD
+547 silly ADD
+548 silly ADD
+549 silly ADD
+550 silly ADD
+551 silly ADD
+552 silly ADD
+553 silly ADD
+554 silly ADD node_modules/semver
+555 silly ADD
+556 silly ADD
+557 silly ADD
+558 silly ADD
+559 silly ADD
+560 silly ADD
+561 silly ADD
+562 silly ADD
+563 silly ADD node_modules/nan
+564 silly ADD
+565 silly ADD
+566 silly ADD node_modules/string_decoder
+567 silly ADD node_modules/readable-stream
+568 silly ADD node_modules/bl
+569 silly ADD
+570 silly ADD
+571 silly ADD
+572 silly ADD
+573 silly ADD
+574 silly ADD
+575 silly ADD
+576 silly ADD
+577 silly ADD
+578 silly ADD
+579 silly ADD
+580 silly ADD node_modules/through2
+581 silly ADD node_modules/readable-stream
+582 silly ADD node_modules/isarray
+583 silly ADD node_modules/buffer-from
+584 silly ADD
+585 silly ADD
+586 silly ADD
+587 silly ADD
+588 silly ADD
+589 silly ADD
+590 silly ADD
+591 silly ADD
+592 silly ADD
+593 silly ADD
+594 silly ADD
+595 silly ADD
+596 silly ADD
+597 silly ADD
+598 silly ADD
+599 silly ADD
+600 silly ADD
+601 silly ADD
+602 silly ADD
+603 silly ADD
+604 silly ADD
+605 silly ADD
+606 silly ADD
+607 silly ADD
+608 silly ADD
+609 silly ADD
+610 silly ADD
+611 silly ADD
+612 silly ADD
+613 silly ADD
+614 silly ADD
+615 silly ADD
+616 silly ADD
+617 silly ADD
+618 silly ADD
+619 silly ADD
+620 silly ADD
+621 silly ADD
+622 silly ADD
+623 silly ADD
+624 silly ADD
+625 silly ADD
+626 silly ADD
+627 silly ADD
+628 silly ADD
+629 silly ADD
+630 silly ADD
+631 silly ADD
+632 silly ADD
+633 silly ADD
+634 silly ADD
+635 silly ADD
+636 silly ADD
+637 silly ADD
+638 silly ADD node_modules/string_decoder
+639 silly ADD node_modules/safe-buffer
+640 silly ADD node_modules/readable-stream
+641 silly ADD
+642 silly ADD
+643 silly ADD
+644 silly ADD
+645 warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+645 warn allow-scripts   kerberos@0.0.24 (install: node-gyp rebuild)
+645 warn allow-scripts
+645 warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+646 verbose cwd /data
+647 verbose os Linux 7.0.0-27-generic
+648 verbose node v24.16.0
+649 verbose npm  v11.16.0
+650 verbose exit 0
+651 info ok

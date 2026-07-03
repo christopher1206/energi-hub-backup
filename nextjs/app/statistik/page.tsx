@@ -86,9 +86,9 @@ export default function StatistikSide() {
       <div className="stat-sektion">
         <h2>☀️ Sol produktion</h2>
         <div className="stat-grid">
-          <StatKort icon="☀️" titel="Produceret total" value={data.pv_energy_total.toFixed(2)} unit=" kWh" farve="#f59e0b" />
+          <StatKort icon="☀️" titel="Produceret i alt (levetid)" value={data.pv_energy_total.toFixed(2)} unit=" kWh" farve="#f59e0b" />
           <StatKort icon="⚡" titel="Sol nu" value={data.sol_power_nu} unit=" W" farve="#f59e0b" />
-          <StatKort icon="🏠" titel="Hus forbrug total" value={data.load_energy_total.toFixed(2)} unit=" kWh" />
+          <StatKort icon="🏠" titel="Hus forbrug i alt (levetid)" value={data.load_energy_total.toFixed(2)} unit=" kWh" />
           <StatKort icon="🔌" titel="Hus forbrug nu" value={data.load_power_nu} unit=" W" />
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function StatistikSide() {
         <h2>🚗 King kong — Tesla Model Y</h2>
         <div className="stat-grid">
           <StatKort icon="🔋" titel="Bil batteri" value={data.car_soc} unit="%" farve={data.car_soc > 50 ? '#22c55e' : '#ef4444'} />
-          <StatKort icon="⚡" titel="Total ladet via go-e" value={teslaKwh} unit=" kWh" farve="#3b82f6" />
+          <StatKort icon="⚡" titel="Ladet i alt via go-e (levetid)" value={teslaKwh} unit=" kWh" farve="#3b82f6" />
           <StatKort icon="🔌" titel="Ladestrøm nu" value={data.go_e_car > 1 ? `${data.go_e_amp}A` : 'Ikke tilsluttet'} farve={data.go_e_car > 1 ? '#22c55e' : '#64748b'} />
           <StatKort icon="💰" titel="Ladet for (est.)" value={(teslaKwh * 0.80).toFixed(0)} unit=" kr" farve="#3b82f6" />
         </div>

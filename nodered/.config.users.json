@@ -29,7 +29,7 @@
                                 "config",
                                 "context"
                             ],
-                            "height": 283.297,
+                            "height": 284.62533399999995,
                             "hidden": false,
                             "active": "config"
                         },
@@ -47,21 +47,28 @@
                             "tabs": [
                                 "explorer"
                             ],
-                            "hidden": false,
+                            "hidden": true,
                             "active": "explorer",
-                            "height": 302
+                            "height": 303.333334
                         },
                         "bottom": {
                             "tabs": [
                                 "palette"
                             ],
-                            "hidden": false,
+                            "hidden": true,
                             "active": "palette"
                         }
                     }
                 }
+            },
+            "dialog": {
+                "export": {
+                    "pretty": true,
+                    "json-view": true
+                }
             }
         },
-        "menu-menu-item-left-sidebar": true
+        "menu-menu-item-left-sidebar": false,
+        "menu-menu-item-right-sidebar": true
     }
 }

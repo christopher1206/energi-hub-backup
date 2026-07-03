@@ -12,17 +12,21 @@ interface Event {
 const typeIkon: Record<string, string> = {
   discharge_skift: '🔋',
   tesla_ladning: '🚗',
+  tesla_plan: '📋',
   override: '🚨',
   alarm: '⚠️',
   system: '⚡',
+  lys_automatik: '💡',
 };
 
 const typeFarve: Record<string, string> = {
   discharge_skift: '#3b82f6',
   tesla_ladning: '#22c55e',
+  tesla_plan: '#8b5cf6',
   override: '#ef4444',
   alarm: '#f59e0b',
   system: '#94a3b8',
+  lys_automatik: '#eab308',
 };
 
 export default function LogSide() {
@@ -61,7 +65,7 @@ export default function LogSide() {
 
       {/* Filter knapper */}
       <div className="periode-valg">
-        {['alle', 'discharge_skift', 'tesla_ladning', 'override', 'alarm'].map(f => (
+        {['alle', 'discharge_skift', 'tesla_ladning', 'tesla_plan', 'override', 'alarm', 'lys_automatik'].map(f => (
           <button
             key={f}
             className={`periode-btn ${filter === f ? 'aktiv' : ''}`}

@@ -21,7 +21,7 @@
                     "v": 4,
                     "tabs": [],
                     "primary": {
-                        "width": 300,
+                        "width": 0,
                         "top": {
                             "tabs": [
                                 "info",
@@ -29,7 +29,7 @@
                                 "config",
                                 "context"
                             ],
-                            "height": 297.297,
+                            "height": 284.62533399999995,
                             "hidden": false,
                             "active": "config"
                         },
@@ -42,25 +42,33 @@
                         }
                     },
                     "secondary": {
-                        "width": 0,
+                        "width": 210,
                         "top": {
                             "tabs": [
                                 "explorer"
                             ],
-                            "hidden": true,
-                            "active": "explorer"
+                            "hidden": false,
+                            "active": "explorer",
+                            "height": 303.333334
                         },
                         "bottom": {
                             "tabs": [
                                 "palette"
                             ],
-                            "hidden": true,
+                            "hidden": false,
                             "active": "palette"
                         }
                     }
                 }
+            },
+            "dialog": {
+                "export": {
+                    "pretty": true,
+                    "json-view": true
+                }
             }
         },
-        "menu-menu-item-left-sidebar": false
+        "menu-menu-item-left-sidebar": true,
+        "menu-menu-item-right-sidebar": true
     }
 }

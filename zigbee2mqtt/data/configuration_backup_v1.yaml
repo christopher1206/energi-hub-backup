@@ -1,0 +1,13 @@
+homeassistant: false
+permit_join: true
+mqtt:
+  base_topic: zigbee2mqtt
+  server: 'mqtt://mosquitto:1883'
+serial:
+  port: /dev/ttyUSB0
+  adapter: ember
+frontend:
+  port: 8080
+advanced:
+  log_level: info
+  network_key: GENERATE
