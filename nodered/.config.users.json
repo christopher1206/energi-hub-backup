@@ -29,7 +29,7 @@
                                 "config",
                                 "context"
                             ],
-                            "height": 284.62533399999995,
+                            "height": 286.625,
                             "hidden": false,
                             "active": "config"
                         },
@@ -47,15 +47,15 @@
                             "tabs": [
                                 "explorer"
                             ],
-                            "hidden": true,
+                            "hidden": false,
                             "active": "explorer",
-                            "height": 303.333334
+                            "height": 305.328
                         },
                         "bottom": {
                             "tabs": [
                                 "palette"
                             ],
-                            "hidden": true,
+                            "hidden": false,
                             "active": "palette"
                         }
                     }
@@ -68,7 +68,7 @@
                 }
             }
         },
-        "menu-menu-item-left-sidebar": false,
+        "menu-menu-item-left-sidebar": true,
         "menu-menu-item-right-sidebar": true
     }
 }

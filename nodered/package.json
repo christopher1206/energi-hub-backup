@@ -4,6 +4,8 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+        "aws4": "^1.13.2",
+        "node-red-contrib-ical-events": "~2.2.5",
         "node-red-contrib-influxdb": "~0.7.0",
         "node-red-contrib-mqtt-broker": "~0.2.9",
         "node-red-contrib-sun-position": "~3.0.1"

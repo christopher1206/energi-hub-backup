@@ -99,6 +99,34 @@ interface LysAutomatikData {
   timestamp: string;
 }
 
+interface LadeplanTime {
+  time: string;
+  pris: number;
+}
+
+interface LadeplanData {
+  timer: LadeplanTime[];
+  manglerKwh: number;
+  timerNodvendige: number;
+  bilTilsluttet: boolean;
+  carSoc: number;
+  deadline: string | null;
+}
+
+interface KalenderBegivenhed {
+  summary: string;
+  start: string;
+  slut: string;
+  heldag: boolean;
+  lokation: string | null;
+}
+
+interface KalenderData {
+  igangvaerende: KalenderBegivenhed[];
+  kommende: KalenderBegivenhed[];
+  opdateret: string | null;
+}
+
 function ZoneFarve({ zone }: { zone: string }) {
   if (zone === 'billig') return <span className="zone-billig">● BILLIG</span>;
   if (zone === 'dyr') return <span className="zone-dyr">● DYR</span>;
@@ -185,6 +213,30 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const hentLadeplan = async () => {
+      try {
+        const res = await fetch('/api/ladeplan');
+        setLadeplan(await res.json());
+      } catch (e) {}
+    };
+    hentLadeplan();
+    const interval = setInterval(hentLadeplan, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentKalender = async () => {
+      try {
+        const res = await fetch('/api/kalender');
+        setKalender(await res.json());
+      } catch (e) {}
+    };
+    hentKalender();
+    const interval = setInterval(hentKalender, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
@@ -216,6 +268,8 @@ export default function Dashboard() {
   const [lysLoading, setLysLoading] = useState<{ lys_carport: boolean; lys_terrasse: boolean }>({ lys_carport: false, lys_terrasse: false });
   const [sliderVaerdi, setSliderVaerdi] = useState<{ lys_carport: number; lys_terrasse: number }>({ lys_carport: 254, lys_terrasse: 254 });
   const [lysAutomatik, setLysAutomatik] = useState<LysAutomatikData | null>(null);
+  const [ladeplan, setLadeplan] = useState<LadeplanData | null>(null);
+  const [kalender, setKalender] = useState<KalenderData | null>(null);
 
   const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
     if (!udendorsLys) return;
@@ -408,11 +462,94 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Arbejdskalender */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>📅 Kalender</div>
+        {kalender ? (
+          <div>
+            {kalender.igangvaerende.length > 0 && (
+              <div style={{
+                background: '#1e3a5f', border: '1px solid #3b82f6', borderRadius: '8px',
+                padding: '0.5rem 0.75rem', marginBottom: '0.5rem', fontSize: '0.8rem'
+              }}>
+                <span style={{ color: '#93c5fd', fontWeight: 600 }}>🔵 Lige nu: </span>
+                <span style={{ color: '#dbeafe' }}>{kalender.igangvaerende[0].summary}</span>
+                {kalender.igangvaerende[0].lokation && (
+                  <span style={{ color: '#93c5fd' }}> · {kalender.igangvaerende[0].lokation}</span>
+                )}
+              </div>
+            )}
+            {kalender.kommende.length === 0 ? (
+              <div style={{ color: '#64748b', fontSize: '0.8rem' }}>Ingen kommende begivenheder</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                {kalender.kommende.map((b, i) => {
+                  const start = new Date(b.start);
+                  return (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#cbd5e1' }}>
+                        {b.summary}
+                        {b.lokation && <span style={{ color: '#64748b' }}> · {b.lokation}</span>}
+                      </span>
+                      <span style={{ color: '#64748b', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
+                        {b.heldag
+                          ? start.toLocaleDateString('da-DK', { weekday: 'short', day: 'numeric', month: 'short' })
+                          : start.toLocaleDateString('da-DK', { weekday: 'short', day: 'numeric', month: 'short' }) + ' ' + start.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
+        )}
+      </div>
+
+      {/* Ladeplan - hvilke timer systemet forventer at lade i */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>🔋 Ladeplan</div>
+        {ladeplan ? (
+          !ladeplan.bilTilsluttet ? (
+            <div style={{ color: '#64748b', fontSize: '0.85rem' }}>🚗 Bil ikke tilsluttet</div>
+          ) : ladeplan.manglerKwh <= 0 ? (
+            <div style={{ color: '#86efac', fontSize: '0.85rem' }}>✅ Bil allerede fuldt opladet ({ladeplan.carSoc}%)</div>
+          ) : ladeplan.timer.length === 0 ? (
+            <div style={{ color: '#fca5a5', fontSize: '0.85rem' }}>⚠️ Ingen billige timer fundet endnu (mangler {ladeplan.manglerKwh.toFixed(1)} kWh)</div>
+          ) : (
+            <div>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                {ladeplan.carSoc}% → 100% · mangler {ladeplan.manglerKwh.toFixed(1)} kWh · {ladeplan.timerNodvendige} planlagte timer
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {ladeplan.timer.map((t, i) => {
+                  const d = new Date(t.time);
+                  return (
+                    <div key={i} style={{
+                      background: '#14532d', border: '1px solid #22c55e', borderRadius: '8px',
+                      padding: '0.4rem 0.7rem', fontSize: '0.8rem'
+                    }}>
+                      <div style={{ color: '#86efac', fontWeight: 600 }}>
+                        {d.toLocaleDateString('da-DK', { weekday: 'short' })} {d.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <div style={{ color: '#4ade80', fontSize: '0.75rem' }}>{t.pris.toFixed(2)} kr/kWh</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
+        )}
+      </div>
+
       {/* Udendørs lys - carport og terrasse */}
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>💡 Udendørs lys</div>
         {udendorsLys ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="two-col-responsive">
             {(['lys_carport', 'lys_terrasse'] as const).map(sted => (
               <div key={sted} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -485,7 +622,7 @@ export default function Dashboard() {
 
       {/* Begivenheder — kompakt enkelt kort */}
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="two-col-responsive">
           <div>
             <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.4rem' }}>⏰ Næste begivenheder</div>
             {begivenheder.naeste.length > 0 ? begivenheder.naeste.map((b, i) => (

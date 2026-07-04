@@ -1,7 +1,22 @@
 {
     "lys_udendors_state": false,
     "lys_sol_tider": {
-        "sunrise": "4:46",
+        "sunrise": "4:47",
         "sunset": "22:07"
-    }
+    },
+    "morgen_joke_sidste_dag": "03/07/2026",
+    "morgen_joke_brugte": [
+        3
+    ],
+    "fakta_sidste_slot": "03/07/2026_22",
+    "fakta_brugte": [
+        8,
+        10,
+        37,
+        26,
+        32,
+        3,
+        11,
+        19
+    ]
 }

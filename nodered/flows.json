@@ -55,16 +55,16 @@
         "info": ""
     },
     {
-        "id": "udendors_lys_tab",
+        "id": "sol_lys_tab",
         "type": "tab",
-        "label": "Udendørs lys",
+        "label": "Udendørs lys - automatik",
         "disabled": false,
         "info": ""
     },
     {
-        "id": "sol_lys_tab",
+        "id": "udendors_lys_tab",
         "type": "tab",
-        "label": "Udendørs lys - automatik",
+        "label": "Udendørs lys",
         "disabled": false,
         "info": ""
     },
@@ -159,6 +159,22 @@
         "cleansession": true
     },
     {
+        "id": "2afa667286e92a4a",
+        "type": "ical-config",
+        "url": "https://outlook.office365.com/owa/calendar/31883be60115466082112c2fdbca21f9@welcon.dk/8348257a59e946ebbb7213ace57d227215977848938849320012/calendar.ics",
+        "caldav": "",
+        "caltype": "ical",
+        "name": "Arbejde",
+        "replacedates": false,
+        "usecache": true,
+        "username": "",
+        "password": "",
+        "experimental": false,
+        "calendar": "",
+        "pastWeeks": "0",
+        "futureWeeks": "4"
+    },
+    {
         "id": "8679af34499a293a",
         "type": "mqtt in",
         "z": "d15cda5bbc79a153",
@@ -193,6 +209,187 @@
         "statusType": "auto",
         "x": 460,
         "y": 300,
+        "wires": []
+    },
+    {
+        "id": "77fa3fdf0da2bf9d",
+        "type": "ical-upcoming",
+        "z": "d15cda5bbc79a153",
+        "confignode": "2afa667286e92a4a",
+        "timeout": "",
+        "timeoutUnits": "seconds",
+        "cron": "",
+        "name": "Arbejde",
+        "offsettype": "",
+        "offset": "",
+        "offsetUnitstype": "",
+        "offsetUnits": "",
+        "eventtypes": "",
+        "eventtypestype": "str",
+        "calendar": "",
+        "calendartype": "str",
+        "triggertype": "trigger",
+        "trigger": "always",
+        "timezone": "",
+        "timezonetype": "str",
+        "dateformat": "{ \"timeStyle\": \"short\", \"dateStyle\": \"short\" }",
+        "dateformattype": "json",
+        "language": "en",
+        "languagetype": "language",
+        "filterProperty": "summary",
+        "filterPropertytype": "filterProperty",
+        "filterOperator": "between",
+        "filterOperatortype": "filterOperator",
+        "filtertype": "str",
+        "filter2type": "str",
+        "filter2": "",
+        "filter": "",
+        "checkall": false,
+        "endpreview": "",
+        "endpreviewUnits": "",
+        "previewtype": "num",
+        "preview": "",
+        "previewUnitstype": "previewUnits",
+        "previewUnits": "days",
+        "pastviewtype": "num",
+        "pastview": "",
+        "pastviewUnits": "days",
+        "pastviewUnitstype": "pastviewUnits",
+        "x": 380,
+        "y": 140,
+        "wires": [
+            [
+                "21519323ec9057fd",
+                "kalender_behandl"
+            ]
+        ]
+    },
+    {
+        "id": "21519323ec9057fd",
+        "type": "debug",
+        "z": "d15cda5bbc79a153",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f718464e6133922e",
+        "type": "inject",
+        "z": "d15cda5bbc79a153",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 140,
+        "wires": [
+            [
+                "77fa3fdf0da2bf9d"
+            ]
+        ]
+    },
+    {
+        "id": "kalender_periodisk",
+        "type": "inject",
+        "z": "d15cda5bbc79a153",
+        "name": "Hvert 15. minut",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "900",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 2,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "77fa3fdf0da2bf9d"
+            ]
+        ]
+    },
+    {
+        "id": "kalender_behandl",
+        "type": "function",
+        "z": "d15cda5bbc79a153",
+        "name": "Behandl kalenderdata",
+        "func": "const events = msg.payload || [];\nconst now = new Date();\n\nconst igangvaerende = events.filter(e => {\n    const start = new Date(e.eventStart);\n    const end = new Date(e.eventEnd);\n    return start <= now && now <= end;\n});\n\nconst kommende = events\n    .filter(e => new Date(e.eventStart) > now)\n    .sort((a, b) => new Date(a.eventStart) - new Date(b.eventStart))\n    .slice(0, 5);\n\nconst format = (e) => ({\n    summary: e.summary,\n    start: e.eventStart,\n    slut: e.eventEnd,\n    heldag: e.allDay || false,\n    lokation: e.location || null\n});\n\nglobal.set('kalender_igangvaerende', igangvaerende.map(format));\nglobal.set('kalender_kommende', kommende.map(format));\nglobal.set('kalender_opdateret', now.toISOString());\n\nnode.status({\n    fill: igangvaerende.length > 0 ? 'blue' : 'grey',\n    shape: 'dot',\n    text: igangvaerende.length > 0 ? `I gang: ${igangvaerende[0].summary}` : `${kommende.length} kommende`\n});\n\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "kalender_api_in",
+        "type": "http in",
+        "z": "d15cda5bbc79a153",
+        "name": "Kalender API",
+        "url": "/api/kalender",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 320,
+        "wires": [
+            [
+                "kalender_api_handler"
+            ]
+        ]
+    },
+    {
+        "id": "kalender_api_handler",
+        "type": "function",
+        "z": "d15cda5bbc79a153",
+        "name": "Byg kalender-svar",
+        "func": "msg.payload = {\n    igangvaerende: global.get('kalender_igangvaerende') || [],\n    kommende: global.get('kalender_kommende') || [],\n    opdateret: global.get('kalender_opdateret') || null\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 420,
+        "y": 320,
+        "wires": [
+            [
+                "kalender_api_svar"
+            ]
+        ]
+    },
+    {
+        "id": "kalender_api_svar",
+        "type": "http response",
+        "z": "d15cda5bbc79a153",
+        "name": "Kalender svar",
+        "statusCode": "",
+        "headers": {},
+        "x": 650,
+        "y": 320,
         "wires": []
     },
     {
@@ -675,7 +872,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Beslutnings-motor",
-        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 4140; // 3-faset minimum: 6A x 690W\nconst DEADLINE_TIME = 6; // Bilen skal være klar kl. 06:00 hver dag\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Bilens behov\nconst carSoc = global.get('car_soc') || 50;\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst manglerKwh = Math.max(0, (TESLA_MAL - carSoc) * (TESLA_KWH / 100));\nconst timerNodvendige = Math.ceil(manglerKwh / TESLA_MAX_KW);\n\n// Beregn deadline-tidspunkt (næste forekomst af DEADLINE_TIME)\nconst deadline = new Date(nu);\ndeadline.setHours(DEADLINE_TIME, 0, 0, 0);\nif (deadline <= nu) {\n    deadline.setDate(deadline.getDate() + 1);\n}\n\n// Find alle kommende prispunkter FREM TIL deadline\nconst kommendeTilDeadline = priser.filter(p => {\n    const t = new Date(p.time);\n    return t > nu && t <= deadline;\n});\n\n// Vælg de N billigste timer ud af dem, hvor N = timerNodvendige (mindst 1 hvis bilen mangler noget)\nconst billigsteTimer = [...kommendeTilDeadline]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, Math.max(timerNodvendige, 1))\n    .map(p => new Date(p.time).getHours());\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tving Tesla hvis vi er inde i den udvalgte ladeperiode og tæt på deadline\n// (sikkerhedsnet hvis prislogikken af en grund ikke rammer rigtigt)\nconst timerTilDeadline = (deadline.getTime() - nu.getTime()) / (1000 * 60 * 60);\nconst maxKwhResterende = timerTilDeadline * TESLA_MAX_KW;\nlet tvingTesla = false;\nif (bilTilsluttet && maxKwhResterende < manglerKwh && manglerKwh > 0) {\n    tvingTesla = true;\n    node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}% før ${DEADLINE_TIME}:00! Mangler ${manglerKwh.toFixed(1)} kWh, kun ${maxKwhResterende.toFixed(1)} kWh tid tilbage`);\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Dyre aftentimer → Load first + afladning tilladt\nif (erDyrAften) {\n    growattMode = 'load_first';\n    dischargeMode = 'aktiv';\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) → Load first | Batteri + sol dækker huset`);\n    teslaLad = false;\n}\n\n// REGEL 2: Sol til stede → Load first\nelse if (erSol) {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`☀️ Sol (${sol}W) → Load first | Hus: ${loadPower}W | Overskud: ${solEfterHus}W`);\n}\n\n// REGEL 3: Billig time → Load first + lad Tesla mod deadline, uanset Growatt SOC\nelse if (zone === 'billig') {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n\n    if (bilTilsluttet && carSoc < 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 16;\n        beslutning.push(`🚗 Tesla lader mod deadline ${DEADLINE_TIME}:00 (${pris} kr/kWh, ${carSoc}% → 100%, mangler ${manglerKwh.toFixed(1)} kWh)`);\n    } else if (bilTilsluttet && carSoc >= 100) {\n        beslutning.push(`🚗 Tesla allerede fuldt opladet (${carSoc}%)`);\n    } else if (!bilTilsluttet) {\n        beslutning.push(`🚗 Tesla ikke tilsluttet - springer billig nat-ladning over`);\n    }\n}\n\n// REGEL 4: Normal time → Load first\nelse {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// REGEL 5: Sol overskud → lad Tesla (kun hvis Growatt 100%)\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 690); // 3-faset: 1A = 3x230V = 690W\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A 3-faset = 4140W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline er i fare - tæller over ALLE dage, ikke kun hverdage\nif (tvingTesla) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE ${DEADLINE_TIME}:00! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | Bil: ${bilTilsluttet ? carSoc + '% (mangler ' + manglerKwh.toFixed(1) + ' kWh, behov ' + timerNodvendige + 'h)' : 'ikke tilsluttet'} | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
+        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 4140; // 3-faset minimum: 6A x 690W\nconst DEADLINE_TIME = 6; // Bilen skal være klar kl. 06:00 hver dag\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Bilens behov\nconst carSoc = global.get('car_soc') || 50;\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst manglerKwh = Math.max(0, (TESLA_MAL - carSoc) * (TESLA_KWH / 100));\nconst timerNodvendige = Math.ceil(manglerKwh / TESLA_MAX_KW);\n\n// Beregn deadline-tidspunkt (næste forekomst af DEADLINE_TIME)\nconst deadline = new Date(nu);\ndeadline.setHours(DEADLINE_TIME, 0, 0, 0);\nif (deadline <= nu) {\n    deadline.setDate(deadline.getDate() + 1);\n}\n\n// Find prispunkter FRA START AF DENNE TIME og frem til deadline.\n// VIGTIGT: Bruger starten af nuværende time (ikke det præcise \"nu\"-tidspunkt),\n// ellers bliver den time vi rent faktisk står i altid ekskluderet som kandidat\n// (fordi timens tidsstempel, fx 22:00:00, altid ligger FØR \"nu\", fx 22:53) -\n// det betød at automatisk ladning ALDRIG kunne starte i den billigste time,\n// kun i timer der blev udpeget en time i forvejen.\nconst timeStart = new Date(nu);\ntimeStart.setMinutes(0, 0, 0);\n\nconst kommendeTilDeadline = priser.filter(p => {\n    const t = new Date(p.time);\n    return t >= timeStart && t <= deadline;\n});\n\n// Vælg de N billigste timer ud af dem, hvor N = timerNodvendige (mindst 1 hvis bilen mangler noget)\nconst billigsteTimerFuld = [...kommendeTilDeadline]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, Math.max(timerNodvendige, 1))\n    .sort((a, b) => new Date(a.time) - new Date(b.time));\n\nconst billigsteTimer = billigsteTimerFuld.map(p => new Date(p.time).getHours());\n\nglobal.set('ladeplan', {\n    timer: billigsteTimerFuld.map(p => ({ time: p.time, pris: p.pris })),\n    manglerKwh: manglerKwh,\n    timerNodvendige: timerNodvendige,\n    bilTilsluttet: bilTilsluttet,\n    carSoc: carSoc,\n    deadline: deadline.toISOString()\n});\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tving Tesla hvis vi er inde i den udvalgte ladeperiode og tæt på deadline\n// (sikkerhedsnet hvis prislogikken af en grund ikke rammer rigtigt)\nconst timerTilDeadline = (deadline.getTime() - nu.getTime()) / (1000 * 60 * 60);\nconst maxKwhResterende = timerTilDeadline * TESLA_MAX_KW;\nlet tvingTesla = false;\nif (bilTilsluttet && maxKwhResterende < manglerKwh && manglerKwh > 0) {\n    tvingTesla = true;\n    node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}% før ${DEADLINE_TIME}:00! Mangler ${manglerKwh.toFixed(1)} kWh, kun ${maxKwhResterende.toFixed(1)} kWh tid tilbage`);\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Dyre aftentimer → Load first + afladning tilladt\nif (erDyrAften) {\n    growattMode = 'load_first';\n    dischargeMode = 'aktiv';\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) → Load first | Batteri + sol dækker huset`);\n    teslaLad = false;\n}\n\n// REGEL 2: Sol til stede → Load first\nelse if (erSol) {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`☀️ Sol (${sol}W) → Load first | Hus: ${loadPower}W | Overskud: ${solEfterHus}W`);\n}\n\n// REGEL 3: Billig time → Load first + lad Tesla mod deadline, uanset Growatt SOC\nelse if (zone === 'billig') {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n\n    if (bilTilsluttet && carSoc < 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 16;\n        beslutning.push(`🚗 Tesla lader mod deadline ${DEADLINE_TIME}:00 (${pris} kr/kWh, ${carSoc}% → 100%, mangler ${manglerKwh.toFixed(1)} kWh)`);\n    } else if (bilTilsluttet && carSoc >= 100) {\n        beslutning.push(`🚗 Tesla allerede fuldt opladet (${carSoc}%)`);\n    } else if (!bilTilsluttet) {\n        beslutning.push(`🚗 Tesla ikke tilsluttet - springer billig nat-ladning over`);\n    }\n}\n\n// REGEL 4: Normal time → Load first\nelse {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// REGEL 5: Sol overskud → lad Tesla (kun hvis Growatt 100%)\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 690); // 3-faset: 1A = 3x230V = 690W\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A 3-faset = 4140W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline er i fare - tæller over ALLE dage, ikke kun hverdage\nif (tvingTesla) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE ${DEADLINE_TIME}:00! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | Bil: ${bilTilsluttet ? carSoc + '% (mangler ' + manglerKwh.toFixed(1) + ' kWh, behov ' + timerNodvendige + 'h)' : 'ikke tilsluttet'} | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -821,8 +1018,8 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Override handler",
-        "func": "const aktiv = msg.payload.aktiv;\nlet eventMsg = null;\n\nif (aktiv) {\n    global.set('override_aktiv', true);\n    global.set('override_slut', null);\n    node.warn(`🚨 OVERRIDE AKTIV - kører indtil manuelt stop!`);\n    msg.payload = { success: true, besked: 'Override aktiv indtil manuelt stop' };\n    eventMsg = { payload: { event: 'override', beskrivelse: '🚨 Manuel override aktiveret - Tesla tvinges til 16A' } };\n} else {\n    global.set('override_aktiv', false);\n    global.set('override_slut', null);\n    node.warn('✅ Override deaktiveret');\n    msg.payload = { success: true, besked: 'Override deaktiveret' };\n    eventMsg = { payload: { event: 'override', beskrivelse: '✅ Manuel override deaktiveret' } };\n}\n\nreturn [msg, eventMsg];",
-        "outputs": 2,
+        "func": "const aktiv = msg.payload.aktiv;\nlet eventMsg = null;\n\nif (aktiv) {\n    global.set('override_aktiv', true);\n    global.set('override_slut', null);\n    node.warn(`\\ud83d\\udea8 OVERRIDE AKTIV - k\\u00f8rer indtil manuelt stop!`);\n    msg.payload = { success: true, besked: 'Override aktiv indtil manuelt stop' };\n    eventMsg = { payload: { event: 'override', beskrivelse: '\\ud83d\\udea8 Manuel override aktiveret - Tesla tvinges til 16A' } };\n} else {\n    global.set('override_aktiv', false);\n    global.set('override_slut', null);\n    node.warn('\\u2705 Override deaktiveret');\n    msg.payload = { success: true, besked: 'Override deaktiveret' };\n    eventMsg = { payload: { event: 'override', beskrivelse: '\\u2705 Manuel override deaktiveret' } };\n}\n\n// Trigger Beslutnings-motor med det samme, uanset t\\u00e6nd/sluk,\n// i stedet for at vente p\\u00e5 n\\u00e6ste 5-minutters cyklus\nconst triggerMsg = { payload: {} };\n\nreturn [msg, eventMsg, triggerMsg];\n",
+        "outputs": 3,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
@@ -836,6 +1033,9 @@
             ],
             [
                 "gem-event"
+            ],
+            [
+                "beslutnings-motor"
             ]
         ]
     },
@@ -937,12 +1137,15 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Gem go-e status",
-        "func": "const car = msg.payload.car || 0;\nconst amp = msg.payload.amp || 0;\nconst wh = msg.payload.wh || 0;\n\nconst sidsteWh = global.get('go_e_wh_sidste') || 0;\nconst akkumuleret = global.get('car_charged_wh_akkumuleret') || 0;\n\nlet nytAkkumuleret = akkumuleret;\nif (wh >= sidsteWh) {\n    nytAkkumuleret += (wh - sidsteWh);\n} else {\n    nytAkkumuleret += wh;\n}\n\nglobal.set('go_e_wh_sidste', wh);\nglobal.set('car_charged_wh_akkumuleret', nytAkkumuleret);\nglobal.set('go_e_car', car);\nglobal.set('go_e_amp', amp);\nglobal.set('go_e_wh', wh);\n\nnode.warn(`go-e: car=${car} amp=${amp}A wh=${wh} akkumuleret_siden_sidste_opdatering=${nytAkkumuleret}Wh`);\nreturn null;",
-        "outputs": 1,
+        "func": "const car = msg.payload.car || 0;\nconst amp = msg.payload.amp || 0;\nconst wh = msg.payload.wh || 0;\n\nconst sidsteWh = global.get('go_e_wh_sidste') || 0;\nconst akkumuleret = global.get('car_charged_wh_akkumuleret') || 0;\n\nlet nytAkkumuleret = akkumuleret;\nif (wh >= sidsteWh) {\n    nytAkkumuleret += (wh - sidsteWh);\n} else {\n    nytAkkumuleret += wh;\n}\n\nglobal.set('go_e_wh_sidste', wh);\nglobal.set('car_charged_wh_akkumuleret', nytAkkumuleret);\nglobal.set('go_e_car', car);\nglobal.set('go_e_amp', amp);\nglobal.set('go_e_wh', wh);\n\nnode.warn(`go-e: car=${car} amp=${amp}A wh=${wh} akkumuleret_siden_sidste_opdatering=${nytAkkumuleret}Wh`);\n\n// Log tilsluttet/afbrudt som begivenhed, kun ved faktisk skift i status\nconst tilsluttet = car > 1;\nconst sidsteTilsluttet = global.get('sidste_bil_tilsluttet');\nlet eventMsg = null;\nif (sidsteTilsluttet !== tilsluttet) {\n    global.set('sidste_bil_tilsluttet', tilsluttet);\n    eventMsg = {\n        payload: {\n            event: 'bil_tilslutning',\n            beskrivelse: tilsluttet ? '🔌 Bil tilsluttet opladeren' : '🔌 Bil afbrudt fra opladeren'\n        }\n    };\n    node.warn(`📝 Event: Bil ${tilsluttet ? 'tilsluttet' : 'afbrudt'}`);\n}\n\nreturn [null, eventMsg];",
+        "outputs": 2,
         "x": 980,
         "y": 520,
         "wires": [
-            []
+            [],
+            [
+                "gem-event"
+            ]
         ]
     },
     {
@@ -1048,6 +1251,50 @@
                 "gem-event"
             ]
         ]
+    },
+    {
+        "id": "ladeplan-api",
+        "type": "http in",
+        "z": "d2c1c437030fcf3d",
+        "name": "Ladeplan API",
+        "url": "/api/ladeplan",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 500,
+        "wires": [
+            [
+                "ladeplan-handler"
+            ]
+        ]
+    },
+    {
+        "id": "ladeplan-handler",
+        "type": "function",
+        "z": "d2c1c437030fcf3d",
+        "name": "Byg ladeplan-svar",
+        "func": "msg.payload = global.get('ladeplan') || {\n    timer: [],\n    manglerKwh: 0,\n    timerNodvendige: 0,\n    bilTilsluttet: false,\n    carSoc: 0,\n    deadline: null\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 430,
+        "y": 500,
+        "wires": [
+            [
+                "ladeplan-svar"
+            ]
+        ]
+    },
+    {
+        "id": "ladeplan-svar",
+        "type": "http response",
+        "z": "d2c1c437030fcf3d",
+        "name": "Ladeplan svar",
+        "statusCode": "",
+        "headers": {},
+        "x": 650,
+        "y": 500,
+        "wires": []
     },
     {
         "id": "forbered-energi",
@@ -2087,7 +2334,7 @@
         "type": "function",
         "z": "ced8b8b6adb174ea",
         "name": "Parse Telegram besked",
-        "func": "const result = msg.payload;\n\n// Stop hvis ingen nye beskeder\nif (!result || !result.ok || !result.result || result.result.length === 0) {\n    return null;\n}\n\nfor (const update of result.result) {\n    const newOffset = update.update_id + 1;\n    const currentOffset = global.get('tg_offset') || 0;\n    if (newOffset > currentOffset) {\n        global.set('tg_offset', newOffset);\n    }\n\n    const text = update.message ? update.message.text : null;\n    const chatId = update.message ? update.message.chat.id : null;\n\n    if (!text) continue;\n\n    // Tjek om det er et tal (bil SOC)\n    const trimmed = text.trim().replace('%', '');\n    const soc = parseFloat(trimmed);\n\n    if (!isNaN(soc) && soc >= 0 && soc <= 100) {\n        msg.payload = { soc: Math.round(soc), chatId };\n        return msg;\n    }\n}\n\n// Ingen gyldige SOC-beskeder fundet\nreturn null;",
+        "func": "const result = msg.payload;\n\n// Stop hvis ingen nye beskeder\nif (!result || !result.ok || !result.result || result.result.length === 0) {\n    return null;\n}\n\nfor (const update of result.result) {\n    const newOffset = update.update_id + 1;\n    const currentOffset = global.get('tg_offset') || 0;\n    if (newOffset > currentOffset) {\n        global.set('tg_offset', newOffset);\n    }\n\n    // Fang live-position: den FØRSTE besked kommer som \"message\",\n    // men efterfølgende opdateringer under liveposition-deling kommer\n    // som \"edited_message\" - vi tjekker begge.\n    const lokationKilde = (update.message && update.message.location)\n        ? update.message.location\n        : (update.edited_message && update.edited_message.location)\n            ? update.edited_message.location\n            : null;\n\n    if (lokationKilde) {\n        global.set('bruger_position', {\n            lat: lokationKilde.latitude,\n            lon: lokationKilde.longitude,\n            opdateret: new Date().toISOString()\n        });\n        node.warn(`📍 Position modtaget: ${lokationKilde.latitude}, ${lokationKilde.longitude}`);\n    }\n\n    const text = update.message ? update.message.text : null;\n    const chatId = update.message ? update.message.chat.id : null;\n\n    if (!text) continue;\n\n    // Tjek om det er et tal (bil SOC)\n    const trimmed = text.trim().replace('%', '');\n    const soc = parseFloat(trimmed);\n\n    if (!isNaN(soc) && soc >= 0 && soc <= 100) {\n        msg.payload = { soc: Math.round(soc), chatId };\n        return msg;\n    }\n}\n\n// Ingen gyldige SOC-beskeder fundet\nreturn null;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2109,8 +2356,8 @@
         "name": "Gem SOC og svar",
         "func": "const soc = msg.payload.soc;\nconst chatId = msg.payload.chatId;\n\nglobal.set('car_soc', soc);\nglobal.set('car_soc_opdateret', new Date().toISOString());\nglobal.set('car_charged_wh_akkumuleret', 0);\n\nnode.warn('🚗 Telegram: Bil SOC opdateret til ' + soc + '%');\n\nconst priser = global.get('priser') || [];\nconst nuT = new Date();\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst DEADLINE_TIME = 6;\nconst manglerKwh = Math.max(0, (100 - soc) * (TESLA_KWH / 100));\nconst timerNodvendige = Math.ceil(manglerKwh / TESLA_MAX_KW);\n\nconst deadline = new Date(nuT);\ndeadline.setHours(DEADLINE_TIME, 0, 0, 0);\nif (deadline <= nuT) deadline.setDate(deadline.getDate() + 1);\n\nconst kommendeTilPlan = priser.filter(p => {\n    const t = new Date(p.time);\n    return t > nuT && t <= deadline;\n});\n\nconst billigstePlan = [...kommendeTilPlan]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, timerNodvendige)\n    .sort((a, b) => new Date(a.time) - new Date(b.time));\n\nlet planBeskrivelse;\nif (manglerKwh === 0) {\n    planBeskrivelse = `📋 Ladeplan: Bil allerede fuldt opladet (${soc}%)`;\n} else if (billigstePlan.length > 0) {\n    const startTid = new Date(billigstePlan[0].time).toLocaleTimeString('da-DK', {hour:'2-digit', minute:'2-digit'});\n    const slutTid = new Date(new Date(billigstePlan[billigstePlan.length-1].time).getTime() + 3600000).toLocaleTimeString('da-DK', {hour:'2-digit', minute:'2-digit'});\n    const snit = (billigstePlan.reduce((a,b) => a + b.pris, 0) / billigstePlan.length).toFixed(2);\n    planBeskrivelse = `📋 Ladeplan: ${startTid}-${slutTid} (${timerNodvendige}t, snit ${snit} kr/kWh) for at nå 100% fra ${soc}%`;\n} else {\n    planBeskrivelse = `📋 Ladeplan: Ingen billige timer fundet inden ${DEADLINE_TIME}:00 (mangler ${manglerKwh.toFixed(0)} kWh fra ${soc}%)`;\n}\n\nconst eventMsg = { payload: { event: 'tesla_plan', beskrivelse: planBeskrivelse } };\n\nconst token = '8716129124:AAHP0rg0PFAEISe0Ml_KyW-AfrykHt_kEKQ';\nconst svar = '✅ Bil SOC opdateret til ' + soc + '%\\n\\n' + planBeskrivelse;\n\nconst svarMsg = { url: 'https://api.telegram.org/bot' + token + '/sendMessage', payload: { chat_id: chatId, text: svar } };\nreturn [svarMsg, eventMsg];",
         "outputs": 2,
-        "x": 870,
-        "y": 60,
+        "x": 850,
+        "y": 40,
         "wires": [
             [
                 "tg_svar_api"
@@ -2128,8 +2375,8 @@
         "method": "POST",
         "ret": "obj",
         "url": "",
-        "x": 1120,
-        "y": 60,
+        "x": 1140,
+        "y": 20,
         "wires": [
             []
         ]
@@ -2143,9 +2390,125 @@
         "links": [
             "event-link-in"
         ],
-        "x": 690,
-        "y": 300,
+        "x": 565,
+        "y": 260,
         "wires": []
+    },
+    {
+        "id": "rejsetid_inject",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Hvert 5. minut",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "300",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 3,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 820,
+        "wires": [
+            [
+                "rejsetid_find"
+            ]
+        ]
+    },
+    {
+        "id": "rejsetid_find",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Find næste fysiske møde",
+        "func": "// Fast udgangspunkt: Granitvænget 13, 6640 Lunderskov (geokodet af TomTom)\nconst HJEM = { lat: 55.4830377, lon: 9.2743589 };\n\nconst kommende = global.get('kalender_kommende') || [];\nconst now = new Date();\n\nconst virtuelleOrd = ['teams', 'zoom', 'skype', 'meet.google', 'google meet', 'hangout'];\n\nconst fysiske = kommende.filter(e => {\n    if (!e.lokation) return false;\n    const lok = e.lokation.toLowerCase();\n    if (virtuelleOrd.some(v => lok.includes(v))) return false;\n    if (e.heldag) return false;\n    return new Date(e.start) > now;\n});\n\nif (fysiske.length === 0) {\n    node.status({fill: 'grey', shape: 'ring', text: 'ingen fysiske møder'});\n    return [null, null];\n}\n\nconst naeste = fysiske[0];\n\nconst alarmeret = flow.get('rejsetid_alarmeret') || [];\nif (alarmeret.includes(naeste.start)) {\n    node.status({fill: 'grey', shape: 'ring', text: 'allerede alarmeret'});\n    return [null, null];\n}\n\nconst position = HJEM;\n\nnode.status({fill: 'blue', shape: 'dot', text: `tjekker: ${naeste.summary}`});\n\nconst geoCache = flow.get('rejsetid_geo_cache') || {};\n\nif (geoCache[naeste.lokation]) {\n    const dest = geoCache[naeste.lokation];\n    const url = `https://api.tomtom.com/routing/1/calculateRoute/${position.lat},${position.lon}:${dest.lat},${dest.lon}/json?key=${env.get('TOMTOM_API_KEY')}&traffic=true`;\n    return [null, { naeste, position, destination: dest, url, method: 'GET' }];\n} else {\n    const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(naeste.lokation)}.json?key=${env.get('TOMTOM_API_KEY')}&limit=1`;\n    return [{ naeste, position, url, method: 'GET' }, null];\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 820,
+        "wires": [
+            [
+                "rejsetid_geocode"
+            ],
+            [
+                "rejsetid_routing"
+            ]
+        ]
+    },
+    {
+        "id": "rejsetid_geocode",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "TomTom Geocode",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "x": 660,
+        "y": 380,
+        "wires": [
+            [
+                "rejsetid_geo_parse"
+            ]
+        ]
+    },
+    {
+        "id": "rejsetid_geo_parse",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Parse geokodning",
+        "func": "const results = msg.payload && msg.payload.results;\nif (!results || results.length === 0) {\n    node.warn(`⚠️ Kunne ikke geokode adresse: ${msg.naeste.lokation}`);\n    return null;\n}\n\nconst pos = results[0].position;\nconst dest = { lat: pos.lat, lon: pos.lon };\n\nconst geoCache = flow.get('rejsetid_geo_cache') || {};\ngeoCache[msg.naeste.lokation] = dest;\nflow.set('rejsetid_geo_cache', geoCache);\n\nmsg.destination = dest;\nmsg.url = `https://api.tomtom.com/routing/1/calculateRoute/${msg.position.lat},${msg.position.lon}:${dest.lat},${dest.lon}/json?key=${env.get('TOMTOM_API_KEY')}&traffic=true`;\nmsg.method = 'GET';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 900,
+        "y": 380,
+        "wires": [
+            [
+                "rejsetid_routing"
+            ]
+        ]
+    },
+    {
+        "id": "rejsetid_routing",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "TomTom Routing",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "x": 900,
+        "y": 440,
+        "wires": [
+            [
+                "rejsetid_vurder"
+            ]
+        ]
+    },
+    {
+        "id": "rejsetid_vurder",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Vurder rejsetid",
+        "func": "const route = msg.payload && msg.payload.routes && msg.payload.routes[0];\nif (!route) {\n    node.warn('⚠️ Kunne ikke beregne rute til møde');\n    return null;\n}\n\nconst travelSeconds = route.summary.travelTimeInSeconds;\nconst naeste = msg.naeste;\nconst eventStart = new Date(naeste.start);\nconst bufferMin = 15;\n\nconst skalKoereSenest = new Date(eventStart.getTime() - travelSeconds * 1000 - bufferMin * 60000);\nconst now = new Date();\n\nconst koeretidMin = Math.round(travelSeconds / 60);\nnode.status({\n    fill: 'blue', shape: 'dot',\n    text: `${naeste.summary}: ${koeretidMin} min køretid, kør senest ${skalKoereSenest.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'})}`\n});\n\nif (now >= skalKoereSenest && now < eventStart) {\n    const alarmeret = flow.get('rejsetid_alarmeret') || [];\n    alarmeret.push(naeste.start);\n    flow.set('rejsetid_alarmeret', alarmeret);\n\n    const moedeTid = eventStart.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });\n\n    msg.payload = `🚗 <b>Tid til at køre!</b>\\n\\n${naeste.summary}\\nStarter kl. ${moedeTid}\\nKøretid (inkl. trafik): ${koeretidMin} min\\n📍 ${naeste.lokation}`;\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1140,
+        "y": 400,
+        "wires": [
+            [
+                "telegram-send"
+            ]
+        ]
     },
     {
         "id": "opvask_mqtt_in",
@@ -2170,7 +2533,7 @@
         "type": "function",
         "z": "opvask_tab",
         "name": "Byg InfluxDB line protocol",
-        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.apower === undefined) {\n    return null;\n}\n\nconst fields = [];\nfields.push(`apower=${data.apower}`);\nif (data.voltage !== undefined) fields.push(`voltage=${data.voltage}`);\nif (data.current !== undefined) fields.push(`current=${data.current}`);\nif (data.output !== undefined) fields.push(`output=${data.output ? 1 : 0}`);\nif (data.aenergy && data.aenergy.total !== undefined) fields.push(`aenergy_total=${data.aenergy.total}`);\nif (data.temperature && data.temperature.tC !== undefined) fields.push(`temp_c=${data.temperature.tC}`);\n\nconst line = `opvaskemaskine ${fields.join(',')}`;\n\nmsg.url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\nmsg.method = 'POST';\nmsg.headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nmsg.payload = line;\n\nreturn msg;",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.apower === undefined) {\n    return null;\n}\n\nconst fields = [];\nfields.push(`apower=${data.apower}`);\nif (data.voltage !== undefined) fields.push(`voltage=${data.voltage}`);\nif (data.current !== undefined) fields.push(`current=${data.current}`);\nif (data.output !== undefined) fields.push(`output=${data.output ? 1 : 0}`);\nif (data.aenergy && data.aenergy.total !== undefined) fields.push(`aenergy_total=${data.aenergy.total}`);\nif (data.temperature && data.temperature.tC !== undefined) fields.push(`temp_c=${data.temperature.tC}`);\n\nconst line = `opvaskemaskine ${fields.join(',')}`;\nconst headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nconst url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nconst msgs = [{ url, method: 'POST', headers, payload: line }];\n\nif (data.output !== undefined) {\n    const sidste = flow.get('opvask_sidste_output');\n    if (sidste !== data.output) {\n        flow.set('opvask_sidste_output', data.output);\n        const beskrivelse = data.output ? 'Opvaskemaskine tændt' : 'Opvaskemaskine slukket';\n        msgs.push({ url, method: 'POST', headers, payload: `events,type=opvaskemaskine value=\"${beskrivelse}\"` });\n    }\n}\n\nreturn [msgs];",
         "outputs": 1,
         "noerr": 0,
         "x": 480,
@@ -2200,60 +2563,6 @@
         ]
     },
     {
-        "id": "udendors_mqtt_in",
-        "type": "mqtt in",
-        "z": "udendors_lys_tab",
-        "name": "Zigbee udendørs lys status",
-        "topic": "zigbee2mqtt/+",
-        "qos": "0",
-        "datatype": "auto",
-        "broker": "opvask_mqtt_broker",
-        "nl": false,
-        "rap": false,
-        "inputs": 0,
-        "x": 220,
-        "y": 100,
-        "wires": [
-            [
-                "udendors_function"
-            ]
-        ]
-    },
-    {
-        "id": "udendors_function",
-        "type": "function",
-        "z": "udendors_lys_tab",
-        "name": "Byg InfluxDB line protocol",
-        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.state === undefined) {\n    return null;\n}\n\nconst sted = msg.topic.split('/')[1];\n\nconst fields = [];\nfields.push(`state=${data.state === 'ON' ? 1 : 0}`);\nif (data.brightness !== undefined) fields.push(`brightness=${data.brightness}`);\nif (data.linkquality !== undefined) fields.push(`linkquality=${data.linkquality}`);\n\nconst line = `udendors_lys,sted=${sted} ${fields.join(',')}`;\n\nmsg.url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\nmsg.method = 'POST';\nmsg.headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nmsg.payload = line;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 490,
-        "y": 100,
-        "wires": [
-            [
-                "udendors_http"
-            ]
-        ]
-    },
-    {
-        "id": "udendors_http",
-        "type": "http request",
-        "z": "udendors_lys_tab",
-        "name": "Skriv til InfluxDB",
-        "method": "use",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "x": 740,
-        "y": 100,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "sol_lys_inject",
         "type": "inject",
         "z": "sol_lys_tab",
@@ -2274,7 +2583,9 @@
         "y": 100,
         "wires": [
             [
-                "sol_lys_function"
+                "sol_lys_function",
+                "morgen_joke_check",
+                "vidste_du_check"
             ]
         ]
     },
@@ -2382,6 +2693,88 @@
         "proxy": "",
         "x": 710,
         "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "morgen_joke_check",
+        "type": "function",
+        "z": "sol_lys_tab",
+        "name": "Morgen-joke (05:00)",
+        "func": "const now = new Date();\nconst nowLocalStr = now.toLocaleString('en-GB', { timeZone: 'Europe/Copenhagen', hour: '2-digit', minute: '2-digit', hour12: false });\nconst [nh, nm] = nowLocalStr.split(':').map(Number);\nconst nowMin = nh * 60 + nm;\n\nconst MORGEN_TIME = 5 * 60 + 0;\n\nconst idagStr = now.toLocaleDateString('en-GB', { timeZone: 'Europe/Copenhagen' });\nconst sidsteDag = flow.get('morgen_joke_sidste_dag');\n\nif (nowMin < MORGEN_TIME || sidsteDag === idagStr) {\n    return null;\n}\n\nflow.set('morgen_joke_sidste_dag', idagStr);\n\nconst jokes = [\n    \"Hvorfor tog skelettet ikke til festen? Fordi han ikke havde nogen at ga med! 💀\",\n    \"Hvad sagde den ene vaeg til den anden? Vi modes lige pa hjornet! 🧱\",\n    \"Hvorfor kan cykler ikke sta selv? Fordi de er to-traette! 🚲\",\n    \"Hvad kalder man en ko uden ben? Hakkekod! 🐄\",\n    \"Hvorfor gik computeren til laegen? Den havde en virus! 💻\",\n    \"Hvad siger man til en snegl pa ryggen af en skildpadde? Wheee! 🐌\",\n    \"Hvorfor kan man ikke stole pa atomer? De finder pa alt! ⚛️\",\n    \"Hvad er en pirats yndlingsbogstav? Man skulle tro det var R, men det er faktisk havet! 🏴‍☠️\",\n    \"Hvorfor tog spogelset ikke elevatoren? Den foretrak at ga igennem etagerne! 👻\",\n    \"Hvad sagde 0 til 8? Flot baelte! 🔢\",\n    \"Hvorfor er der ingen der spiller kort i junglen? For mange geparder! 🐆\",\n    \"Hvad kalder man en fisk uden ojne? Fsk! 🐟\",\n    \"Hvorfor blev matematikbogen ked af det? Den havde for mange problemer! 📖\",\n    \"Hvad sagde den ene magnet til den anden? Jeg finder dig tiltraekkende! 🧲\",\n    \"Hvorfor tog bien til laegen? Den havde bi-svarme! 🐝\",\n    \"Hvad er en drages yndlingsmaltid? Grill! 🐉\",\n    \"Hvorfor er skeer altid glade? Fordi de rorer rundt i det hele! 🥄\",\n    \"Hvorfor kunne cyklen ikke sove? Den var for udmattet! 🚴\",\n    \"Hvad kalder man en dinosaur der aldrig giver op? En try-ceratops! 🦖\",\n    \"Hvorfor gik aeblet til laegen? Det folte sig ikke helt frisk! 🍎\",\n    \"Hvad sagde traeet til vinden? Blaes du bare, jeg staer fast! 🌳\",\n    \"Hvorfor tager kartofler aldrig ferie? De er allerede rodfaestede! 🥔\",\n    \"Hvad kalder man en sky der aldrig regner? En optimist! ☁️\",\n    \"Hvorfor kunne blyanten ikke skrive en vits? Den var lidt slov! ✏️\",\n    \"Hvad sagde havet til stranden? Ingenting, det bare vinkede! 🌊\",\n    \"Hvorfor er kaffe altid sa positiv? Den ser altid lyst pa morgenen! ☕\",\n    \"Hvad kalder man en ost der ikke er din egen? Nachos! 🧀\",\n    \"Hvorfor gik toasteren i terapi? Den havde svaert ved at slappe af! 🍞\",\n    \"Hvad sagde den ene stjerne til den anden? Du gor dagen lysere! ⭐\",\n    \"Hvorfor er ure altid traette om morgenen? De har gaet hele natten! ⏰\",\n    \"Hvad kalder man en hund der elsker matematik? En labra-tor! 🐕\",\n    \"Hvorfor tog blomsten en pause? Den havde brug for at rode sig! 🌸\",\n    \"Hvad sagde skyen til regnen? Held og lykke dernede! 🌧️\",\n    \"Hvorfor er broer altid sa afslappede? De haenger bare ud! 🌉\",\n    \"Hvad kalder man en kartoffel der er god til sport? En champion-chip! 🥇\",\n    \"Hvorfor smilede paraplyen? Den sa frem til lidt regn! ☂️\",\n    \"Hvad sagde den ene bolge til den anden? Jeg surfer lige forbi! 🏄\",\n    \"Hvorfor er trapper aldrig ensomme? De har altid trin at holde sig til! 🪜\",\n    \"Hvad kalder man en frosk der parkerer ulovligt? Tudse-bode! 🐸\",\n    \"Hvorfor tog stolen ferie? Den havde brug for at laene sig tilbage! 🪑\",\n    \"Hvad sagde vinduet til solen? Kom bare ind og skin! 🌞\",\n    \"Hvorfor er kalendere altid sa populaere? De har mange dage! 📅\",\n    \"Hvad kalder man en fugl der elsker vinter? En sne-spurv! 🐦\",\n    \"Hvorfor smiler solsikker altid? De folger bare det gode med solen! 🌻\",\n    \"Hvad sagde den ene sok til den anden? Vi er et godt par! 🧦\",\n    \"Hvorfor er postkasser aldrig kede af det? De far altid noget at glaede sig til! 📬\",\n    \"Hvad kalder man en robot der elsker musik? En dans-o-mat! 🤖\",\n    \"Hvorfor gik regnbuen til frisoren? Den ville have nye farver! 🌈\",\n    \"Hvad sagde den ene sky til bjerget? Du raekker virkelig hojt! ⛰️\",\n    \"Hvorfor er senge sa gode til at holde hemmeligheder? De er altid dyner! 🛏️\",\n    \"Hvad kalder man en kop der er god til at fortaelle historier? En kaffekop med indhold! ☕\",\n    \"Hvorfor smiler morgenen altid? Den ved der er en hel ny dag pa vej! 🌅\",\n    \"Hvad sagde den ene fugl til den anden om morgenen? Tidlig fugl fanger ormen, men jeg foretraekker morgenmad! 🐦\",\n    \"Hvorfor er dor-matter sa velkomne overalt? De byder altid folk indenfor! 🚪\",\n    \"Hvad kalder man en sky der er god til comedy? En stand-op-sky! ☁️\",\n    \"Hvorfor tog laderen ferie? Den havde brug for at lade op! 🔌\",\n    \"Hvad sagde den ene time til den anden? Tiden gar hurtigt nar man har det sjovt! ⏳\",\n    \"Hvorfor er glas altid sa positive? De ser altid det halve som fyldt! 🥛\",\n    \"Hvad kalder man en sol der elsker at danse? En solskins-diskofest! ☀️\",\n    \"Hvorfor er morgener bedst med kaffe? Fordi de starter med en varm omfavnelse! ☕\"\n];\n\nlet brugte = flow.get('morgen_joke_brugte') || [];\nlet tilgaengelige = jokes.map((_, i) => i).filter(i => !brugte.includes(i));\n\nif (tilgaengelige.length === 0) {\n    brugte = [];\n    tilgaengelige = jokes.map((_, i) => i);\n}\n\nconst valgtIndex = tilgaengelige[Math.floor(Math.random() * tilgaengelige.length)];\nbrugte.push(valgtIndex);\nflow.set('morgen_joke_brugte', brugte);\n\nconst valgt = jokes[valgtIndex];\nmsg.payload = `☀️ <b>God morgen, Christopher!</b>\\n\\n${valgt}\\n\\nHav en fantastisk dag! 🌞`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "vidste_du_check",
+        "type": "function",
+        "z": "sol_lys_tab",
+        "name": "Vidste du godt (08-22, hver 2t)",
+        "func": "const now = new Date();\nconst nowLocalStr = now.toLocaleString('en-GB', { timeZone: 'Europe/Copenhagen', hour: '2-digit', minute: '2-digit', hour12: false });\nconst [nh, nm] = nowLocalStr.split(':').map(Number);\n\nconst tilladteTimer = [8, 10, 12, 14, 16, 18, 20, 22];\nif (!tilladteTimer.includes(nh)) {\n    return null;\n}\n\nconst idagStr = now.toLocaleDateString('en-GB', { timeZone: 'Europe/Copenhagen' });\nconst slotKey = `${idagStr}_${nh}`;\nconst sidsteSlot = flow.get('fakta_sidste_slot');\nif (sidsteSlot === slotKey) {\n    return null;\n}\nflow.set('fakta_sidste_slot', slotKey);\n\nconst fakta = [\n    \"en flok flamingoer hedder en 'flamboyance' pa engelsk. 🦩\",\n    \"honning aldrig gar darligt - arkaeologer har fundet 3000 ar gammel honning i egyptiske grave, som stadig var spiselig. 🍯\",\n    \"en gruppe krager hedder en 'murder' pa engelsk, altsa et 'mord af krager'. 🐦‍⬛\",\n    \"octopusser har tre hjerter og blat blod. 🐙\",\n    \"bananer er tekniske baer, mens jordbaer slet ikke er det botanisk set. 🍌\",\n    \"Eiffeltarnet kan blive op til 15 cm hojere om sommeren pga. varmeudvidelse i metallet. 🗼\",\n    \"en dag pa Venus er laengere end et ar pa Venus. ♀️\",\n    \"sommerfugle smager med foddderne. 🦋\",\n    \"det tager lyset fra solen ca. 8 minutter og 20 sekunder at na Jorden. ☀️\",\n    \"hajer eksisterede for dinosaurerne - de har vaeret her i over 400 millioner ar. 🦈\",\n    \"din nese kan huske op til 50.000 forskellige dufte. 👃\",\n    \"Danmark er et af de aeldste kongeriger i verden, med en sammenhaengende kongeraekke tilbage til Gorm den Gamle. 👑\",\n    \"en gruppe pandaer hedder et 'embarrassment' pa engelsk. 🐼\",\n    \"isbjornes pels er faktisk gennemsigtig, ikke hvid - den reflekterer bare lyset. 🐻‍❄️\",\n    \"menneskehjertet slar omkring 100.000 gange om dagen. ❤️\",\n    \"verdens korteste krig varede kun 38 minutter, mellem England og Zanzibar i 1896. ⚔️\",\n    \"en snail kan sove i op til tre ar. 🐌\",\n    \"Mount Everest bliver ved med at vokse ca. 4 mm hvert ar. 🏔️\",\n    \"koldt vand fryser hurtigere end varmt vand under visse forhold - det kaldes Mpemba-effekten. 🧊\",\n    \"der findes flere stjerner i universet end sandkorn pa alle jordens strande tilsammen. ⭐\",\n    \"en gruppe flamingoer star ofte pa et ben for at spare kropsvarme. 🦩\",\n    \"kaenguruer kan ikke ga baglaens. 🦘\",\n    \"Danmark har flere svin end mennesker. 🐖\",\n    \"det menneskelige skelet fornyer sig helt hvert 10. ar. 🦴\",\n    \"en blaehval er sa stor at et menneske kunne krybe gennem dens hovedpulsare. 🐋\",\n    \"morgendug pa graes betyder ofte at det bliver en klar, tor dag. 🌱\",\n    \"Wien i Ostrig er kaldt musikkens hovedstad pga. sin lange historie med komponister som Mozart og Beethoven. 🎻\",\n    \"en gruppe ugler hedder et 'parliament' pa engelsk. 🦉\",\n    \"menneskets ojne kan skelne mellem cirka 10 millioner forskellige farver. 👁️\",\n    \"Sahara-orkenen var engang et frodigt, gront omrade for ca. 6000 ar siden. 🏜️\",\n    \"koral er faktisk levende dyr, ikke planter. 🪸\",\n    \"en dags soevn hjaelper hjernen med at rydde op i unodvendig information fra dagen. 🧠\",\n    \"Danmarks flag, Dannebrog, er et af verdens aeldste stadig brugte nationalflag. 🇩🇰\",\n    \"elefanter kan genkende sig selv i et spejl, hvilket kun fa dyrearter kan. 🐘\",\n    \"det tager cirka 8 ar for lyset fra den naermeste stjerne, Sirius, at na Jorden. ✨\",\n    \"en gruppe delfiner hedder en 'pod'. 🐬\",\n    \"regnbuer er faktisk hele cirkler, men vi ser normalt kun den overste halvdel fra jorden. 🌈\",\n    \"man kan ikke nyse med abne ojne - kroppen lukker dem automatisk. 👀\",\n    \"der findes flere levende organismer i en skefuld jord end mennesker pa hele planeten. 🌍\",\n    \"Great Barrier Reef er den storste levende struktur pa Jorden, synlig fra rummet. 🐠\"\n];\n\nlet brugte = flow.get('fakta_brugte') || [];\nlet tilgaengelige = fakta.map((_, i) => i).filter(i => !brugte.includes(i));\n\nif (tilgaengelige.length === 0) {\n    brugte = [];\n    tilgaengelige = fakta.map((_, i) => i);\n}\n\nconst valgtIndex = tilgaengelige[Math.floor(Math.random() * tilgaengelige.length)];\nbrugte.push(valgtIndex);\nflow.set('fakta_brugte', brugte);\n\nconst valgt = fakta[valgtIndex];\nmsg.payload = `🧠 <b>Vidste du...</b>\\n\\n...at ${valgt}`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "udendors_mqtt_in",
+        "type": "mqtt in",
+        "z": "udendors_lys_tab",
+        "name": "Zigbee udendørs lys status",
+        "topic": "zigbee2mqtt/+",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "opvask_mqtt_broker",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 220,
+        "y": 100,
+        "wires": [
+            [
+                "udendors_function"
+            ]
+        ]
+    },
+    {
+        "id": "udendors_function",
+        "type": "function",
+        "z": "udendors_lys_tab",
+        "name": "Byg InfluxDB line protocol",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.state === undefined) {\n    return null;\n}\n\nconst sted = msg.topic.split('/')[1];\nconst stedNavn = sted === 'lys_carport' ? 'Carport' : sted === 'lys_terrasse' ? 'Terrasse' : sted;\n\nconst stateVal = data.state === 'ON' ? 1 : 0;\nconst fields = [];\nfields.push(`state=${stateVal}`);\nif (data.brightness !== undefined) fields.push(`brightness=${data.brightness}`);\nif (data.linkquality !== undefined) fields.push(`linkquality=${data.linkquality}`);\n\nconst line = `udendors_lys,sted=${sted} ${fields.join(',')}`;\nconst headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nconst url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nconst msgs = [{ url, method: 'POST', headers, payload: line }];\n\nconst key = `lys_sidste_state_${sted}`;\nconst sidste = flow.get(key);\nif (sidste !== stateVal) {\n    flow.set(key, stateVal);\n    const beskrivelse = stateVal ? `${stedNavn} tændt` : `${stedNavn} slukket`;\n    msgs.push({ url, method: 'POST', headers, payload: `events,type=lys_automatik value=\"${beskrivelse}\"` });\n}\n\nreturn [msgs];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "udendors_http"
+            ]
+        ]
+    },
+    {
+        "id": "udendors_http",
+        "type": "http request",
+        "z": "udendors_lys_tab",
+        "name": "Skriv til InfluxDB",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "x": 740,
+        "y": 100,
         "wires": [
             []
         ]

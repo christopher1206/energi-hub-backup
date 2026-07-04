@@ -726,3 +726,16 @@ footer {
   color: #64748b;
   text-align: center;
 }
+
+/* Responsivt to-kolonne grid - bruges af kort der ellers har faste inline gridTemplateColumns */
+.two-col-responsive {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .two-col-responsive {
+    grid-template-columns: 1fr;
+  }
+}

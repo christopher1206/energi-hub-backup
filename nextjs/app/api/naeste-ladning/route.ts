@@ -15,11 +15,17 @@ export async function GET() {
     const kwhMangler = Math.max(0, (100 - bilSoc) * 0.60);
     const timerNodvendige = Math.ceil(kwhMangler / 11);
 
+    // VIGTIGT: brug starten af nuværende time, ikke det præcise "nu"-tidspunkt,
+    // ellers ekskluderes den time vi rent faktisk står i altid som mulighed
+    // (samme fejl som blev fundet og rettet i Beslutnings-motoren)
+    const timeStart = new Date(nu);
+    timeStart.setMinutes(0, 0, 0);
+
     // KUN timer UDEN for 16-21 (dyr nettarif)
     // Tillad: 21:00-06:00 (nat + sen aften)
     const tilladteLadeTimer = priser.filter((p: any) => {
       const t = new Date(p.time);
-      if (t <= nu) return false;
+      if (t < timeStart) return false;
       const h = t.getHours();
       // ALDRIG 16-21 uanset pris
       if (h >= 16 && h < 21) return false;

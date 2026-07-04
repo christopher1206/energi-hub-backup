@@ -10,6 +10,7 @@ services:
     environment:
       - TZ=Europe/Copenhagen
       - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - TOMTOM_API_KEY=${TOMTOM_API_KEY}
 
   influxdb:
     image: influxdb:2.7

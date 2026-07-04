@@ -1,0 +1,976 @@
+0 verbose cli /usr/local/bin/node /usr/src/node-red/node_modules/npm/bin/npm-cli.js
+1 info using npm@11.16.0
+2 info using node@v24.16.0
+3 silly config load:file:/usr/src/node-red/node_modules/npm/npmrc
+4 silly config load:file:/data/.npmrc
+5 silly config load:file:/usr/src/node-red/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install node-red-contrib-ical-events@2.2.5
+8 verbose argv "install" "--no-audit" "--no-update-notifier" "--no-fund" "--save" "--save-prefix" "~" "--omit" "dev" "--engine-strict" "--" "node-red-contrib-ical-events@2.2.5"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2026-07-03T05_53_40_965Z-
+10 verbose logfile /data/.npm/_logs/2026-07-03T05_53_40_965Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+13 silly idealTree buildDeps
+14 silly fetch manifest node-red-contrib-ical-events@2.2.5
+15 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-ical-events cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-ical-events 364ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-ical-events set size:undefined disposed:false
+18 silly placeDep ROOT node-red-contrib-ical-events@2.2.5 OK for: node-red-project@0.0.1 want: 2.2.5
+19 silly fetch manifest cron@^1.8.2
+20 silly packumentCache full:https://registry.npmjs.org/cron cache-miss
+21 silly fetch manifest cron-parser@^4.1.0
+22 silly packumentCache full:https://registry.npmjs.org/cron-parser cache-miss
+23 silly fetch manifest crypto-js@^4.1.1
+24 silly packumentCache full:https://registry.npmjs.org/crypto-js cache-miss
+25 silly fetch manifest kalender-events@^0.28.3
+26 silly packumentCache full:https://registry.npmjs.org/kalender-events cache-miss
+27 silly fetch manifest luxon@^2.0.2
+28 silly packumentCache full:https://registry.npmjs.org/luxon cache-miss
+29 silly fetch manifest moment@^2.29.1
+30 silly packumentCache full:https://registry.npmjs.org/moment cache-miss
+31 silly fetch manifest moment-timezone@^0.5.34
+32 silly packumentCache full:https://registry.npmjs.org/moment-timezone cache-miss
+33 silly fetch manifest node-cache@^5.1.2
+34 silly packumentCache full:https://registry.npmjs.org/node-cache cache-miss
+35 silly fetch manifest piscina@^4.1.0
+36 silly packumentCache full:https://registry.npmjs.org/piscina cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/cron 51ms (cache miss)
+38 silly packumentCache full:https://registry.npmjs.org/cron set size:undefined disposed:false
+39 http fetch GET 200 https://registry.npmjs.org/crypto-js 88ms (cache miss)
+40 silly packumentCache full:https://registry.npmjs.org/crypto-js set size:undefined disposed:false
+41 http fetch GET 200 https://registry.npmjs.org/piscina 89ms (cache miss)
+42 silly packumentCache full:https://registry.npmjs.org/piscina set size:undefined disposed:false
+43 http fetch GET 200 https://registry.npmjs.org/moment 94ms (cache miss)
+44 silly packumentCache full:https://registry.npmjs.org/moment set size:undefined disposed:false
+45 http fetch GET 200 https://registry.npmjs.org/cron-parser 99ms (cache miss)
+46 silly packumentCache full:https://registry.npmjs.org/cron-parser set size:undefined disposed:false
+47 http fetch GET 200 https://registry.npmjs.org/node-cache 254ms (cache miss)
+48 silly packumentCache full:https://registry.npmjs.org/node-cache set size:undefined disposed:false
+49 http fetch GET 200 https://registry.npmjs.org/moment-timezone 258ms (cache miss)
+50 silly packumentCache full:https://registry.npmjs.org/moment-timezone set size:undefined disposed:false
+51 http fetch GET 200 https://registry.npmjs.org/luxon 263ms (cache miss)
+52 silly packumentCache full:https://registry.npmjs.org/luxon set size:undefined disposed:false
+53 http fetch GET 200 https://registry.npmjs.org/kalender-events 293ms (cache miss)
+54 silly packumentCache full:https://registry.npmjs.org/kalender-events set size:undefined disposed:false
+55 silly placeDep ROOT cron@1.8.2 OK for: node-red-contrib-ical-events@2.2.5 want: ^1.8.2
+56 silly placeDep ROOT cron-parser@4.9.0 OK for: node-red-contrib-ical-events@2.2.5 want: ^4.1.0
+57 silly placeDep ROOT crypto-js@4.2.0 OK for: node-red-contrib-ical-events@2.2.5 want: ^4.1.1
+58 silly placeDep ROOT kalender-events@0.28.3 OK for: node-red-contrib-ical-events@2.2.5 want: ^0.28.3
+59 silly placeDep ROOT luxon@2.5.2 OK for: node-red-contrib-ical-events@2.2.5 want: ^2.0.2
+60 silly placeDep ROOT moment@2.30.1 OK for: node-red-contrib-ical-events@2.2.5 want: ^2.29.1
+61 silly placeDep ROOT moment-timezone@0.5.48 OK for: node-red-contrib-ical-events@2.2.5 want: ^0.5.34
+62 silly placeDep ROOT node-cache@5.1.2 OK for: node-red-contrib-ical-events@2.2.5 want: ^5.1.2
+63 silly placeDep ROOT piscina@4.9.3 OK for: node-red-contrib-ical-events@2.2.5 want: ^4.1.0
+64 silly fetch manifest moment-timezone@^0.5.x
+65 silly packumentCache full:https://registry.npmjs.org/moment-timezone cache-miss
+66 silly fetch manifest luxon@^3.2.1
+67 silly packumentCache full:https://registry.npmjs.org/luxon cache-miss
+68 silly fetch manifest @naimo84/dav@^1.9.0
+69 silly packumentCache full:https://registry.npmjs.org/@naimo84%2fdav cache-miss
+70 silly fetch manifest axios@^0.21.1
+71 silly packumentCache full:https://registry.npmjs.org/axios cache-miss
+72 silly fetch manifest cloneextend@0.0.3
+73 silly packumentCache full:https://registry.npmjs.org/cloneextend cache-miss
+74 silly fetch manifest debug@^4.1.1
+75 silly packumentCache full:https://registry.npmjs.org/debug cache-miss
+76 silly fetch manifest ical-expander@^2.1.0
+77 silly packumentCache full:https://registry.npmjs.org/ical-expander cache-miss
+78 silly fetch manifest node-cache@^5.1.0
+79 silly packumentCache full:https://registry.npmjs.org/node-cache cache-miss
+80 silly fetch manifest rrule@2.6.4
+81 silly packumentCache full:https://registry.npmjs.org/rrule cache-miss
+82 silly fetch manifest scrapegoat@1.0.1
+83 silly packumentCache full:https://registry.npmjs.org/scrapegoat cache-miss
+84 silly fetch manifest uuid@^8.3.2
+85 silly packumentCache full:https://registry.npmjs.org/uuid cache-miss
+86 http cache https://registry.npmjs.org/moment-timezone 13ms (cache hit)
+87 silly packumentCache full:https://registry.npmjs.org/moment-timezone set size:164337 disposed:false
+88 silly fetch manifest xml-js@^1.6.11
+89 silly packumentCache full:https://registry.npmjs.org/xml-js cache-miss
+90 http cache https://registry.npmjs.org/node-cache 14ms (cache hit)
+91 silly packumentCache full:https://registry.npmjs.org/node-cache set size:113081 disposed:false
+92 silly fetch manifest clone@2.x
+93 silly packumentCache full:https://registry.npmjs.org/clone cache-miss
+94 http cache https://registry.npmjs.org/luxon 19ms (cache hit)
+95 silly packumentCache full:https://registry.npmjs.org/luxon set size:511002 disposed:false
+96 silly fetch manifest @napi-rs/nice@^1.0.1
+97 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice cache-miss
+98 http fetch GET 200 https://registry.npmjs.org/debug 58ms (cache revalidated)
+99 silly packumentCache full:https://registry.npmjs.org/debug set size:195840 disposed:false
+100 http fetch GET 200 https://registry.npmjs.org/xml-js 52ms (cache miss)
+101 silly packumentCache full:https://registry.npmjs.org/xml-js set size:undefined disposed:false
+102 http fetch GET 200 https://registry.npmjs.org/uuid 68ms (cache revalidated)
+103 silly packumentCache full:https://registry.npmjs.org/uuid set size:256419 disposed:false
+104 http fetch GET 200 https://registry.npmjs.org/axios 76ms (cache miss)
+105 silly packumentCache full:https://registry.npmjs.org/axios set size:undefined disposed:false
+106 http fetch GET 200 https://registry.npmjs.org/clone 68ms (cache revalidated)
+107 silly packumentCache full:https://registry.npmjs.org/clone set size:82973 disposed:false
+108 http fetch GET 200 https://registry.npmjs.org/cloneextend 185ms (cache miss)
+109 silly packumentCache full:https://registry.npmjs.org/cloneextend set size:undefined disposed:false
+110 http fetch GET 200 https://registry.npmjs.org/ical-expander 212ms (cache miss)
+111 silly packumentCache full:https://registry.npmjs.org/ical-expander set size:undefined disposed:false
+112 http fetch GET 200 https://registry.npmjs.org/rrule 218ms (cache miss)
+113 silly packumentCache full:https://registry.npmjs.org/rrule set size:undefined disposed:false
+114 http fetch GET 200 https://registry.npmjs.org/scrapegoat 230ms (cache miss)
+115 silly packumentCache full:https://registry.npmjs.org/scrapegoat set size:undefined disposed:false
+116 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice 386ms (cache miss)
+117 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice set size:undefined disposed:false
+118 http fetch GET 200 https://registry.npmjs.org/@naimo84%2fdav 481ms (cache miss)
+119 silly packumentCache full:https://registry.npmjs.org/@naimo84%2fdav set size:undefined disposed:false
+120 silly placeDep node_modules/cron-parser luxon@3.7.2 OK for: cron-parser@4.9.0 want: ^3.2.1
+121 silly placeDep ROOT @naimo84/dav@1.9.0 OK for: kalender-events@0.28.3 want: ^1.9.0
+122 silly placeDep ROOT axios@0.21.4 OK for: kalender-events@0.28.3 want: ^0.21.1
+123 silly placeDep ROOT cloneextend@0.0.3 OK for: kalender-events@0.28.3 want: 0.0.3
+124 silly placeDep node_modules/kalender-events debug@4.4.3 OK for: kalender-events@0.28.3 want: ^4.1.1
+125 silly placeDep ROOT ical-expander@2.1.0 OK for: kalender-events@0.28.3 want: ^2.1.0
+126 silly placeDep ROOT rrule@2.6.4 OK for: kalender-events@0.28.3 want: 2.6.4
+127 silly placeDep ROOT scrapegoat@1.0.1 OK for: kalender-events@0.28.3 want: 1.0.1
+128 silly placeDep node_modules/kalender-events uuid@8.3.2 OK for: kalender-events@0.28.3 want: ^8.3.2
+129 silly placeDep ROOT xml-js@1.6.11 OK for: kalender-events@0.28.3 want: ^1.6.11
+130 silly fetch manifest @babel/polyfill@^7.0.0
+131 silly packumentCache full:https://registry.npmjs.org/@babel%2fpolyfill cache-miss
+132 silly fetch manifest co@^4.6.0
+133 silly packumentCache full:https://registry.npmjs.org/co cache-miss
+134 silly fetch manifest xmldom@^0.1.27
+135 silly packumentCache full:https://registry.npmjs.org/xmldom cache-miss
+136 silly fetch manifest xmlhttprequest@^1.8.0
+137 silly packumentCache full:https://registry.npmjs.org/xmlhttprequest cache-miss
+138 silly fetch manifest follow-redirects@^1.14.0
+139 silly packumentCache full:https://registry.npmjs.org/follow-redirects cache-miss
+140 silly fetch manifest ms@^2.1.3
+141 silly packumentCache full:https://registry.npmjs.org/ms cache-miss
+142 silly fetch manifest ical.js@1.2.2
+143 silly packumentCache full:https://registry.npmjs.org/ical.js cache-miss
+144 silly fetch manifest tslib@^1.10.0
+145 silly packumentCache full:https://registry.npmjs.org/tslib cache-miss
+146 silly fetch manifest luxon@^1.21.3
+147 silly packumentCache full:https://registry.npmjs.org/luxon cache-hit
+148 silly fetch manifest ejs@^2.3.1
+149 silly packumentCache full:https://registry.npmjs.org/ejs cache-miss
+150 silly fetch manifest xml2js@^0.4.5
+151 silly packumentCache full:https://registry.npmjs.org/xml2js cache-miss
+152 silly fetch manifest ical.js@^1.2.2
+153 silly packumentCache full:https://registry.npmjs.org/ical.js cache-miss
+154 http fetch GET 200 https://registry.npmjs.org/xmlhttprequest 26ms (cache miss)
+155 silly packumentCache full:https://registry.npmjs.org/xmlhttprequest set size:undefined disposed:false
+156 silly fetch manifest sax@^1.2.4
+157 silly packumentCache full:https://registry.npmjs.org/sax cache-miss
+158 http fetch GET 200 https://registry.npmjs.org/ms 37ms (cache revalidated)
+159 silly packumentCache full:https://registry.npmjs.org/ms set size:92208 disposed:false
+160 http fetch GET 200 https://registry.npmjs.org/tslib 39ms (cache revalidated)
+161 silly packumentCache full:https://registry.npmjs.org/tslib set size:108843 disposed:false
+162 http fetch GET 200 https://registry.npmjs.org/follow-redirects 45ms (cache miss)
+163 silly packumentCache full:https://registry.npmjs.org/follow-redirects set size:undefined disposed:false
+164 http fetch GET 200 https://registry.npmjs.org/ejs 45ms (cache miss)
+165 silly packumentCache full:https://registry.npmjs.org/ejs set size:undefined disposed:false
+166 http fetch GET 200 https://registry.npmjs.org/xml2js 45ms (cache miss)
+167 silly packumentCache full:https://registry.npmjs.org/xml2js set size:undefined disposed:false
+168 http fetch GET 200 https://registry.npmjs.org/sax 25ms (cache miss)
+169 silly packumentCache full:https://registry.npmjs.org/sax set size:undefined disposed:false
+170 http fetch GET 200 https://registry.npmjs.org/co 190ms (cache miss)
+171 silly packumentCache full:https://registry.npmjs.org/co set size:undefined disposed:false
+172 http fetch GET 200 https://registry.npmjs.org/xmldom 191ms (cache miss)
+173 silly packumentCache full:https://registry.npmjs.org/xmldom set size:undefined disposed:false
+174 http fetch GET 200 https://registry.npmjs.org/@babel%2fpolyfill 194ms (cache miss)
+175 silly packumentCache full:https://registry.npmjs.org/@babel%2fpolyfill set size:undefined disposed:false
+176 http fetch GET 200 https://registry.npmjs.org/ical.js 209ms (cache miss)
+177 silly packumentCache full:https://registry.npmjs.org/ical.js set size:undefined disposed:false
+178 http fetch GET 200 https://registry.npmjs.org/ical.js 217ms (cache miss)
+179 silly packumentCache full:https://registry.npmjs.org/ical.js set size:undefined disposed:false
+180 silly placeDep ROOT @babel/polyfill@7.12.1 OK for: @naimo84/dav@1.9.0 want: ^7.0.0
+181 silly placeDep ROOT co@4.6.0 OK for: @naimo84/dav@1.9.0 want: ^4.6.0
+182 silly placeDep node_modules/@naimo84/dav debug@4.4.3 OK for: @naimo84/dav@1.9.0 want: ^4.1.1
+183 silly placeDep ROOT xmldom@0.1.31 OK for: @naimo84/dav@1.9.0 want: ^0.1.27
+184 silly placeDep ROOT xmlhttprequest@1.8.0 OK for: @naimo84/dav@1.9.0 want: ^1.8.0
+185 silly fetch manifest core-js@^2.6.5
+186 silly packumentCache full:https://registry.npmjs.org/core-js cache-miss
+187 silly fetch manifest regenerator-runtime@^0.13.4
+188 silly packumentCache full:https://registry.npmjs.org/regenerator-runtime cache-miss
+189 http fetch GET 200 https://registry.npmjs.org/core-js 66ms (cache miss)
+190 silly packumentCache full:https://registry.npmjs.org/core-js set size:undefined disposed:false
+191 http fetch GET 200 https://registry.npmjs.org/regenerator-runtime 188ms (cache miss)
+192 silly packumentCache full:https://registry.npmjs.org/regenerator-runtime set size:undefined disposed:false
+193 silly placeDep ROOT core-js@2.6.12 OK for: @babel/polyfill@7.12.1 want: ^2.6.5
+194 silly placeDep ROOT regenerator-runtime@0.13.11 OK for: @babel/polyfill@7.12.1 want: ^0.13.4
+195 silly placeDep ROOT follow-redirects@1.16.0 OK for: axios@0.21.4 want: ^1.14.0
+196 silly placeDep ROOT ical.js@1.2.2 OK for: ical-expander@2.1.0 want: 1.2.2
+197 silly placeDep node_modules/node-cache clone@2.1.2 OK for: node-cache@5.1.2 want: 2.x
+198 silly placeDep ROOT @napi-rs/nice@1.1.1 OK for: piscina@4.9.3 want: ^1.0.1
+199 silly fetch manifest @napi-rs/nice-darwin-x64@1.1.1
+200 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-darwin-x64 cache-miss
+201 silly fetch manifest @napi-rs/nice-darwin-arm64@1.1.1
+202 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-darwin-arm64 cache-miss
+203 silly fetch manifest @napi-rs/nice-linux-x64-gnu@1.1.1
+204 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-x64-gnu cache-miss
+205 silly fetch manifest @napi-rs/nice-win32-x64-msvc@1.1.1
+206 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-win32-x64-msvc cache-miss
+207 silly fetch manifest @napi-rs/nice-linux-x64-musl@1.1.1
+208 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-x64-musl cache-miss
+209 silly fetch manifest @napi-rs/nice-linux-arm64-gnu@1.1.1
+210 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-arm64-gnu cache-miss
+211 silly fetch manifest @napi-rs/nice-win32-ia32-msvc@1.1.1
+212 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-win32-ia32-msvc cache-miss
+213 silly fetch manifest @napi-rs/nice-linux-arm-gnueabihf@1.1.1
+214 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-arm-gnueabihf cache-miss
+215 silly fetch manifest @napi-rs/nice-android-arm64@1.1.1
+216 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-android-arm64 cache-miss
+217 silly fetch manifest @napi-rs/nice-freebsd-x64@1.1.1
+218 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-freebsd-x64 cache-miss
+219 silly fetch manifest @napi-rs/nice-linux-arm64-musl@1.1.1
+220 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-arm64-musl cache-miss
+221 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-arm64-gnu 74ms (cache miss)
+222 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-arm64-gnu set size:undefined disposed:false
+223 silly fetch manifest @napi-rs/nice-android-arm-eabi@1.1.1
+224 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-android-arm-eabi cache-miss
+225 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-freebsd-x64 373ms (cache miss)
+226 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-freebsd-x64 set size:undefined disposed:false
+227 silly fetch manifest @napi-rs/nice-win32-arm64-msvc@1.1.1
+228 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-win32-arm64-msvc cache-miss
+229 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-darwin-arm64 394ms (cache miss)
+230 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-darwin-arm64 set size:undefined disposed:false
+231 silly fetch manifest @napi-rs/nice-linux-ppc64-gnu@1.1.1
+232 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-ppc64-gnu cache-miss
+233 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-android-arm64 394ms (cache miss)
+234 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-android-arm64 set size:undefined disposed:false
+235 silly fetch manifest @napi-rs/nice-linux-s390x-gnu@1.1.1
+236 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-s390x-gnu cache-miss
+237 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-win32-ia32-msvc 397ms (cache miss)
+238 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-win32-ia32-msvc set size:undefined disposed:false
+239 silly fetch manifest @napi-rs/nice-linux-riscv64-gnu@1.1.1
+240 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-riscv64-gnu cache-miss
+241 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-x64-gnu 400ms (cache miss)
+242 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-x64-gnu set size:undefined disposed:false
+243 silly fetch manifest @napi-rs/nice-openharmony-arm64@1.1.1
+244 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-openharmony-arm64 cache-miss
+245 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-arm64-musl 399ms (cache miss)
+246 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-arm64-musl set size:undefined disposed:false
+247 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-win32-x64-msvc 402ms (cache miss)
+248 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-win32-x64-msvc set size:undefined disposed:false
+249 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-x64-musl 405ms (cache miss)
+250 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-x64-musl set size:undefined disposed:false
+251 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-darwin-x64 407ms (cache miss)
+252 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-darwin-x64 set size:undefined disposed:false
+253 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-arm-gnueabihf 439ms (cache miss)
+254 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-arm-gnueabihf set size:undefined disposed:false
+255 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-s390x-gnu 50ms (cache miss)
+256 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-s390x-gnu set size:undefined disposed:false
+257 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-android-arm-eabi 411ms (cache miss)
+258 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-android-arm-eabi set size:undefined disposed:false
+259 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-openharmony-arm64 222ms (cache miss)
+260 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-openharmony-arm64 set size:undefined disposed:false
+261 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-ppc64-gnu 389ms (cache miss)
+262 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-ppc64-gnu set size:undefined disposed:false
+263 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-win32-arm64-msvc 419ms (cache miss)
+264 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-win32-arm64-msvc set size:undefined disposed:false
+265 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fnice-linux-riscv64-gnu 425ms (cache miss)
+266 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fnice-linux-riscv64-gnu set size:undefined disposed:false
+267 silly placeDep ROOT @napi-rs/nice-android-arm-eabi@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+268 silly placeDep ROOT @napi-rs/nice-android-arm64@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+269 silly placeDep ROOT @napi-rs/nice-darwin-arm64@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+270 silly placeDep ROOT @napi-rs/nice-darwin-x64@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+271 silly placeDep ROOT @napi-rs/nice-freebsd-x64@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+272 silly placeDep ROOT @napi-rs/nice-linux-arm-gnueabihf@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+273 silly placeDep ROOT @napi-rs/nice-linux-arm64-gnu@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+274 silly placeDep ROOT @napi-rs/nice-linux-arm64-musl@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+275 silly placeDep ROOT @napi-rs/nice-linux-ppc64-gnu@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+276 silly placeDep ROOT @napi-rs/nice-linux-riscv64-gnu@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+277 silly placeDep ROOT @napi-rs/nice-linux-s390x-gnu@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+278 silly placeDep ROOT @napi-rs/nice-linux-x64-gnu@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+279 silly placeDep ROOT @napi-rs/nice-linux-x64-musl@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+280 silly placeDep ROOT @napi-rs/nice-openharmony-arm64@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+281 silly placeDep ROOT @napi-rs/nice-win32-arm64-msvc@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+282 silly placeDep ROOT @napi-rs/nice-win32-ia32-msvc@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+283 silly placeDep ROOT @napi-rs/nice-win32-x64-msvc@1.1.1 OK for: @napi-rs/nice@1.1.1 want: 1.1.1
+284 silly placeDep node_modules/rrule luxon@1.28.1 OK for: rrule@2.6.4 want: ^1.21.3
+285 silly placeDep node_modules/rrule tslib@1.14.1 OK for: rrule@2.6.4 want: ^1.10.0
+286 silly placeDep ROOT ejs@2.7.4 OK for: scrapegoat@1.0.1 want: ^2.3.1
+287 silly placeDep ROOT xml2js@0.4.23 OK for: scrapegoat@1.0.1 want: ^0.4.5
+288 silly fetch manifest sax@>=0.6.0
+289 silly packumentCache full:https://registry.npmjs.org/sax cache-miss
+290 silly fetch manifest xmlbuilder@~11.0.0
+291 silly packumentCache full:https://registry.npmjs.org/xmlbuilder cache-miss
+292 http cache https://registry.npmjs.org/sax 4ms (cache hit)
+293 silly packumentCache full:https://registry.npmjs.org/sax set size:91199 disposed:false
+294 http fetch GET 200 https://registry.npmjs.org/xmlbuilder 25ms (cache miss)
+295 silly packumentCache full:https://registry.npmjs.org/xmlbuilder set size:undefined disposed:false
+296 silly placeDep ROOT sax@1.6.0 OK for: xml-js@1.6.11 want: ^1.2.4
+297 silly placeDep ROOT xmlbuilder@11.0.1 OK for: xml2js@0.4.23 want: ~11.0.0
+298 silly placeDep node_modules/@naimo84/dav ms@2.1.3 OK for: debug@4.4.3 want: ^2.1.3
+299 silly placeDep node_modules/kalender-events ms@2.1.3 OK for: debug@4.4.3 want: ^2.1.3
+300 silly reify moves {}
+301 http cache xmlbuilder@https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz 0ms (cache hit)
+302 http cache sax@https://registry.npmjs.org/sax/-/sax-1.6.0.tgz 0ms (cache hit)
+303 http cache xml2js@https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz 0ms (cache hit)
+304 http cache @napi-rs/nice-linux-x64-musl@https://registry.npmjs.org/@napi-rs/nice-linux-x64-musl/-/nice-linux-x64-musl-1.1.1.tgz 0ms (cache hit)
+305 http cache ejs@https://registry.npmjs.org/ejs/-/ejs-2.7.4.tgz 0ms (cache hit)
+306 http cache @napi-rs/nice@https://registry.npmjs.org/@napi-rs/nice/-/nice-1.1.1.tgz 0ms (cache hit)
+307 http cache ical.js@https://registry.npmjs.org/ical.js/-/ical.js-1.2.2.tgz 0ms (cache hit)
+308 http cache follow-redirects@https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.0.tgz 0ms (cache hit)
+309 http cache regenerator-runtime@https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz 0ms (cache hit)
+310 http cache core-js@https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz 0ms (cache hit)
+311 http cache xmlhttprequest@https://registry.npmjs.org/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz 0ms (cache hit)
+312 http cache xmldom@https://registry.npmjs.org/xmldom/-/xmldom-0.1.31.tgz 0ms (cache hit)
+313 http cache co@https://registry.npmjs.org/co/-/co-4.6.0.tgz 0ms (cache hit)
+314 http cache xml-js@https://registry.npmjs.org/xml-js/-/xml-js-1.6.11.tgz 0ms (cache hit)
+315 http cache @babel/polyfill@https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.12.1.tgz 0ms (cache hit)
+316 http cache scrapegoat@https://registry.npmjs.org/scrapegoat/-/scrapegoat-1.0.1.tgz 0ms (cache hit)
+317 http cache rrule@https://registry.npmjs.org/rrule/-/rrule-2.6.4.tgz 0ms (cache hit)
+318 http cache cloneextend@https://registry.npmjs.org/cloneextend/-/cloneextend-0.0.3.tgz 0ms (cache hit)
+319 http cache ical-expander@https://registry.npmjs.org/ical-expander/-/ical-expander-2.1.0.tgz 0ms (cache hit)
+320 http cache axios@https://registry.npmjs.org/axios/-/axios-0.21.4.tgz 0ms (cache hit)
+321 http cache @naimo84/dav@https://registry.npmjs.org/@naimo84/dav/-/dav-1.9.0.tgz 0ms (cache hit)
+322 http cache piscina@https://registry.npmjs.org/piscina/-/piscina-4.9.3.tgz 0ms (cache hit)
+323 http cache node-cache@https://registry.npmjs.org/node-cache/-/node-cache-5.1.2.tgz 0ms (cache hit)
+324 http cache moment-timezone@https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.48.tgz 0ms (cache hit)
+325 http cache luxon@https://registry.npmjs.org/luxon/-/luxon-2.5.2.tgz 0ms (cache hit)
+326 http cache moment@https://registry.npmjs.org/moment/-/moment-2.30.1.tgz 0ms (cache hit)
+327 http cache kalender-events@https://registry.npmjs.org/kalender-events/-/kalender-events-0.28.3.tgz 0ms (cache hit)
+328 http cache crypto-js@https://registry.npmjs.org/crypto-js/-/crypto-js-4.2.0.tgz 0ms (cache hit)
+329 http cache cron@https://registry.npmjs.org/cron/-/cron-1.8.2.tgz 0ms (cache hit)
+330 http cache cron-parser@https://registry.npmjs.org/cron-parser/-/cron-parser-4.9.0.tgz 0ms (cache hit)
+331 http cache node-red-contrib-ical-events@https://registry.npmjs.org/node-red-contrib-ical-events/-/node-red-contrib-ical-events-2.2.5.tgz 0ms (cache hit)
+332 http cache zmq@https://registry.npmjs.org/zmq/-/zmq-2.15.3.tgz 0ms (cache hit)
+333 http cache which-typed-array@https://registry.npmjs.org/which-typed-array/-/which-typed-array-1.1.22.tgz 0ms (cache hit)
+334 http cache which@https://registry.npmjs.org/which/-/which-1.3.1.tgz 0ms (cache hit)
+335 http cache verror@https://registry.npmjs.org/verror/-/verror-1.10.0.tgz 0ms (cache hit)
+336 http cache url-template@https://registry.npmjs.org/url-template/-/url-template-2.0.8.tgz 0ms (cache hit)
+337 http cache util-extend@https://registry.npmjs.org/util-extend/-/util-extend-1.0.3.tgz 0ms (cache hit)
+338 http cache uri-js@https://registry.npmjs.org/uri-js/-/uri-js-4.4.1.tgz 0ms (cache hit)
+339 http cache unzip-response@https://registry.npmjs.org/unzip-response/-/unzip-response-1.0.2.tgz 0ms (cache hit)
+340 http cache typed-array-buffer@https://registry.npmjs.org/typed-array-buffer/-/typed-array-buffer-1.0.3.tgz 0ms (cache hit)
+341 http cache type@https://registry.npmjs.org/type/-/type-2.7.3.tgz 0ms (cache hit)
+342 http cache tweetnacl@https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.5.tgz 0ms (cache hit)
+343 http cache tunnel-agent@https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.6.0.tgz 0ms (cache hit)
+344 http cache tough-cookie@https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.5.0.tgz 0ms (cache hit)
+345 http cache to-buffer@https://registry.npmjs.org/to-buffer/-/to-buffer-1.2.2.tgz 0ms (cache hit)
+346 http cache tar-stream@https://registry.npmjs.org/tar-stream/-/tar-stream-1.6.2.tgz 0ms (cache hit)
+347 http cache tar-fs@https://registry.npmjs.org/tar-fs/-/tar-fs-1.16.6.tgz 0ms (cache hit)
+348 http cache tar@https://registry.npmjs.org/tar/-/tar-2.2.2.tgz 0ms (cache hit)
+349 http cache sshpk@https://registry.npmjs.org/sshpk/-/sshpk-1.18.0.tgz 0ms (cache hit)
+350 http cache strip-json-comments@https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-2.0.1.tgz 0ms (cache hit)
+351 http cache snappy@https://registry.npmjs.org/snappy/-/snappy-5.0.5.tgz 0ms (cache hit)
+352 http cache simple-mime@https://registry.npmjs.org/simple-mime/-/simple-mime-0.1.0.tgz 0ms (cache hit)
+353 http cache simple-get@https://registry.npmjs.org/simple-get/-/simple-get-1.4.3.tgz 0ms (cache hit)
+354 http cache safer-buffer@https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz 0ms (cache hit)
+355 http cache rimraf@https://registry.npmjs.org/rimraf/-/rimraf-2.7.1.tgz 0ms (cache hit)
+356 http cache request@https://registry.npmjs.org/request/-/request-2.88.2.tgz 0ms (cache hit)
+357 http cache rc@https://registry.npmjs.org/rc/-/rc-1.2.8.tgz 0ms (cache hit)
+358 http cache qs@https://registry.npmjs.org/qs/-/qs-6.5.5.tgz 0ms (cache hit)
+359 http cache psl@https://registry.npmjs.org/psl/-/psl-1.15.0.tgz 0ms (cache hit)
+360 http cache prebuild@https://registry.npmjs.org/prebuild/-/prebuild-4.5.0.tgz 0ms (cache hit)
+361 http cache possible-typed-array-names@https://registry.npmjs.org/possible-typed-array-names/-/possible-typed-array-names-1.1.0.tgz 0ms (cache hit)
+362 http cache performance-now@https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz 0ms (cache hit)
+363 http cache path-array@https://registry.npmjs.org/path-array/-/path-array-1.0.1.tgz 0ms (cache hit)
+364 http cache osenv@https://registry.npmjs.org/osenv/-/osenv-0.1.5.tgz 0ms (cache hit)
+365 http cache os-tmpdir@https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz 0ms (cache hit)
+366 http cache os-homedir@https://registry.npmjs.org/os-homedir/-/os-homedir-1.0.2.tgz 0ms (cache hit)
+367 http cache oauth-sign@https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.9.0.tgz 0ms (cache hit)
+368 http cache npmlog@https://registry.npmjs.org/npmlog/-/npmlog-2.0.4.tgz 0ms (cache hit)
+369 http cache nopt@https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz 0ms (cache hit)
+370 http cache noop-logger@https://registry.npmjs.org/noop-logger/-/noop-logger-0.1.1.tgz 0ms (cache hit)
+371 http cache node-gyp@https://registry.npmjs.org/node-gyp/-/node-gyp-3.8.0.tgz 0ms (cache hit)
+372 http cache node-ninja@https://registry.npmjs.org/node-ninja/-/node-ninja-1.0.2.tgz 0ms (cache hit)
+373 http cache next-tick@https://registry.npmjs.org/next-tick/-/next-tick-1.1.0.tgz 0ms (cache hit)
+374 http cache mkdirp@https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.6.tgz 0ms (cache hit)
+375 http cache mime-types@https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz 0ms (cache hit)
+376 http cache mime-db@https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz 0ms (cache hit)
+377 http cache lodash.padstart@https://registry.npmjs.org/lodash.padstart/-/lodash.padstart-4.6.1.tgz 0ms (cache hit)
+378 http cache lodash.padend@https://registry.npmjs.org/lodash.padend/-/lodash.padend-4.6.1.tgz 0ms (cache hit)
+379 http cache lodash.pad@https://registry.npmjs.org/lodash.pad/-/lodash.pad-4.5.1.tgz 0ms (cache hit)
+380 http cache leveldown@https://registry.npmjs.org/leveldown/-/leveldown-1.4.6.tgz 0ms (cache hit)
+381 http cache jsprim@https://registry.npmjs.org/jsprim/-/jsprim-1.4.2.tgz 0ms (cache hit)
+382 http cache jsonist@https://registry.npmjs.org/jsonist/-/jsonist-2.1.2.tgz 0ms (cache hit)
+383 http cache json-stringify-safe@https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz 0ms (cache hit)
+384 http cache json-schema-traverse@https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz 0ms (cache hit)
+385 http cache json-schema@https://registry.npmjs.org/json-schema/-/json-schema-0.4.0.tgz 0ms (cache hit)
+386 http cache jsbn@https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz 0ms (cache hit)
+387 http cache isstream@https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz 0ms (cache hit)
+388 http cache isexe@https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz 0ms (cache hit)
+389 http cache is-typedarray@https://registry.npmjs.org/is-typedarray/-/is-typedarray-1.0.0.tgz 0ms (cache hit)
+390 http cache is-typed-array@https://registry.npmjs.org/is-typed-array/-/is-typed-array-1.1.15.tgz 0ms (cache hit)
+391 http cache is-callable@https://registry.npmjs.org/is-callable/-/is-callable-1.2.7.tgz 1ms (cache hit)
+392 http cache ini@https://registry.npmjs.org/ini/-/ini-1.3.8.tgz 0ms (cache hit)
+393 http cache hyperquest@https://registry.npmjs.org/hyperquest/-/hyperquest-2.1.3.tgz 0ms (cache hit)
+394 http cache http-signature@https://registry.npmjs.org/http-signature/-/http-signature-1.2.0.tgz 0ms (cache hit)
+395 http cache has-unicode@https://registry.npmjs.org/has-unicode/-/has-unicode-2.0.1.tgz 0ms (cache hit)
+396 http cache has-tostringtag@https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.2.tgz 0ms (cache hit)
+397 http cache har-validator@https://registry.npmjs.org/har-validator/-/har-validator-5.1.5.tgz 0ms (cache hit)
+398 http cache har-schema@https://registry.npmjs.org/har-schema/-/har-schema-2.0.0.tgz 0ms (cache hit)
+399 http cache graceful-fs@https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz 0ms (cache hit)
+400 http cache github-from-package@https://registry.npmjs.org/github-from-package/-/github-from-package-0.0.0.tgz 0ms (cache hit)
+401 http cache ghrepos@https://registry.npmjs.org/ghrepos/-/ghrepos-2.1.0.tgz 0ms (cache hit)
+402 http cache ghutils@https://registry.npmjs.org/ghutils/-/ghutils-3.2.6.tgz 0ms (cache hit)
+403 http cache ghreleases@https://registry.npmjs.org/ghreleases/-/ghreleases-1.0.7.tgz 0ms (cache hit)
+404 http cache getpass@https://registry.npmjs.org/getpass/-/getpass-0.1.7.tgz 0ms (cache hit)
+405 http cache gauge@https://registry.npmjs.org/gauge/-/gauge-1.2.7.tgz 0ms (cache hit)
+406 http cache fstream@https://registry.npmjs.org/fstream/-/fstream-1.0.12.tgz 0ms (cache hit)
+407 http cache fs-ext@https://registry.npmjs.org/fs-ext/-/fs-ext-0.5.0.tgz 0ms (cache hit)
+408 http cache fs-constants@https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz 0ms (cache hit)
+409 http cache form-data@https://registry.npmjs.org/form-data/-/form-data-2.3.3.tgz 0ms (cache hit)
+410 http cache forever-agent@https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz 0ms (cache hit)
+411 http cache for-each@https://registry.npmjs.org/for-each/-/for-each-0.3.5.tgz 0ms (cache hit)
+412 http cache fast-json-stable-stringify@https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz 0ms (cache hit)
+413 http cache fast-future@https://registry.npmjs.org/fast-future/-/fast-future-1.0.2.tgz 0ms (cache hit)
+414 http cache fast-deep-equal@https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz 0ms (cache hit)
+415 http cache extsprintf@https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz 0ms (cache hit)
+416 http cache ext@https://registry.npmjs.org/ext/-/ext-1.7.0.tgz 0ms (cache hit)
+417 http cache expand-template@https://registry.npmjs.org/expand-template/-/expand-template-1.1.1.tgz 0ms (cache hit)
+418 http cache execspawn@https://registry.npmjs.org/execspawn/-/execspawn-1.0.1.tgz 0ms (cache hit)
+419 http cache event-emitter@https://registry.npmjs.org/event-emitter/-/event-emitter-0.3.5.tgz 0ms (cache hit)
+420 http cache esniff@https://registry.npmjs.org/esniff/-/esniff-2.0.1.tgz 0ms (cache hit)
+421 http cache es6-symbol@https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.1.4.tgz 0ms (cache hit)
+422 http cache es6-iterator@https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.3.tgz 0ms (cache hit)
+423 http cache es5-ext@https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.64.tgz 0ms (cache hit)
+424 http cache ecc-jsbn@https://registry.npmjs.org/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz 0ms (cache hit)
+425 http cache duplexer2@https://registry.npmjs.org/duplexer2/-/duplexer2-0.0.2.tgz 0ms (cache hit)
+426 http cache delegates@https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz 0ms (cache hit)
+427 http cache delayed-stream@https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz 0ms (cache hit)
+428 http cache deep-extend@https://registry.npmjs.org/deep-extend/-/deep-extend-0.6.0.tgz 0ms (cache hit)
+429 http cache dashdash@https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz 0ms (cache hit)
+430 http cache d@https://registry.npmjs.org/d/-/d-1.0.2.tgz 0ms (cache hit)
+431 http cache combined-stream@https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz 0ms (cache hit)
+432 http cache chownr@https://registry.npmjs.org/chownr/-/chownr-1.1.4.tgz 0ms (cache hit)
+433 http cache caseless@https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz 0ms (cache hit)
+434 http cache buffer-fill@https://registry.npmjs.org/buffer-fill/-/buffer-fill-1.0.0.tgz 0ms (cache hit)
+435 http cache buffer-alloc-unsafe@https://registry.npmjs.org/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz 0ms (cache hit)
+436 http cache buffer-alloc@https://registry.npmjs.org/buffer-alloc/-/buffer-alloc-1.2.0.tgz 0ms (cache hit)
+437 http cache block-stream@https://registry.npmjs.org/block-stream/-/block-stream-0.0.9.tgz 0ms (cache hit)
+438 http cache bindings@https://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz 0ms (cache hit)
+439 http cache bcrypt-pbkdf@https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz 0ms (cache hit)
+440 http cache aws4@https://registry.npmjs.org/aws4/-/aws4-1.13.2.tgz 0ms (cache hit)
+441 http cache aws-sign2@https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.7.0.tgz 0ms (cache hit)
+442 http cache available-typed-arrays@https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.7.tgz 0ms (cache hit)
+443 http cache asynckit@https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz 0ms (cache hit)
+444 http cache assert-plus@https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz 0ms (cache hit)
+445 http cache asn1@https://registry.npmjs.org/asn1/-/asn1-0.2.6.tgz 0ms (cache hit)
+446 http cache array-index@https://registry.npmjs.org/array-index/-/array-index-1.0.0.tgz 0ms (cache hit)
+447 http cache ansi@https://registry.npmjs.org/ansi/-/ansi-0.3.1.tgz 0ms (cache hit)
+448 http cache are-we-there-yet@https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.1.7.tgz 0ms (cache hit)
+449 http cache ajv@https://registry.npmjs.org/ajv/-/ajv-6.15.0.tgz 0ms (cache hit)
+450 http cache after@https://registry.npmjs.org/after/-/after-0.8.2.tgz 0ms (cache hit)
+451 http cache abbrev@https://registry.npmjs.org/abbrev/-/abbrev-1.1.1.tgz 0ms (cache hit)
+452 http cache tslib@https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz 0ms (cache hit)
+453 http cache luxon@https://registry.npmjs.org/luxon/-/luxon-1.28.1.tgz 0ms (cache hit)
+454 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+455 http cache debug@https://registry.npmjs.org/debug/-/debug-4.4.3.tgz 0ms (cache hit)
+456 http cache clone@https://registry.npmjs.org/clone/-/clone-2.1.2.tgz 0ms (cache hit)
+457 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+458 http cache uuid@https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz 0ms (cache hit)
+459 http cache luxon@https://registry.npmjs.org/luxon/-/luxon-3.7.2.tgz 0ms (cache hit)
+460 http cache debug@https://registry.npmjs.org/debug/-/debug-4.4.3.tgz 0ms (cache hit)
+461 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+462 http cache core-util-is@https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz 0ms (cache hit)
+463 http cache isarray@https://registry.npmjs.org/isarray/-/isarray-2.0.5.tgz 0ms (cache hit)
+464 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz 0ms (cache hit)
+465 http cache safe-buffer@https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz 0ms (cache hit)
+466 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz 0ms (cache hit)
+467 http cache node-gyp@https://registry.npmjs.org/node-gyp/-/node-gyp-3.4.0.tgz 0ms (cache hit)
+468 http cache uuid@https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz 0ms (cache hit)
+469 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+470 http cache semver@https://registry.npmjs.org/semver/-/semver-5.3.0.tgz 0ms (cache hit)
+471 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+472 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz 0ms (cache hit)
+473 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz 0ms (cache hit)
+474 http cache bl@https://registry.npmjs.org/bl/-/bl-3.0.1.tgz 0ms (cache hit)
+475 http cache through2@https://registry.npmjs.org/through2/-/through2-0.6.5.tgz 0ms (cache hit)
+476 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.34.tgz 0ms (cache hit)
+477 http cache isarray@https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz 0ms (cache hit)
+478 http cache buffer-from@https://registry.npmjs.org/buffer-from/-/buffer-from-0.1.2.tgz 0ms (cache hit)
+479 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz 0ms (cache hit)
+480 http cache safe-buffer@https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz 0ms (cache hit)
+481 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz 0ms (cache hit)
+482 silly tarball no local data for xmlbuilder@https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz. Extracting by manifest.
+483 silly tarball no local data for sax@https://registry.npmjs.org/sax/-/sax-1.6.0.tgz. Extracting by manifest.
+484 silly tarball no local data for xml2js@https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz. Extracting by manifest.
+485 silly tarball no local data for @napi-rs/nice-linux-x64-musl@https://registry.npmjs.org/@napi-rs/nice-linux-x64-musl/-/nice-linux-x64-musl-1.1.1.tgz. Extracting by manifest.
+486 silly tarball no local data for ejs@https://registry.npmjs.org/ejs/-/ejs-2.7.4.tgz. Extracting by manifest.
+487 silly tarball no local data for @napi-rs/nice@https://registry.npmjs.org/@napi-rs/nice/-/nice-1.1.1.tgz. Extracting by manifest.
+488 silly tarball no local data for ical.js@https://registry.npmjs.org/ical.js/-/ical.js-1.2.2.tgz. Extracting by manifest.
+489 silly tarball no local data for follow-redirects@https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.0.tgz. Extracting by manifest.
+490 silly tarball no local data for regenerator-runtime@https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz. Extracting by manifest.
+491 silly tarball no local data for core-js@https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz. Extracting by manifest.
+492 silly tarball no local data for xmlhttprequest@https://registry.npmjs.org/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz. Extracting by manifest.
+493 silly tarball no local data for xmldom@https://registry.npmjs.org/xmldom/-/xmldom-0.1.31.tgz. Extracting by manifest.
+494 silly tarball no local data for co@https://registry.npmjs.org/co/-/co-4.6.0.tgz. Extracting by manifest.
+495 silly tarball no local data for xml-js@https://registry.npmjs.org/xml-js/-/xml-js-1.6.11.tgz. Extracting by manifest.
+496 silly tarball no local data for @babel/polyfill@https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.12.1.tgz. Extracting by manifest.
+497 silly tarball no local data for scrapegoat@https://registry.npmjs.org/scrapegoat/-/scrapegoat-1.0.1.tgz. Extracting by manifest.
+498 silly tarball no local data for rrule@https://registry.npmjs.org/rrule/-/rrule-2.6.4.tgz. Extracting by manifest.
+499 silly tarball no local data for cloneextend@https://registry.npmjs.org/cloneextend/-/cloneextend-0.0.3.tgz. Extracting by manifest.
+500 silly tarball no local data for ical-expander@https://registry.npmjs.org/ical-expander/-/ical-expander-2.1.0.tgz. Extracting by manifest.
+501 silly tarball no local data for axios@https://registry.npmjs.org/axios/-/axios-0.21.4.tgz. Extracting by manifest.
+502 silly tarball no local data for @naimo84/dav@https://registry.npmjs.org/@naimo84/dav/-/dav-1.9.0.tgz. Extracting by manifest.
+503 silly tarball no local data for piscina@https://registry.npmjs.org/piscina/-/piscina-4.9.3.tgz. Extracting by manifest.
+504 silly tarball no local data for node-cache@https://registry.npmjs.org/node-cache/-/node-cache-5.1.2.tgz. Extracting by manifest.
+505 silly tarball no local data for moment-timezone@https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.48.tgz. Extracting by manifest.
+506 silly tarball no local data for luxon@https://registry.npmjs.org/luxon/-/luxon-2.5.2.tgz. Extracting by manifest.
+507 silly tarball no local data for moment@https://registry.npmjs.org/moment/-/moment-2.30.1.tgz. Extracting by manifest.
+508 silly tarball no local data for kalender-events@https://registry.npmjs.org/kalender-events/-/kalender-events-0.28.3.tgz. Extracting by manifest.
+509 silly tarball no local data for crypto-js@https://registry.npmjs.org/crypto-js/-/crypto-js-4.2.0.tgz. Extracting by manifest.
+510 silly tarball no local data for cron@https://registry.npmjs.org/cron/-/cron-1.8.2.tgz. Extracting by manifest.
+511 silly tarball no local data for cron-parser@https://registry.npmjs.org/cron-parser/-/cron-parser-4.9.0.tgz. Extracting by manifest.
+512 silly tarball no local data for node-red-contrib-ical-events@https://registry.npmjs.org/node-red-contrib-ical-events/-/node-red-contrib-ical-events-2.2.5.tgz. Extracting by manifest.
+513 silly tarball no local data for tslib@https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz. Extracting by manifest.
+514 silly tarball no local data for luxon@https://registry.npmjs.org/luxon/-/luxon-1.28.1.tgz. Extracting by manifest.
+515 silly tarball no local data for clone@https://registry.npmjs.org/clone/-/clone-2.1.2.tgz. Extracting by manifest.
+516 silly tarball no local data for luxon@https://registry.npmjs.org/luxon/-/luxon-3.7.2.tgz. Extracting by manifest.
+517 warn deprecated osenv@0.1.5: This package is no longer supported.
+518 warn deprecated npmlog@2.0.4: This package is no longer supported.
+519 warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+520 warn deprecated are-we-there-yet@1.1.7: This package is no longer supported.
+521 http fetch GET 200 https://registry.npmjs.org/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz 351ms (cache miss)
+522 http fetch GET 200 https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz 353ms (cache miss)
+523 warn deprecated har-validator@5.1.5: this library is no longer supported
+524 warn deprecated gauge@1.2.7: This package is no longer supported.
+525 http fetch GET 200 https://registry.npmjs.org/cloneextend/-/cloneextend-0.0.3.tgz 358ms (cache miss)
+526 http fetch GET 200 https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.0.tgz 365ms (cache miss)
+527 http fetch GET 200 https://registry.npmjs.org/@napi-rs/nice/-/nice-1.1.1.tgz 369ms (cache miss)
+528 http fetch GET 200 https://registry.npmjs.org/sax/-/sax-1.6.0.tgz 378ms (cache miss)
+529 http fetch GET 200 https://registry.npmjs.org/ical-expander/-/ical-expander-2.1.0.tgz 371ms (cache miss)
+530 http fetch GET 200 https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz 364ms (cache miss)
+531 http fetch GET 200 https://registry.npmjs.org/clone/-/clone-2.1.2.tgz 364ms (cache miss)
+532 http fetch GET 200 https://registry.npmjs.org/co/-/co-4.6.0.tgz 385ms (cache miss)
+533 http fetch GET 200 https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz 393ms (cache miss)
+534 http fetch GET 200 https://registry.npmjs.org/node-cache/-/node-cache-5.1.2.tgz 393ms (cache miss)
+535 http fetch GET 200 https://registry.npmjs.org/ejs/-/ejs-2.7.4.tgz 403ms (cache miss)
+536 http fetch GET 200 https://registry.npmjs.org/xmldom/-/xmldom-0.1.31.tgz 412ms (cache miss)
+537 warn deprecated xmldom@0.1.31: Deprecated due to CVE-2021-21366 resolved in 0.5.0
+538 warn deprecated uuid@3.4.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+539 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-ical-events/-/node-red-contrib-ical-events-2.2.5.tgz 430ms (cache miss)
+540 http fetch GET 200 https://registry.npmjs.org/@napi-rs/nice-linux-x64-musl/-/nice-linux-x64-musl-1.1.1.tgz 444ms (cache miss)
+541 warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+542 http fetch GET 200 https://registry.npmjs.org/scrapegoat/-/scrapegoat-1.0.1.tgz 444ms (cache miss)
+543 http fetch GET 200 https://registry.npmjs.org/kalender-events/-/kalender-events-0.28.3.tgz 448ms (cache miss)
+544 warn deprecated fstream@1.0.12: This package is no longer supported.
+545 http fetch GET 200 https://registry.npmjs.org/cron/-/cron-1.8.2.tgz 456ms (cache miss)
+546 warn deprecated prebuild@4.5.0: No longer maintained (alternatives available)
+547 http fetch GET 200 https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.12.1.tgz 480ms (cache miss)
+548 warn deprecated @babel/polyfill@7.12.1: 🚨 This package has been deprecated in favor of separate inclusion of a polyfill and regenerator-runtime (when needed). See the @babel/polyfill docs (https://babeljs.io/docs/en/babel-polyfill) for more information.
+549 http fetch GET 200 https://registry.npmjs.org/crypto-js/-/crypto-js-4.2.0.tgz 480ms (cache miss)
+550 http fetch GET 200 https://registry.npmjs.org/xml-js/-/xml-js-1.6.11.tgz 507ms (cache miss)
+551 http fetch GET 200 https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz 520ms (cache miss)
+552 http fetch GET 200 https://registry.npmjs.org/ical.js/-/ical.js-1.2.2.tgz 532ms (cache miss)
+553 http fetch GET 200 https://registry.npmjs.org/@naimo84/dav/-/dav-1.9.0.tgz 544ms (cache miss)
+554 http fetch GET 200 https://registry.npmjs.org/axios/-/axios-0.21.4.tgz 548ms (cache miss)
+555 http fetch GET 200 https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.48.tgz 564ms (cache miss)
+556 warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+557 http fetch GET 200 https://registry.npmjs.org/luxon/-/luxon-1.28.1.tgz 616ms (cache miss)
+558 http fetch GET 200 https://registry.npmjs.org/luxon/-/luxon-2.5.2.tgz 647ms (cache miss)
+559 http fetch GET 200 https://registry.npmjs.org/luxon/-/luxon-3.7.2.tgz 648ms (cache miss)
+560 http fetch GET 200 https://registry.npmjs.org/piscina/-/piscina-4.9.3.tgz 662ms (cache miss)
+561 warn deprecated tar@2.2.2: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+562 http fetch GET 200 https://registry.npmjs.org/cron-parser/-/cron-parser-4.9.0.tgz 700ms (cache miss)
+563 warn deprecated leveldown@1.4.6: Superseded by classic-level (https://github.com/Level/community#faq)
+564 http fetch GET 200 https://registry.npmjs.org/rrule/-/rrule-2.6.4.tgz 803ms (cache miss)
+565 http fetch GET 200 https://registry.npmjs.org/moment/-/moment-2.30.1.tgz 843ms (cache miss)
+566 http fetch GET 200 https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz 959ms (cache miss)
+567 warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+568 info run fs-ext@0.5.0 install node_modules/fs-ext node-gyp configure build
+569 info run leveldown@1.4.6 install node_modules/leveldown prebuild --install
+570 info run snappy@5.0.5 install node_modules/snappy ./node_modules/.bin/node-gyp rebuild
+571 info run zmq@2.15.3 install node_modules/zmq node-gyp rebuild
+572 info run fs-ext@0.5.0 install { code: 1, signal: null }
+573 verbose reify failed optional dependency /data/node_modules/fs-ext
+574 silly reify mark deleted [ '/data/node_modules/fs-ext' ]
+575 info run zmq@2.15.3 install { code: 1, signal: null }
+576 verbose reify failed optional dependency /data/node_modules/zmq
+577 silly reify mark deleted [ '/data/node_modules/zmq' ]
+578 verbose reify failed optional dependency /data/node_modules/zmq/node_modules/nan
+579 silly reify mark deleted [ '/data/node_modules/zmq/node_modules/nan' ]
+580 info run snappy@5.0.5 install { code: 1, signal: null }
+581 verbose reify failed optional dependency /data/node_modules/snappy
+582 silly reify mark deleted [ '/data/node_modules/snappy' ]
+583 verbose reify failed optional dependency /data/node_modules/snappy/node_modules/nan
+584 silly reify mark deleted [ '/data/node_modules/snappy/node_modules/nan' ]
+585 verbose reify failed optional dependency /data/node_modules/snappy/node_modules/node-gyp
+586 silly reify mark deleted [
+586 silly reify   '/data/node_modules/snappy/node_modules/node-gyp',
+586 silly reify   '/data/node_modules/snappy/node_modules/.bin/node-gyp'
+586 silly reify ]
+587 info run leveldown@1.4.6 install { code: 2, signal: null }
+588 verbose reify failed optional dependency /data/node_modules/leveldown
+589 silly reify mark deleted [ '/data/node_modules/leveldown' ]
+590 verbose reify failed optional dependency /data/node_modules/bindings
+591 silly reify mark deleted [ '/data/node_modules/bindings' ]
+592 verbose reify failed optional dependency /data/node_modules/fast-future
+593 silly reify mark deleted [ '/data/node_modules/fast-future' ]
+594 verbose reify failed optional dependency /data/node_modules/leveldown/node_modules/nan
+595 silly reify mark deleted [ '/data/node_modules/leveldown/node_modules/nan' ]
+596 verbose reify failed optional dependency /data/node_modules/prebuild
+597 silly reify mark deleted [ '/data/node_modules/prebuild', '/data/node_modules/.bin/prebuild' ]
+598 verbose reify failed optional dependency /data/node_modules/execspawn
+599 silly reify mark deleted [ '/data/node_modules/execspawn' ]
+600 verbose reify failed optional dependency /data/node_modules/expand-template
+601 silly reify mark deleted [ '/data/node_modules/expand-template' ]
+602 verbose reify failed optional dependency /data/node_modules/ghreleases
+603 silly reify mark deleted [ '/data/node_modules/ghreleases' ]
+604 verbose reify failed optional dependency /data/node_modules/github-from-package
+605 silly reify mark deleted [ '/data/node_modules/github-from-package' ]
+606 verbose reify failed optional dependency /data/node_modules/mkdirp
+607 silly reify mark deleted [ '/data/node_modules/mkdirp', '/data/node_modules/.bin/mkdirp' ]
+608 verbose reify failed optional dependency /data/node_modules/node-gyp
+609 silly reify mark deleted [ '/data/node_modules/node-gyp', '/data/node_modules/.bin/node-gyp' ]
+610 verbose reify failed optional dependency /data/node_modules/node-ninja
+611 silly reify mark deleted [
+611 silly reify   '/data/node_modules/node-ninja',
+611 silly reify   '/data/node_modules/.bin/node-ninja'
+611 silly reify ]
+612 verbose reify failed optional dependency /data/node_modules/noop-logger
+613 silly reify mark deleted [ '/data/node_modules/noop-logger' ]
+614 verbose reify failed optional dependency /data/node_modules/npmlog
+615 silly reify mark deleted [ '/data/node_modules/npmlog' ]
+616 verbose reify failed optional dependency /data/node_modules/os-homedir
+617 silly reify mark deleted [ '/data/node_modules/os-homedir' ]
+618 verbose reify failed optional dependency /data/node_modules/rc
+619 silly reify mark deleted [ '/data/node_modules/rc', '/data/node_modules/.bin/rc' ]
+620 verbose reify failed optional dependency /data/node_modules/simple-get
+621 silly reify mark deleted [ '/data/node_modules/simple-get' ]
+622 verbose reify failed optional dependency /data/node_modules/tar-fs
+623 silly reify mark deleted [ '/data/node_modules/tar-fs' ]
+624 verbose reify failed optional dependency /data/node_modules/tar-stream
+625 silly reify mark deleted [ '/data/node_modules/tar-stream' ]
+626 verbose reify failed optional dependency /data/node_modules/util-extend
+627 silly reify mark deleted [ '/data/node_modules/util-extend' ]
+628 verbose reify failed optional dependency /data/node_modules/after
+629 silly reify mark deleted [ '/data/node_modules/after' ]
+630 verbose reify failed optional dependency /data/node_modules/ghrepos
+631 silly reify mark deleted [ '/data/node_modules/ghrepos' ]
+632 verbose reify failed optional dependency /data/node_modules/ghutils
+633 silly reify mark deleted [ '/data/node_modules/ghutils' ]
+634 verbose reify failed optional dependency /data/node_modules/simple-mime
+635 silly reify mark deleted [ '/data/node_modules/simple-mime' ]
+636 verbose reify failed optional dependency /data/node_modules/url-template
+637 silly reify mark deleted [ '/data/node_modules/url-template' ]
+638 verbose reify failed optional dependency /data/node_modules/fstream
+639 silly reify mark deleted [ '/data/node_modules/fstream' ]
+640 verbose reify failed optional dependency /data/node_modules/graceful-fs
+641 silly reify mark deleted [ '/data/node_modules/graceful-fs' ]
+642 verbose reify failed optional dependency /data/node_modules/nopt
+643 silly reify mark deleted [ '/data/node_modules/nopt', '/data/node_modules/.bin/nopt' ]
+644 verbose reify failed optional dependency /data/node_modules/osenv
+645 silly reify mark deleted [ '/data/node_modules/osenv' ]
+646 verbose reify failed optional dependency /data/node_modules/rimraf
+647 silly reify mark deleted [ '/data/node_modules/rimraf', '/data/node_modules/.bin/rimraf' ]
+648 verbose reify failed optional dependency /data/node_modules/node-gyp/node_modules/semver
+649 silly reify mark deleted [
+649 silly reify   '/data/node_modules/node-gyp/node_modules/semver',
+649 silly reify   '/data/node_modules/node-gyp/node_modules/.bin/semver'
+649 silly reify ]
+650 verbose reify failed optional dependency /data/node_modules/tar
+651 silly reify mark deleted [ '/data/node_modules/tar' ]
+652 verbose reify failed optional dependency /data/node_modules/which
+653 silly reify mark deleted [ '/data/node_modules/which', '/data/node_modules/.bin/which' ]
+654 verbose reify failed optional dependency /data/node_modules/path-array
+655 silly reify mark deleted [ '/data/node_modules/path-array' ]
+656 verbose reify failed optional dependency /data/node_modules/ansi
+657 silly reify mark deleted [ '/data/node_modules/ansi' ]
+658 verbose reify failed optional dependency /data/node_modules/are-we-there-yet
+659 silly reify mark deleted [ '/data/node_modules/are-we-there-yet' ]
+660 verbose reify failed optional dependency /data/node_modules/gauge
+661 silly reify mark deleted [ '/data/node_modules/gauge' ]
+662 verbose reify failed optional dependency /data/node_modules/deep-extend
+663 silly reify mark deleted [ '/data/node_modules/deep-extend' ]
+664 verbose reify failed optional dependency /data/node_modules/ini
+665 silly reify mark deleted [ '/data/node_modules/ini' ]
+666 verbose reify failed optional dependency /data/node_modules/strip-json-comments
+667 silly reify mark deleted [ '/data/node_modules/strip-json-comments' ]
+668 verbose reify failed optional dependency /data/node_modules/unzip-response
+669 silly reify mark deleted [ '/data/node_modules/unzip-response' ]
+670 verbose reify failed optional dependency /data/node_modules/chownr
+671 silly reify mark deleted [ '/data/node_modules/chownr' ]
+672 verbose reify failed optional dependency /data/node_modules/buffer-alloc
+673 silly reify mark deleted [ '/data/node_modules/buffer-alloc' ]
+674 verbose reify failed optional dependency /data/node_modules/fs-constants
+675 silly reify mark deleted [ '/data/node_modules/fs-constants' ]
+676 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/readable-stream
+677 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/readable-stream' ]
+678 verbose reify failed optional dependency /data/node_modules/to-buffer
+679 silly reify mark deleted [ '/data/node_modules/to-buffer' ]
+680 verbose reify failed optional dependency /data/node_modules/jsonist
+681 silly reify mark deleted [ '/data/node_modules/jsonist' ]
+682 verbose reify failed optional dependency /data/node_modules/abbrev
+683 silly reify mark deleted [ '/data/node_modules/abbrev' ]
+684 verbose reify failed optional dependency /data/node_modules/os-tmpdir
+685 silly reify mark deleted [ '/data/node_modules/os-tmpdir' ]
+686 verbose reify failed optional dependency /data/node_modules/block-stream
+687 silly reify mark deleted [ '/data/node_modules/block-stream' ]
+688 verbose reify failed optional dependency /data/node_modules/isexe
+689 silly reify mark deleted [ '/data/node_modules/isexe' ]
+690 verbose reify failed optional dependency /data/node_modules/array-index
+691 silly reify mark deleted [ '/data/node_modules/array-index' ]
+692 verbose reify failed optional dependency /data/node_modules/delegates
+693 silly reify mark deleted [ '/data/node_modules/delegates' ]
+694 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/readable-stream
+695 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/readable-stream' ]
+696 verbose reify failed optional dependency /data/node_modules/has-unicode
+697 silly reify mark deleted [ '/data/node_modules/has-unicode' ]
+698 verbose reify failed optional dependency /data/node_modules/lodash.pad
+699 silly reify mark deleted [ '/data/node_modules/lodash.pad' ]
+700 verbose reify failed optional dependency /data/node_modules/lodash.padend
+701 silly reify mark deleted [ '/data/node_modules/lodash.padend' ]
+702 verbose reify failed optional dependency /data/node_modules/lodash.padstart
+703 silly reify mark deleted [ '/data/node_modules/lodash.padstart' ]
+704 verbose reify failed optional dependency /data/node_modules/buffer-alloc-unsafe
+705 silly reify mark deleted [ '/data/node_modules/buffer-alloc-unsafe' ]
+706 verbose reify failed optional dependency /data/node_modules/buffer-fill
+707 silly reify mark deleted [ '/data/node_modules/buffer-fill' ]
+708 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/safe-buffer
+709 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/safe-buffer' ]
+710 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/string_decoder
+711 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/string_decoder' ]
+712 verbose reify failed optional dependency /data/node_modules/to-buffer/node_modules/isarray
+713 silly reify mark deleted [ '/data/node_modules/to-buffer/node_modules/isarray' ]
+714 verbose reify failed optional dependency /data/node_modules/typed-array-buffer
+715 silly reify mark deleted [ '/data/node_modules/typed-array-buffer' ]
+716 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/bl
+717 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/bl' ]
+718 verbose reify failed optional dependency /data/node_modules/hyperquest
+719 silly reify mark deleted [ '/data/node_modules/hyperquest' ]
+720 verbose reify failed optional dependency /data/node_modules/es6-symbol
+721 silly reify mark deleted [ '/data/node_modules/es6-symbol' ]
+722 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/safe-buffer
+723 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/safe-buffer' ]
+724 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/string_decoder
+725 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/string_decoder' ]
+726 verbose reify failed optional dependency /data/node_modules/is-typed-array
+727 silly reify mark deleted [ '/data/node_modules/is-typed-array' ]
+728 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/readable-stream
+729 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/readable-stream' ]
+730 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/buffer-from
+731 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/buffer-from' ]
+732 verbose reify failed optional dependency /data/node_modules/duplexer2
+733 silly reify mark deleted [ '/data/node_modules/duplexer2' ]
+734 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/through2
+735 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/through2' ]
+736 verbose reify failed optional dependency /data/node_modules/d
+737 silly reify mark deleted [ '/data/node_modules/d' ]
+738 verbose reify failed optional dependency /data/node_modules/ext
+739 silly reify mark deleted [ '/data/node_modules/ext' ]
+740 verbose reify failed optional dependency /data/node_modules/which-typed-array
+741 silly reify mark deleted [ '/data/node_modules/which-typed-array' ]
+742 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/string_decoder
+743 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/string_decoder' ]
+744 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/readable-stream
+745 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/readable-stream' ]
+746 verbose reify failed optional dependency /data/node_modules/es5-ext
+747 silly reify mark deleted [ '/data/node_modules/es5-ext' ]
+748 verbose reify failed optional dependency /data/node_modules/type
+749 silly reify mark deleted [ '/data/node_modules/type' ]
+750 verbose reify failed optional dependency /data/node_modules/available-typed-arrays
+751 silly reify mark deleted [ '/data/node_modules/available-typed-arrays' ]
+752 verbose reify failed optional dependency /data/node_modules/for-each
+753 silly reify mark deleted [ '/data/node_modules/for-each' ]
+754 verbose reify failed optional dependency /data/node_modules/has-tostringtag
+755 silly reify mark deleted [ '/data/node_modules/has-tostringtag' ]
+756 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/isarray
+757 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/isarray' ]
+758 verbose reify failed optional dependency /data/node_modules/es6-iterator
+759 silly reify mark deleted [ '/data/node_modules/es6-iterator' ]
+760 verbose reify failed optional dependency /data/node_modules/esniff
+761 silly reify mark deleted [ '/data/node_modules/esniff' ]
+762 verbose reify failed optional dependency /data/node_modules/next-tick
+763 silly reify mark deleted [ '/data/node_modules/next-tick' ]
+764 verbose reify failed optional dependency /data/node_modules/possible-typed-array-names
+765 silly reify mark deleted [ '/data/node_modules/possible-typed-array-names' ]
+766 verbose reify failed optional dependency /data/node_modules/is-callable
+767 silly reify mark deleted [ '/data/node_modules/is-callable' ]
+768 verbose reify failed optional dependency /data/node_modules/event-emitter
+769 silly reify mark deleted [ '/data/node_modules/event-emitter' ]
+770 info run core-js@2.6.12 postinstall node_modules/core-js node -e "try{require('./postinstall')}catch(e){}"
+771 info run ejs@2.7.4 postinstall node_modules/ejs node ./postinstall.js
+772 info run core-js@2.6.12 postinstall { code: 0, signal: null }
+773 info run ejs@2.7.4 postinstall { code: 0, signal: null }
+774 silly ADD node_modules/xmlbuilder
+775 silly ADD node_modules/sax
+776 silly ADD node_modules/xml2js
+777 silly ADD node_modules/ejs
+778 silly ADD node_modules/@napi-rs/nice-linux-x64-musl
+779 silly ADD node_modules/@napi-rs/nice
+780 silly ADD node_modules/ical.js
+781 silly ADD node_modules/follow-redirects
+782 silly ADD node_modules/regenerator-runtime
+783 silly ADD node_modules/core-js
+784 silly ADD node_modules/xmlhttprequest
+785 silly ADD node_modules/xmldom
+786 silly ADD node_modules/co
+787 silly ADD node_modules/@babel/polyfill
+788 silly ADD node_modules/xml-js
+789 silly ADD node_modules/scrapegoat
+790 silly ADD node_modules/rrule
+791 silly ADD node_modules/rrule/node_modules/tslib
+792 silly ADD node_modules/rrule/node_modules/luxon
+793 silly ADD node_modules/ical-expander
+794 silly ADD node_modules/cloneextend
+795 silly ADD node_modules/axios
+796 silly ADD node_modules/@naimo84/dav
+797 silly ADD node_modules/@naimo84/dav/node_modules/ms
+798 silly ADD node_modules/@naimo84/dav/node_modules/debug
+799 silly ADD node_modules/piscina
+800 silly ADD node_modules/node-cache
+801 silly ADD node_modules/node-cache/node_modules/clone
+802 silly ADD node_modules/moment-timezone
+803 silly ADD node_modules/moment
+804 silly ADD node_modules/luxon
+805 silly ADD node_modules/kalender-events
+806 silly ADD node_modules/kalender-events/node_modules/ms
+807 silly ADD node_modules/kalender-events/node_modules/uuid
+808 silly ADD node_modules/kalender-events/node_modules/debug
+809 silly ADD node_modules/crypto-js
+810 silly ADD node_modules/cron-parser
+811 silly ADD node_modules/cron-parser/node_modules/luxon
+812 silly ADD node_modules/cron
+813 silly ADD node_modules/node-red-contrib-ical-events
+814 silly ADD
+815 silly ADD node_modules/nan
+816 silly ADD
+817 silly ADD
+818 silly ADD node_modules/verror
+819 silly ADD node_modules/verror/node_modules/core-util-is
+820 silly ADD
+821 silly ADD
+822 silly ADD node_modules/uri-js
+823 silly ADD
+824 silly ADD
+825 silly ADD
+826 silly ADD node_modules/tweetnacl
+827 silly ADD node_modules/tunnel-agent
+828 silly ADD node_modules/tough-cookie
+829 silly ADD
+830 silly ADD node_modules/isarray
+831 silly ADD
+832 silly ADD node_modules/string_decoder
+833 silly ADD node_modules/safe-buffer
+834 silly ADD node_modules/readable-stream
+835 silly ADD
+836 silly ADD
+837 silly ADD
+838 silly ADD node_modules/sshpk
+839 silly ADD
+840 silly ADD node_modules/node-gyp
+841 silly ADD node_modules/nan
+842 silly ADD
+843 silly ADD
+844 silly ADD node_modules/safer-buffer
+845 silly ADD
+846 silly ADD node_modules/request
+847 silly ADD node_modules/request/node_modules/uuid
+848 silly ADD
+849 silly ADD node_modules/qs
+850 silly ADD node_modules/psl
+851 silly ADD
+852 silly ADD
+853 silly ADD node_modules/performance-now
+854 silly ADD
+855 silly ADD
+856 silly ADD
+857 silly ADD
+858 silly ADD node_modules/oauth-sign
+859 silly ADD
+860 silly ADD
+861 silly ADD
+862 silly ADD
+863 silly ADD
+864 silly ADD node_modules/semver
+865 silly ADD
+866 silly ADD
+867 silly ADD node_modules/mime-types
+868 silly ADD node_modules/mime-db
+869 silly ADD
+870 silly ADD
+871 silly ADD
+872 silly ADD
+873 silly ADD node_modules/nan
+874 silly ADD node_modules/jsprim
+875 silly ADD
+876 silly ADD node_modules/string_decoder
+877 silly ADD node_modules/readable-stream
+878 silly ADD node_modules/bl
+879 silly ADD node_modules/json-stringify-safe
+880 silly ADD node_modules/json-schema-traverse
+881 silly ADD node_modules/json-schema
+882 silly ADD node_modules/jsbn
+883 silly ADD node_modules/isstream
+884 silly ADD
+885 silly ADD node_modules/is-typedarray
+886 silly ADD
+887 silly ADD
+888 silly ADD
+889 silly ADD
+890 silly ADD node_modules/through2
+891 silly ADD node_modules/readable-stream
+892 silly ADD node_modules/isarray
+893 silly ADD node_modules/buffer-from
+894 silly ADD node_modules/http-signature
+895 silly ADD
+896 silly ADD
+897 silly ADD node_modules/har-validator
+898 silly ADD node_modules/har-schema
+899 silly ADD
+900 silly ADD
+901 silly ADD
+902 silly ADD
+903 silly ADD
+904 silly ADD node_modules/getpass
+905 silly ADD
+906 silly ADD
+907 silly ADD
+908 silly ADD
+909 silly ADD node_modules/form-data
+910 silly ADD node_modules/forever-agent
+911 silly ADD
+912 silly ADD node_modules/fast-json-stable-stringify
+913 silly ADD
+914 silly ADD node_modules/fast-deep-equal
+915 silly ADD node_modules/extsprintf
+916 silly ADD
+917 silly ADD
+918 silly ADD
+919 silly ADD
+920 silly ADD
+921 silly ADD
+922 silly ADD
+923 silly ADD
+924 silly ADD node_modules/ecc-jsbn
+925 silly ADD
+926 silly ADD
+927 silly ADD node_modules/delayed-stream
+928 silly ADD
+929 silly ADD node_modules/dashdash
+930 silly ADD
+931 silly ADD node_modules/combined-stream
+932 silly ADD
+933 silly ADD node_modules/caseless
+934 silly ADD
+935 silly ADD
+936 silly ADD
+937 silly ADD
+938 silly ADD
+939 silly ADD node_modules/bcrypt-pbkdf
+940 silly ADD node_modules/aws4
+941 silly ADD node_modules/aws-sign2
+942 silly ADD
+943 silly ADD node_modules/asynckit
+944 silly ADD node_modules/assert-plus
+945 silly ADD node_modules/asn1
+946 silly ADD
+947 silly ADD
+948 silly ADD node_modules/string_decoder
+949 silly ADD node_modules/safe-buffer
+950 silly ADD node_modules/readable-stream
+951 silly ADD
+952 silly ADD node_modules/ajv
+953 silly ADD
+954 silly ADD
+955 warn allow-scripts 3 packages have install scripts not yet covered by allowScripts:
+955 warn allow-scripts   kerberos@0.0.24 (install: node-gyp rebuild)
+955 warn allow-scripts   core-js@2.6.12 (postinstall: node -e "try{require('./postinstall')}catch(e){}")
+955 warn allow-scripts   ejs@2.7.4 (postinstall: node ./postinstall.js)
+955 warn allow-scripts
+955 warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+956 verbose cwd /data
+957 verbose os Linux 7.0.0-27-generic
+958 verbose node v24.16.0
+959 verbose npm  v11.16.0
+960 verbose exit 0
+961 info ok

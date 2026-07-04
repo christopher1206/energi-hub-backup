@@ -486,5 +486,123 @@
                 "file": "/data/node_modules/node-red-contrib-aedes/aedes.js"
             }
         }
+    },
+    "node-red-contrib-sun-position": {
+        "name": "node-red-contrib-sun-position",
+        "version": "3.0.1",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "position-config": {
+                "name": "position-config",
+                "types": [
+                    "position-config"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/10-position-config.js"
+            },
+            "time-inject": {
+                "name": "time-inject",
+                "types": [
+                    "time-inject"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/20-time-inject.js"
+            },
+            "within-time-switch": {
+                "name": "within-time-switch",
+                "types": [
+                    "within-time-switch"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/21-within-time-switch.js"
+            },
+            "delay-until": {
+                "name": "delay-until",
+                "types": [
+                    "rdg-delay-until"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/22-delay-until.js"
+            },
+            "sun-position": {
+                "name": "sun-position",
+                "types": [
+                    "sun-position"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/30-sun-position.js"
+            },
+            "moon-position": {
+                "name": "moon-position",
+                "types": [
+                    "moon-position"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/31-moon-position.js"
+            },
+            "time-comp": {
+                "name": "time-comp",
+                "types": [
+                    "time-comp"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/60-time-comp.js"
+            },
+            "time-span": {
+                "name": "time-span",
+                "types": [
+                    "time-span"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/61-time-span.js"
+            },
+            "blind-control": {
+                "name": "blind-control",
+                "types": [
+                    "blind-control"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/80-blind-control.js"
+            },
+            "clock-timer": {
+                "name": "clock-timer",
+                "types": [
+                    "clock-timer"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-sun-position",
+                "file": "/data/node_modules/node-red-contrib-sun-position/nodes/81-clock-timer.js"
+            }
+        }
     }
 }

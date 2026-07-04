@@ -53,9 +53,12 @@ function parseGroupedByStedAndField(csv: string): Record<string, Record<string, 
 
 export async function GET() {
   try {
+    // 24 timer, ikke 6 - Nordtronic-dæmperne rapporterer kun automatisk hver ~18. time
+    // når intet ændrer sig, så et for kort vindue kan fejlagtigt vise "ingen data"
+    // (og dermed default 0%) for en enhed der reelt bare ikke har haft noget nyt at melde.
     const liveFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: -6h)
+        |> range(start: -24h)
         |> filter(fn: (r) => r._measurement == "udendors_lys")
         |> group(columns: ["sted", "_field"])
         |> last()

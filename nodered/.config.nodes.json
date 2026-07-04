@@ -604,5 +604,57 @@
                 "file": "/data/node_modules/node-red-contrib-sun-position/nodes/81-clock-timer.js"
             }
         }
+    },
+    "node-red-contrib-ical-events": {
+        "name": "node-red-contrib-ical-events",
+        "version": "2.2.5",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "ical-config": {
+                "name": "ical-config",
+                "types": [
+                    "ical-config"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-ical-events",
+                "file": "/data/node_modules/node-red-contrib-ical-events/dist/ical-config.js"
+            },
+            "ical-events": {
+                "name": "ical-events",
+                "types": [
+                    "ical-events"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-ical-events",
+                "file": "/data/node_modules/node-red-contrib-ical-events/dist/ical-events.js"
+            },
+            "ical-sensor": {
+                "name": "ical-sensor",
+                "types": [
+                    "ical-sensor"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-ical-events",
+                "file": "/data/node_modules/node-red-contrib-ical-events/dist/ical-sensor.js"
+            },
+            "ical-upcoming": {
+                "name": "ical-upcoming",
+                "types": [
+                    "ical-upcoming"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-ical-events",
+                "file": "/data/node_modules/node-red-contrib-ical-events/dist/ical-upcoming.js"
+            }
+        }
     }
 }
