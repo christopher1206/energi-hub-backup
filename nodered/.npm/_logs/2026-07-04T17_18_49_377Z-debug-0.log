@@ -1,0 +1,919 @@
+0 verbose cli /usr/local/bin/node /usr/src/node-red/node_modules/npm/bin/npm-cli.js
+1 info using npm@11.16.0
+2 info using node@v24.16.0
+3 silly config load:file:/usr/src/node-red/node_modules/npm/npmrc
+4 silly config load:file:/data/.npmrc
+5 silly config load:file:/usr/src/node-red/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install node-red-contrib-modbus@5.45.2
+8 verbose argv "install" "--no-audit" "--no-update-notifier" "--no-fund" "--save" "--save-prefix" "~" "--omit" "dev" "--engine-strict" "--" "node-red-contrib-modbus@5.45.2"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2026-07-04T17_18_49_377Z-
+10 verbose logfile /data/.npm/_logs/2026-07-04T17_18_49_377Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+13 silly idealTree buildDeps
+14 silly fetch manifest node-red-contrib-modbus@5.45.2
+15 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-modbus cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-modbus 384ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-modbus set size:undefined disposed:false
+18 silly placeDep ROOT node-red-contrib-modbus@5.45.2 OK for: node-red-project@0.0.1 want: 5.45.2
+19 silly fetch manifest bson@~6.9.0
+20 silly packumentCache full:https://registry.npmjs.org/bson cache-miss
+21 silly fetch manifest debug@~4.3.7
+22 silly packumentCache full:https://registry.npmjs.org/debug cache-miss
+23 silly fetch manifest jsmodbus@~4.0.10
+24 silly packumentCache full:https://registry.npmjs.org/jsmodbus cache-miss
+25 silly fetch manifest underscore@~1.13.7
+26 silly packumentCache full:https://registry.npmjs.org/underscore cache-miss
+27 silly fetch manifest @xstate/fsm@~2.1.0
+28 silly packumentCache full:https://registry.npmjs.org/@xstate%2ffsm cache-miss
+29 silly fetch manifest line-by-line@~0.1.6
+30 silly packumentCache full:https://registry.npmjs.org/line-by-line cache-miss
+31 silly fetch manifest source-map-support@~0.5.21
+32 silly packumentCache full:https://registry.npmjs.org/source-map-support cache-miss
+33 silly fetch manifest @openp4nr/modbus-serial@https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/openp4nr/modbus-serial/8.4.0/openp4nr-modbus-serial-8.4.0.tgz
+34 silly fetch manifest serialport@~12.0.0
+35 silly packumentCache full:https://registry.npmjs.org/serialport cache-miss
+36 silly fetch manifest @serialport/list@~12.0.0
+37 silly packumentCache full:https://registry.npmjs.org/@serialport%2flist cache-miss
+38 http fetch GET 200 https://registry.npmjs.org/debug 82ms (cache revalidated)
+39 silly packumentCache full:https://registry.npmjs.org/debug set size:195840 disposed:false
+40 http fetch GET 200 https://registry.npmjs.org/underscore 85ms (cache revalidated)
+41 silly packumentCache full:https://registry.npmjs.org/underscore set size:160144 disposed:false
+42 http fetch GET 200 https://registry.npmjs.org/jsmodbus 213ms (cache miss)
+43 silly packumentCache full:https://registry.npmjs.org/jsmodbus set size:undefined disposed:false
+44 http fetch GET 200 https://registry.npmjs.org/line-by-line 231ms (cache miss)
+45 silly packumentCache full:https://registry.npmjs.org/line-by-line set size:undefined disposed:false
+46 http fetch GET 200 https://registry.npmjs.org/source-map-support 256ms (cache miss)
+47 silly packumentCache full:https://registry.npmjs.org/source-map-support set size:undefined disposed:false
+48 http fetch GET 200 https://registry.npmjs.org/bson 262ms (cache revalidated)
+49 silly packumentCache full:https://registry.npmjs.org/bson set size:589688 disposed:false
+50 http fetch GET 200 https://registry.npmjs.org/serialport 266ms (cache miss)
+51 silly packumentCache full:https://registry.npmjs.org/serialport set size:undefined disposed:false
+52 http fetch GET 200 https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/openp4nr/modbus-serial/8.4.0/openp4nr-modbus-serial-8.4.0.tgz 339ms (cache miss)
+53 http fetch GET 200 https://registry.npmjs.org/@xstate%2ffsm 417ms (cache miss)
+54 silly packumentCache full:https://registry.npmjs.org/@xstate%2ffsm set size:undefined disposed:false
+55 http fetch GET 200 https://registry.npmjs.org/@serialport%2flist 477ms (cache miss)
+56 silly packumentCache full:https://registry.npmjs.org/@serialport%2flist set size:undefined disposed:false
+57 silly placeDep ROOT @openp4nr/modbus-serial@8.4.0 OK for: node-red-contrib-modbus@5.45.2 want: https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/openp4nr/modbus-serial/8.4.0/openp4nr-modbus-serial-8.4.0.tgz
+58 silly placeDep ROOT @serialport/list@12.0.0 OK for: node-red-contrib-modbus@5.45.2 want: ~12.0.0
+59 silly placeDep ROOT @xstate/fsm@2.1.0 OK for: node-red-contrib-modbus@5.45.2 want: ~2.1.0
+60 silly placeDep node_modules/node-red-contrib-modbus bson@6.9.1 OK for: node-red-contrib-modbus@5.45.2 want: ~6.9.0
+61 silly placeDep node_modules/node-red-contrib-modbus debug@4.3.7 OK for: node-red-contrib-modbus@5.45.2 want: ~4.3.7
+62 silly placeDep ROOT jsmodbus@4.0.10 OK for: node-red-contrib-modbus@5.45.2 want: ~4.0.10
+63 silly placeDep ROOT line-by-line@0.1.6 OK for: node-red-contrib-modbus@5.45.2 want: ~0.1.6
+64 silly placeDep ROOT serialport@12.0.0 OK for: node-red-contrib-modbus@5.45.2 want: ~12.0.0
+65 silly placeDep ROOT source-map-support@0.5.21 OK for: node-red-contrib-modbus@5.45.2 want: ~0.5.21
+66 silly placeDep node_modules/node-red-contrib-modbus underscore@1.13.8 OK for: node-red-contrib-modbus@5.45.2 want: ~1.13.7
+67 silly fetch manifest debug@^4.1.1
+68 silly packumentCache full:https://registry.npmjs.org/debug cache-hit
+69 silly fetch manifest serialport@^10.4.0
+70 silly packumentCache full:https://registry.npmjs.org/serialport cache-miss
+71 silly fetch manifest commander@11.0.0
+72 silly packumentCache full:https://registry.npmjs.org/commander cache-miss
+73 silly fetch manifest @serialport/bindings-cpp@12.0.1
+74 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-cpp cache-miss
+75 silly fetch manifest ms@^2.1.3
+76 silly packumentCache full:https://registry.npmjs.org/ms cache-miss
+77 silly fetch manifest crc@3.4.0
+78 silly packumentCache full:https://registry.npmjs.org/crc cache-miss
+79 silly fetch manifest debug@^3.1.0
+80 silly packumentCache full:https://registry.npmjs.org/debug cache-hit
+81 silly fetch manifest debug@4.3.4
+82 silly packumentCache full:https://registry.npmjs.org/debug cache-hit
+83 silly fetch manifest @serialport/stream@12.0.0
+84 silly packumentCache full:https://registry.npmjs.org/@serialport%2fstream cache-miss
+85 silly fetch manifest @serialport/binding-mock@10.2.2
+86 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbinding-mock cache-miss
+87 silly fetch manifest @serialport/bindings-cpp@12.0.1
+88 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-cpp cache-miss
+89 silly fetch manifest @serialport/parser-ready@12.0.0
+90 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-ready cache-miss
+91 silly fetch manifest @serialport/parser-regex@12.0.0
+92 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-regex cache-miss
+93 silly fetch manifest @serialport/parser-cctalk@12.0.0
+94 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-cctalk cache-miss
+95 http cache https://registry.npmjs.org/serialport 15ms (cache hit)
+96 silly packumentCache full:https://registry.npmjs.org/serialport set size:490346 disposed:false
+97 silly fetch manifest @serialport/parser-readline@12.0.0
+98 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-readline cache-miss
+99 http fetch GET 200 https://registry.npmjs.org/crc 30ms (cache miss)
+100 silly packumentCache full:https://registry.npmjs.org/crc set size:undefined disposed:false
+101 silly fetch manifest @serialport/parser-delimiter@12.0.0
+102 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-delimiter cache-miss
+103 http fetch GET 200 https://registry.npmjs.org/ms 42ms (cache revalidated)
+104 silly packumentCache full:https://registry.npmjs.org/ms set size:92208 disposed:false
+105 silly fetch manifest @serialport/parser-byte-length@12.0.0
+106 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-byte-length cache-miss
+107 http fetch GET 200 https://registry.npmjs.org/@serialport%2fstream 57ms (cache miss)
+108 silly packumentCache full:https://registry.npmjs.org/@serialport%2fstream set size:undefined disposed:false
+109 silly fetch manifest @serialport/parser-spacepacket@12.0.0
+110 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-spacepacket cache-miss
+111 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-cctalk 56ms (cache miss)
+112 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-cctalk set size:undefined disposed:false
+113 silly fetch manifest @serialport/parser-slip-encoder@12.0.0
+114 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-slip-encoder cache-miss
+115 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-regex 58ms (cache miss)
+116 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-regex set size:undefined disposed:false
+117 silly fetch manifest @serialport/parser-packet-length@12.0.0
+118 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-packet-length cache-miss
+119 http fetch GET 200 https://registry.npmjs.org/@serialport%2fbindings-cpp 62ms (cache miss)
+120 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-cpp set size:undefined disposed:false
+121 silly fetch manifest @serialport/parser-inter-byte-timeout@12.0.0
+122 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-inter-byte-timeout cache-miss
+123 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-ready 63ms (cache miss)
+124 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-ready set size:undefined disposed:false
+125 http fetch GET 200 https://registry.npmjs.org/@serialport%2fbinding-mock 66ms (cache miss)
+126 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbinding-mock set size:undefined disposed:false
+127 http fetch GET 200 https://registry.npmjs.org/@serialport%2fbindings-cpp 70ms (cache miss)
+128 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-cpp set size:undefined disposed:false
+129 http fetch GET 200 https://registry.npmjs.org/commander 72ms (cache revalidated)
+130 silly packumentCache full:https://registry.npmjs.org/commander set size:353115 disposed:false
+131 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-byte-length 40ms (cache miss)
+132 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-byte-length set size:undefined disposed:false
+133 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-slip-encoder 35ms (cache miss)
+134 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-slip-encoder set size:undefined disposed:false
+135 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-delimiter 373ms (cache miss)
+136 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-delimiter set size:undefined disposed:false
+137 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-packet-length 346ms (cache miss)
+138 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-packet-length set size:undefined disposed:false
+139 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-readline 412ms (cache miss)
+140 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-readline set size:undefined disposed:false
+141 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-spacepacket 372ms (cache miss)
+142 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-spacepacket set size:undefined disposed:false
+143 http fetch GET 200 https://registry.npmjs.org/@serialport%2fparser-inter-byte-timeout 368ms (cache miss)
+144 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-inter-byte-timeout set size:undefined disposed:false
+145 silly placeDep node_modules/@openp4nr/modbus-serial debug@4.4.3 OK for: @openp4nr/modbus-serial@8.4.0 want: ^4.1.1
+146 silly placeDep node_modules/@openp4nr/modbus-serial serialport@10.5.0 OK for: @openp4nr/modbus-serial@8.4.0 want: ^10.4.0
+147 silly fetch manifest @serialport/stream@10.5.0
+148 silly packumentCache full:https://registry.npmjs.org/@serialport%2fstream cache-miss
+149 silly fetch manifest @serialport/bindings-cpp@10.8.0
+150 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-cpp cache-miss
+151 silly fetch manifest @serialport/parser-ready@10.5.0
+152 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-ready cache-miss
+153 silly fetch manifest @serialport/parser-regex@10.5.0
+154 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-regex cache-miss
+155 silly fetch manifest @serialport/parser-cctalk@10.5.0
+156 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-cctalk cache-miss
+157 silly fetch manifest @serialport/parser-readline@10.5.0
+158 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-readline cache-miss
+159 silly fetch manifest @serialport/parser-delimiter@10.5.0
+160 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-delimiter cache-miss
+161 silly fetch manifest @serialport/parser-byte-length@10.5.0
+162 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-byte-length cache-miss
+163 silly fetch manifest @serialport/parser-spacepacket@10.5.0
+164 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-spacepacket cache-miss
+165 silly fetch manifest @serialport/parser-slip-encoder@10.5.0
+166 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-slip-encoder cache-miss
+167 silly fetch manifest @serialport/parser-packet-length@10.5.0
+168 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-packet-length cache-miss
+169 http cache https://registry.npmjs.org/@serialport%2fstream 15ms (cache hit)
+170 silly packumentCache full:https://registry.npmjs.org/@serialport%2fstream set size:75131 disposed:false
+171 silly fetch manifest @serialport/parser-inter-byte-timeout@10.5.0
+172 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-inter-byte-timeout cache-miss
+173 http cache https://registry.npmjs.org/@serialport%2fparser-regex 16ms (cache hit)
+174 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-regex set size:58180 disposed:false
+175 http cache https://registry.npmjs.org/@serialport%2fbindings-cpp 16ms (cache hit)
+176 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-cpp set size:141588 disposed:false
+177 http cache https://registry.npmjs.org/@serialport%2fparser-cctalk 17ms (cache hit)
+178 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-cctalk set size:58687 disposed:false
+179 http cache https://registry.npmjs.org/@serialport%2fparser-ready 18ms (cache hit)
+180 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-ready set size:58179 disposed:false
+181 http cache https://registry.npmjs.org/@serialport%2fparser-readline 18ms (cache hit)
+182 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-readline set size:60363 disposed:false
+183 http cache https://registry.npmjs.org/@serialport%2fparser-delimiter 19ms (cache hit)
+184 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-delimiter set size:58805 disposed:false
+185 http cache https://registry.npmjs.org/@serialport%2fparser-slip-encoder 17ms (cache hit)
+186 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-slip-encoder set size:61783 disposed:false
+187 http cache https://registry.npmjs.org/@serialport%2fparser-byte-length 19ms (cache hit)
+188 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-byte-length set size:59122 disposed:false
+189 http cache https://registry.npmjs.org/@serialport%2fparser-spacepacket 20ms (cache hit)
+190 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-spacepacket set size:34720 disposed:false
+191 http cache https://registry.npmjs.org/@serialport%2fparser-packet-length 19ms (cache hit)
+192 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-packet-length set size:30339 disposed:false
+193 http cache https://registry.npmjs.org/@serialport%2fparser-inter-byte-timeout 9ms (cache hit)
+194 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-inter-byte-timeout set size:52699 disposed:false
+195 silly placeDep ROOT @serialport/bindings-cpp@12.0.1 OK for: @serialport/list@12.0.0 want: 12.0.1
+196 silly placeDep node_modules/@serialport/list commander@11.0.0 OK for: @serialport/list@12.0.0 want: 11.0.0
+197 silly fetch manifest node-addon-api@7.0.0
+198 silly packumentCache full:https://registry.npmjs.org/node-addon-api cache-miss
+199 silly fetch manifest node-gyp-build@4.6.0
+200 silly packumentCache full:https://registry.npmjs.org/node-gyp-build cache-miss
+201 silly fetch manifest @serialport/parser-readline@11.0.0
+202 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-readline cache-hit
+203 silly fetch manifest @serialport/bindings-interface@1.2.2
+204 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-interface cache-miss
+205 http fetch GET 200 https://registry.npmjs.org/node-gyp-build 25ms (cache miss)
+206 silly packumentCache full:https://registry.npmjs.org/node-gyp-build set size:undefined disposed:false
+207 http fetch GET 200 https://registry.npmjs.org/@serialport%2fbindings-interface 44ms (cache miss)
+208 silly packumentCache full:https://registry.npmjs.org/@serialport%2fbindings-interface set size:undefined disposed:false
+209 http fetch GET 200 https://registry.npmjs.org/node-addon-api 220ms (cache miss)
+210 silly packumentCache full:https://registry.npmjs.org/node-addon-api set size:undefined disposed:false
+211 silly placeDep ROOT @serialport/bindings-interface@1.2.2 OK for: @serialport/bindings-cpp@12.0.1 want: 1.2.2
+212 silly placeDep ROOT @serialport/parser-readline@11.0.0 OK for: @serialport/bindings-cpp@12.0.1 want: 11.0.0
+213 silly placeDep node_modules/@serialport/bindings-cpp debug@4.3.4 OK for: @serialport/bindings-cpp@12.0.1 want: 4.3.4
+214 silly placeDep ROOT node-addon-api@7.0.0 OK for: @serialport/bindings-cpp@12.0.1 want: 7.0.0
+215 silly placeDep ROOT node-gyp-build@4.6.0 OK for: @serialport/bindings-cpp@12.0.1 want: 4.6.0
+216 silly fetch manifest @serialport/parser-delimiter@11.0.0
+217 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-delimiter cache-hit
+218 silly fetch manifest ms@2.1.2
+219 silly packumentCache full:https://registry.npmjs.org/ms cache-hit
+220 silly placeDep ROOT @serialport/parser-delimiter@11.0.0 OK for: @serialport/parser-readline@11.0.0 want: 11.0.0
+221 silly placeDep ROOT crc@3.4.0 OK for: jsmodbus@4.0.10 want: 3.4.0
+222 silly placeDep node_modules/jsmodbus debug@3.2.7 OK for: jsmodbus@4.0.10 want: ^3.1.0
+223 silly fetch manifest ms@^2.1.1
+224 silly packumentCache full:https://registry.npmjs.org/ms cache-hit
+225 silly placeDep ROOT @serialport/binding-mock@10.2.2 OK for: serialport@12.0.0 want: 10.2.2
+226 silly placeDep ROOT @serialport/parser-byte-length@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+227 silly placeDep ROOT @serialport/parser-cctalk@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+228 silly placeDep node_modules/serialport @serialport/parser-delimiter@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+229 silly placeDep ROOT @serialport/parser-inter-byte-timeout@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+230 silly placeDep ROOT @serialport/parser-packet-length@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+231 silly placeDep node_modules/serialport @serialport/parser-readline@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+232 silly placeDep ROOT @serialport/parser-ready@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+233 silly placeDep ROOT @serialport/parser-regex@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+234 silly placeDep ROOT @serialport/parser-slip-encoder@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+235 silly placeDep ROOT @serialport/parser-spacepacket@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+236 silly placeDep ROOT @serialport/stream@12.0.0 OK for: serialport@12.0.0 want: 12.0.0
+237 silly placeDep node_modules/serialport debug@4.3.4 OK for: serialport@12.0.0 want: 4.3.4
+238 silly fetch manifest debug@^4.3.3
+239 silly packumentCache full:https://registry.npmjs.org/debug cache-hit
+240 silly placeDep node_modules/@serialport/binding-mock debug@4.4.3 OK for: @serialport/binding-mock@10.2.2 want: ^4.3.3
+241 silly placeDep node_modules/@serialport/stream debug@4.3.4 OK for: @serialport/stream@12.0.0 want: 4.3.4
+242 silly placeDep node_modules/@openp4nr/modbus-serial ms@2.1.3 OK for: debug@4.4.3 want: ^2.1.3
+243 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/bindings-cpp@10.8.0 OK for: serialport@10.5.0 want: 10.8.0
+244 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-byte-length@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+245 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-cctalk@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+246 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-delimiter@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+247 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-inter-byte-timeout@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+248 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-packet-length@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+249 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-readline@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+250 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-ready@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+251 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-regex@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+252 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-slip-encoder@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+253 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/parser-spacepacket@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+254 silly placeDep node_modules/@openp4nr/modbus-serial @serialport/stream@10.5.0 OK for: serialport@10.5.0 want: 10.5.0
+255 silly fetch manifest node-addon-api@^5.0.0
+256 silly packumentCache full:https://registry.npmjs.org/node-addon-api cache-miss
+257 silly fetch manifest @serialport/parser-readline@^10.2.1
+258 silly packumentCache full:https://registry.npmjs.org/@serialport%2fparser-readline cache-hit
+259 http cache https://registry.npmjs.org/node-addon-api 9ms (cache hit)
+260 silly packumentCache full:https://registry.npmjs.org/node-addon-api set size:365991 disposed:false
+261 silly placeDep node_modules/@openp4nr/modbus-serial node-addon-api@5.1.0 OK for: @serialport/bindings-cpp@10.8.0 want: ^5.0.0
+262 silly placeDep node_modules/@serialport/binding-mock ms@2.1.3 OK for: debug@4.4.3 want: ^2.1.3
+263 silly placeDep node_modules/@serialport/bindings-cpp ms@2.1.2 OK for: debug@4.3.4 want: 2.1.2
+264 silly placeDep node_modules/@serialport/stream ms@2.1.2 OK for: debug@4.3.4 want: 2.1.2
+265 silly placeDep node_modules/jsmodbus ms@2.1.3 OK for: debug@3.2.7 want: ^2.1.1
+266 silly placeDep node_modules/node-red-contrib-modbus ms@2.1.3 OK for: debug@4.3.7 want: ^2.1.3
+267 silly placeDep node_modules/serialport ms@2.1.2 OK for: debug@4.3.4 want: 2.1.2
+268 silly reify moves {}
+269 http cache @serialport/stream@https://registry.npmjs.org/@serialport/stream/-/stream-12.0.0.tgz 0ms (cache hit)
+270 http cache @serialport/parser-spacepacket@https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-12.0.0.tgz 0ms (cache hit)
+271 http cache @serialport/parser-slip-encoder@https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-12.0.0.tgz 0ms (cache hit)
+272 http cache @serialport/parser-ready@https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-12.0.0.tgz 0ms (cache hit)
+273 http cache @serialport/parser-inter-byte-timeout@https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-12.0.0.tgz 0ms (cache hit)
+274 http cache @serialport/parser-cctalk@https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-12.0.0.tgz 0ms (cache hit)
+275 http cache @serialport/parser-packet-length@https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-12.0.0.tgz 0ms (cache hit)
+276 http cache @serialport/parser-regex@https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-12.0.0.tgz 0ms (cache hit)
+277 http cache @serialport/parser-byte-length@https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-12.0.0.tgz 0ms (cache hit)
+278 http cache @serialport/binding-mock@https://registry.npmjs.org/@serialport/binding-mock/-/binding-mock-10.2.2.tgz 0ms (cache hit)
+279 http cache crc@https://registry.npmjs.org/crc/-/crc-3.4.0.tgz 0ms (cache hit)
+280 http cache @serialport/parser-delimiter@https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-11.0.0.tgz 0ms (cache hit)
+281 http cache node-gyp-build@https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.6.0.tgz 0ms (cache hit)
+282 http cache node-addon-api@https://registry.npmjs.org/node-addon-api/-/node-addon-api-7.0.0.tgz 0ms (cache hit)
+283 http cache @serialport/parser-readline@https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-11.0.0.tgz 0ms (cache hit)
+284 http cache @serialport/bindings-interface@https://registry.npmjs.org/@serialport/bindings-interface/-/bindings-interface-1.2.2.tgz 0ms (cache hit)
+285 http cache @serialport/bindings-cpp@https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-12.0.1.tgz 0ms (cache hit)
+286 http cache source-map-support@https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz 0ms (cache hit)
+287 http cache serialport@https://registry.npmjs.org/serialport/-/serialport-12.0.0.tgz 0ms (cache hit)
+288 http cache line-by-line@https://registry.npmjs.org/line-by-line/-/line-by-line-0.1.6.tgz 0ms (cache hit)
+289 http cache jsmodbus@https://registry.npmjs.org/jsmodbus/-/jsmodbus-4.0.10.tgz 0ms (cache hit)
+290 http cache @xstate/fsm@https://registry.npmjs.org/@xstate/fsm/-/fsm-2.1.0.tgz 0ms (cache hit)
+291 http cache @serialport/list@https://registry.npmjs.org/@serialport/list/-/list-12.0.0.tgz 0ms (cache hit)
+292 http cache @openp4nr/modbus-serial@https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/openp4nr/modbus-serial/8.4.0/openp4nr-modbus-serial-8.4.0.tgz 0ms (cache hit)
+293 http cache node-red-contrib-modbus@https://registry.npmjs.org/node-red-contrib-modbus/-/node-red-contrib-modbus-5.45.2.tgz 0ms (cache hit)
+294 http cache zmq@https://registry.npmjs.org/zmq/-/zmq-2.15.3.tgz 0ms (cache hit)
+295 http cache which-typed-array@https://registry.npmjs.org/which-typed-array/-/which-typed-array-1.1.22.tgz 0ms (cache hit)
+296 http cache util-extend@https://registry.npmjs.org/util-extend/-/util-extend-1.0.3.tgz 0ms (cache hit)
+297 http cache which@https://registry.npmjs.org/which/-/which-1.3.1.tgz 0ms (cache hit)
+298 http cache url-template@https://registry.npmjs.org/url-template/-/url-template-2.0.8.tgz 0ms (cache hit)
+299 http cache unzip-response@https://registry.npmjs.org/unzip-response/-/unzip-response-1.0.2.tgz 0ms (cache hit)
+300 http cache typed-array-buffer@https://registry.npmjs.org/typed-array-buffer/-/typed-array-buffer-1.0.3.tgz 0ms (cache hit)
+301 http cache type@https://registry.npmjs.org/type/-/type-2.7.3.tgz 0ms (cache hit)
+302 http cache to-buffer@https://registry.npmjs.org/to-buffer/-/to-buffer-1.2.2.tgz 0ms (cache hit)
+303 http cache tar-stream@https://registry.npmjs.org/tar-stream/-/tar-stream-1.6.2.tgz 0ms (cache hit)
+304 http cache tar-fs@https://registry.npmjs.org/tar-fs/-/tar-fs-1.16.6.tgz 0ms (cache hit)
+305 http cache tar@https://registry.npmjs.org/tar/-/tar-2.2.2.tgz 0ms (cache hit)
+306 http cache snappy@https://registry.npmjs.org/snappy/-/snappy-5.0.5.tgz 0ms (cache hit)
+307 http cache strip-json-comments@https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-2.0.1.tgz 0ms (cache hit)
+308 http cache simple-mime@https://registry.npmjs.org/simple-mime/-/simple-mime-0.1.0.tgz 0ms (cache hit)
+309 http cache simple-get@https://registry.npmjs.org/simple-get/-/simple-get-1.4.3.tgz 0ms (cache hit)
+310 http cache rimraf@https://registry.npmjs.org/rimraf/-/rimraf-2.7.1.tgz 0ms (cache hit)
+311 http cache rc@https://registry.npmjs.org/rc/-/rc-1.2.8.tgz 0ms (cache hit)
+312 http cache prebuild@https://registry.npmjs.org/prebuild/-/prebuild-4.5.0.tgz 0ms (cache hit)
+313 http cache path-array@https://registry.npmjs.org/path-array/-/path-array-1.0.1.tgz 0ms (cache hit)
+314 http cache possible-typed-array-names@https://registry.npmjs.org/possible-typed-array-names/-/possible-typed-array-names-1.1.0.tgz 0ms (cache hit)
+315 http cache osenv@https://registry.npmjs.org/osenv/-/osenv-0.1.5.tgz 0ms (cache hit)
+316 http cache os-tmpdir@https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz 0ms (cache hit)
+317 http cache os-homedir@https://registry.npmjs.org/os-homedir/-/os-homedir-1.0.2.tgz 0ms (cache hit)
+318 http cache npmlog@https://registry.npmjs.org/npmlog/-/npmlog-2.0.4.tgz 0ms (cache hit)
+319 http cache noop-logger@https://registry.npmjs.org/noop-logger/-/noop-logger-0.1.1.tgz 0ms (cache hit)
+320 http cache nopt@https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz 0ms (cache hit)
+321 http cache node-ninja@https://registry.npmjs.org/node-ninja/-/node-ninja-1.0.2.tgz 0ms (cache hit)
+322 http cache node-gyp@https://registry.npmjs.org/node-gyp/-/node-gyp-3.8.0.tgz 0ms (cache hit)
+323 http cache mkdirp@https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.6.tgz 0ms (cache hit)
+324 http cache next-tick@https://registry.npmjs.org/next-tick/-/next-tick-1.1.0.tgz 0ms (cache hit)
+325 http cache lodash.padstart@https://registry.npmjs.org/lodash.padstart/-/lodash.padstart-4.6.1.tgz 0ms (cache hit)
+326 http cache lodash.pad@https://registry.npmjs.org/lodash.pad/-/lodash.pad-4.5.1.tgz 0ms (cache hit)
+327 http cache lodash.padend@https://registry.npmjs.org/lodash.padend/-/lodash.padend-4.6.1.tgz 0ms (cache hit)
+328 http cache leveldown@https://registry.npmjs.org/leveldown/-/leveldown-1.4.6.tgz 0ms (cache hit)
+329 http cache jsonist@https://registry.npmjs.org/jsonist/-/jsonist-2.1.2.tgz 0ms (cache hit)
+330 http cache isexe@https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz 0ms (cache hit)
+331 http cache is-typed-array@https://registry.npmjs.org/is-typed-array/-/is-typed-array-1.1.15.tgz 0ms (cache hit)
+332 http cache is-callable@https://registry.npmjs.org/is-callable/-/is-callable-1.2.7.tgz 0ms (cache hit)
+333 http cache ini@https://registry.npmjs.org/ini/-/ini-1.3.8.tgz 0ms (cache hit)
+334 http cache hyperquest@https://registry.npmjs.org/hyperquest/-/hyperquest-2.1.3.tgz 0ms (cache hit)
+335 http cache has-unicode@https://registry.npmjs.org/has-unicode/-/has-unicode-2.0.1.tgz 0ms (cache hit)
+336 http cache has-tostringtag@https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.2.tgz 0ms (cache hit)
+337 http cache graceful-fs@https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz 0ms (cache hit)
+338 http cache github-from-package@https://registry.npmjs.org/github-from-package/-/github-from-package-0.0.0.tgz 0ms (cache hit)
+339 http cache ghutils@https://registry.npmjs.org/ghutils/-/ghutils-3.2.6.tgz 0ms (cache hit)
+340 http cache ghrepos@https://registry.npmjs.org/ghrepos/-/ghrepos-2.1.0.tgz 0ms (cache hit)
+341 http cache ghreleases@https://registry.npmjs.org/ghreleases/-/ghreleases-1.0.7.tgz 0ms (cache hit)
+342 http cache gauge@https://registry.npmjs.org/gauge/-/gauge-1.2.7.tgz 0ms (cache hit)
+343 http cache fstream@https://registry.npmjs.org/fstream/-/fstream-1.0.12.tgz 0ms (cache hit)
+344 http cache fs-ext@https://registry.npmjs.org/fs-ext/-/fs-ext-0.5.0.tgz 0ms (cache hit)
+345 http cache fs-constants@https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz 0ms (cache hit)
+346 http cache for-each@https://registry.npmjs.org/for-each/-/for-each-0.3.5.tgz 0ms (cache hit)
+347 http cache fast-future@https://registry.npmjs.org/fast-future/-/fast-future-1.0.2.tgz 0ms (cache hit)
+348 http cache ext@https://registry.npmjs.org/ext/-/ext-1.7.0.tgz 0ms (cache hit)
+349 http cache expand-template@https://registry.npmjs.org/expand-template/-/expand-template-1.1.1.tgz 0ms (cache hit)
+350 http cache execspawn@https://registry.npmjs.org/execspawn/-/execspawn-1.0.1.tgz 0ms (cache hit)
+351 http cache event-emitter@https://registry.npmjs.org/event-emitter/-/event-emitter-0.3.5.tgz 0ms (cache hit)
+352 http cache esniff@https://registry.npmjs.org/esniff/-/esniff-2.0.1.tgz 0ms (cache hit)
+353 http cache es6-symbol@https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.1.4.tgz 0ms (cache hit)
+354 http cache es6-iterator@https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.3.tgz 0ms (cache hit)
+355 http cache es5-ext@https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.64.tgz 0ms (cache hit)
+356 http cache duplexer2@https://registry.npmjs.org/duplexer2/-/duplexer2-0.0.2.tgz 0ms (cache hit)
+357 http cache delegates@https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz 0ms (cache hit)
+358 http cache d@https://registry.npmjs.org/d/-/d-1.0.2.tgz 0ms (cache hit)
+359 http cache deep-extend@https://registry.npmjs.org/deep-extend/-/deep-extend-0.6.0.tgz 0ms (cache hit)
+360 http cache chownr@https://registry.npmjs.org/chownr/-/chownr-1.1.4.tgz 0ms (cache hit)
+361 http cache buffer-fill@https://registry.npmjs.org/buffer-fill/-/buffer-fill-1.0.0.tgz 0ms (cache hit)
+362 http cache buffer-alloc@https://registry.npmjs.org/buffer-alloc/-/buffer-alloc-1.2.0.tgz 0ms (cache hit)
+363 http cache block-stream@https://registry.npmjs.org/block-stream/-/block-stream-0.0.9.tgz 0ms (cache hit)
+364 http cache buffer-alloc-unsafe@https://registry.npmjs.org/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz 0ms (cache hit)
+365 http cache bindings@https://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz 0ms (cache hit)
+366 http cache available-typed-arrays@https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.7.tgz 0ms (cache hit)
+367 http cache array-index@https://registry.npmjs.org/array-index/-/array-index-1.0.0.tgz 0ms (cache hit)
+368 http cache are-we-there-yet@https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.1.7.tgz 0ms (cache hit)
+369 http cache ansi@https://registry.npmjs.org/ansi/-/ansi-0.3.1.tgz 0ms (cache hit)
+370 http cache after@https://registry.npmjs.org/after/-/after-0.8.2.tgz 0ms (cache hit)
+371 http cache abbrev@https://registry.npmjs.org/abbrev/-/abbrev-1.1.1.tgz 0ms (cache hit)
+372 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.2.tgz 0ms (cache hit)
+373 http cache debug@https://registry.npmjs.org/debug/-/debug-4.3.4.tgz 0ms (cache hit)
+374 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+375 http cache debug@https://registry.npmjs.org/debug/-/debug-4.4.3.tgz 0ms (cache hit)
+376 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.2.tgz 0ms (cache hit)
+377 http cache debug@https://registry.npmjs.org/debug/-/debug-4.3.4.tgz 0ms (cache hit)
+378 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.2.tgz 0ms (cache hit)
+379 http cache debug@https://registry.npmjs.org/debug/-/debug-4.3.4.tgz 0ms (cache hit)
+380 http cache @serialport/parser-readline@https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-12.0.0.tgz 0ms (cache hit)
+381 http cache @serialport/parser-delimiter@https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-12.0.0.tgz 0ms (cache hit)
+382 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+383 http cache debug@https://registry.npmjs.org/debug/-/debug-3.2.7.tgz 0ms (cache hit)
+384 http cache commander@https://registry.npmjs.org/commander/-/commander-11.0.0.tgz 0ms (cache hit)
+385 http cache node-addon-api@https://registry.npmjs.org/node-addon-api/-/node-addon-api-5.1.0.tgz 0ms (cache hit)
+386 http cache @serialport/stream@https://registry.npmjs.org/@serialport/stream/-/stream-10.5.0.tgz 0ms (cache hit)
+387 http cache @serialport/parser-spacepacket@https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-10.5.0.tgz 0ms (cache hit)
+388 http cache @serialport/parser-slip-encoder@https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-10.5.0.tgz 0ms (cache hit)
+389 http cache @serialport/parser-regex@https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-10.5.0.tgz 0ms (cache hit)
+390 http cache @serialport/parser-ready@https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-10.5.0.tgz 0ms (cache hit)
+391 http cache @serialport/parser-readline@https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-10.5.0.tgz 0ms (cache hit)
+392 http cache @serialport/parser-packet-length@https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-10.5.0.tgz 0ms (cache hit)
+393 http cache @serialport/parser-inter-byte-timeout@https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-10.5.0.tgz 0ms (cache hit)
+394 http cache @serialport/parser-delimiter@https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-10.5.0.tgz 0ms (cache hit)
+395 http cache @serialport/parser-cctalk@https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-10.5.0.tgz 0ms (cache hit)
+396 http cache @serialport/parser-byte-length@https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-10.5.0.tgz 0ms (cache hit)
+397 http cache @serialport/bindings-cpp@https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-10.8.0.tgz 0ms (cache hit)
+398 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+399 http cache serialport@https://registry.npmjs.org/serialport/-/serialport-10.5.0.tgz 0ms (cache hit)
+400 http cache debug@https://registry.npmjs.org/debug/-/debug-4.4.3.tgz 0ms (cache hit)
+401 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+402 http cache underscore@https://registry.npmjs.org/underscore/-/underscore-1.13.8.tgz 0ms (cache hit)
+403 http cache debug@https://registry.npmjs.org/debug/-/debug-4.3.7.tgz 0ms (cache hit)
+404 http cache bson@https://registry.npmjs.org/bson/-/bson-6.9.1.tgz 0ms (cache hit)
+405 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+406 http cache isarray@https://registry.npmjs.org/isarray/-/isarray-2.0.5.tgz 0ms (cache hit)
+407 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz 0ms (cache hit)
+408 http cache safe-buffer@https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz 0ms (cache hit)
+409 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz 0ms (cache hit)
+410 http cache node-gyp@https://registry.npmjs.org/node-gyp/-/node-gyp-3.4.0.tgz 0ms (cache hit)
+411 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+412 http cache semver@https://registry.npmjs.org/semver/-/semver-5.3.0.tgz 0ms (cache hit)
+413 http cache nan@https://registry.npmjs.org/nan/-/nan-2.3.5.tgz 0ms (cache hit)
+414 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz 0ms (cache hit)
+415 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz 0ms (cache hit)
+416 http cache bl@https://registry.npmjs.org/bl/-/bl-3.0.1.tgz 0ms (cache hit)
+417 http cache through2@https://registry.npmjs.org/through2/-/through2-0.6.5.tgz 0ms (cache hit)
+418 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.34.tgz 0ms (cache hit)
+419 http cache isarray@https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz 0ms (cache hit)
+420 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz 0ms (cache hit)
+421 http cache buffer-from@https://registry.npmjs.org/buffer-from/-/buffer-from-0.1.2.tgz 0ms (cache hit)
+422 http cache safe-buffer@https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz 0ms (cache hit)
+423 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz 0ms (cache hit)
+424 silly tarball no local data for @serialport/stream@https://registry.npmjs.org/@serialport/stream/-/stream-12.0.0.tgz. Extracting by manifest.
+425 silly tarball no local data for @serialport/parser-spacepacket@https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-12.0.0.tgz. Extracting by manifest.
+426 silly tarball no local data for @serialport/parser-slip-encoder@https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-12.0.0.tgz. Extracting by manifest.
+427 silly tarball no local data for @serialport/parser-ready@https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-12.0.0.tgz. Extracting by manifest.
+428 silly tarball no local data for @serialport/parser-inter-byte-timeout@https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-12.0.0.tgz. Extracting by manifest.
+429 silly tarball no local data for @serialport/parser-cctalk@https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-12.0.0.tgz. Extracting by manifest.
+430 silly tarball no local data for @serialport/parser-packet-length@https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-12.0.0.tgz. Extracting by manifest.
+431 silly tarball no local data for @serialport/parser-regex@https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-12.0.0.tgz. Extracting by manifest.
+432 silly tarball no local data for @serialport/parser-byte-length@https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-12.0.0.tgz. Extracting by manifest.
+433 silly tarball no local data for @serialport/binding-mock@https://registry.npmjs.org/@serialport/binding-mock/-/binding-mock-10.2.2.tgz. Extracting by manifest.
+434 silly tarball no local data for crc@https://registry.npmjs.org/crc/-/crc-3.4.0.tgz. Extracting by manifest.
+435 silly tarball no local data for @serialport/parser-delimiter@https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-11.0.0.tgz. Extracting by manifest.
+436 silly tarball no local data for node-gyp-build@https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.6.0.tgz. Extracting by manifest.
+437 silly tarball no local data for node-addon-api@https://registry.npmjs.org/node-addon-api/-/node-addon-api-7.0.0.tgz. Extracting by manifest.
+438 silly tarball no local data for @serialport/parser-readline@https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-11.0.0.tgz. Extracting by manifest.
+439 silly tarball no local data for @serialport/bindings-interface@https://registry.npmjs.org/@serialport/bindings-interface/-/bindings-interface-1.2.2.tgz. Extracting by manifest.
+440 silly tarball no local data for @serialport/bindings-cpp@https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-12.0.1.tgz. Extracting by manifest.
+441 silly tarball no local data for source-map-support@https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz. Extracting by manifest.
+442 silly tarball no local data for serialport@https://registry.npmjs.org/serialport/-/serialport-12.0.0.tgz. Extracting by manifest.
+443 silly tarball no local data for line-by-line@https://registry.npmjs.org/line-by-line/-/line-by-line-0.1.6.tgz. Extracting by manifest.
+444 silly tarball no local data for jsmodbus@https://registry.npmjs.org/jsmodbus/-/jsmodbus-4.0.10.tgz. Extracting by manifest.
+445 silly tarball no local data for @xstate/fsm@https://registry.npmjs.org/@xstate/fsm/-/fsm-2.1.0.tgz. Extracting by manifest.
+446 silly tarball no local data for @serialport/list@https://registry.npmjs.org/@serialport/list/-/list-12.0.0.tgz. Extracting by manifest.
+447 silly tarball no local data for node-red-contrib-modbus@https://registry.npmjs.org/node-red-contrib-modbus/-/node-red-contrib-modbus-5.45.2.tgz. Extracting by manifest.
+448 silly tarball no local data for ms@https://registry.npmjs.org/ms/-/ms-2.1.2.tgz. Extracting by manifest.
+449 silly tarball no local data for debug@https://registry.npmjs.org/debug/-/debug-4.3.4.tgz. Extracting by manifest.
+450 silly tarball no local data for ms@https://registry.npmjs.org/ms/-/ms-2.1.2.tgz. Extracting by manifest.
+451 silly tarball no local data for debug@https://registry.npmjs.org/debug/-/debug-4.3.4.tgz. Extracting by manifest.
+452 silly tarball no local data for ms@https://registry.npmjs.org/ms/-/ms-2.1.2.tgz. Extracting by manifest.
+453 silly tarball no local data for debug@https://registry.npmjs.org/debug/-/debug-4.3.4.tgz. Extracting by manifest.
+454 silly tarball no local data for @serialport/parser-readline@https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-12.0.0.tgz. Extracting by manifest.
+455 silly tarball no local data for @serialport/parser-delimiter@https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-12.0.0.tgz. Extracting by manifest.
+456 silly tarball no local data for debug@https://registry.npmjs.org/debug/-/debug-3.2.7.tgz. Extracting by manifest.
+457 silly tarball no local data for commander@https://registry.npmjs.org/commander/-/commander-11.0.0.tgz. Extracting by manifest.
+458 silly tarball no local data for node-addon-api@https://registry.npmjs.org/node-addon-api/-/node-addon-api-5.1.0.tgz. Extracting by manifest.
+459 silly tarball no local data for @serialport/stream@https://registry.npmjs.org/@serialport/stream/-/stream-10.5.0.tgz. Extracting by manifest.
+460 silly tarball no local data for @serialport/parser-spacepacket@https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-10.5.0.tgz. Extracting by manifest.
+461 silly tarball no local data for @serialport/parser-slip-encoder@https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-10.5.0.tgz. Extracting by manifest.
+462 silly tarball no local data for @serialport/parser-regex@https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-10.5.0.tgz. Extracting by manifest.
+463 silly tarball no local data for @serialport/parser-ready@https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-10.5.0.tgz. Extracting by manifest.
+464 silly tarball no local data for @serialport/parser-readline@https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-10.5.0.tgz. Extracting by manifest.
+465 silly tarball no local data for @serialport/parser-packet-length@https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-10.5.0.tgz. Extracting by manifest.
+466 silly tarball no local data for @serialport/parser-inter-byte-timeout@https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-10.5.0.tgz. Extracting by manifest.
+467 silly tarball no local data for @serialport/parser-delimiter@https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-10.5.0.tgz. Extracting by manifest.
+468 silly tarball no local data for @serialport/parser-cctalk@https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-10.5.0.tgz. Extracting by manifest.
+469 silly tarball no local data for @serialport/parser-byte-length@https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-10.5.0.tgz. Extracting by manifest.
+470 silly tarball no local data for @serialport/bindings-cpp@https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-10.8.0.tgz. Extracting by manifest.
+471 silly tarball no local data for serialport@https://registry.npmjs.org/serialport/-/serialport-10.5.0.tgz. Extracting by manifest.
+472 silly tarball no local data for underscore@https://registry.npmjs.org/underscore/-/underscore-1.13.8.tgz. Extracting by manifest.
+473 silly tarball no local data for debug@https://registry.npmjs.org/debug/-/debug-4.3.7.tgz. Extracting by manifest.
+474 silly tarball no local data for bson@https://registry.npmjs.org/bson/-/bson-6.9.1.tgz. Extracting by manifest.
+475 warn deprecated osenv@0.1.5: This package is no longer supported.
+476 warn deprecated npmlog@2.0.4: This package is no longer supported.
+477 warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+478 warn deprecated are-we-there-yet@1.1.7: This package is no longer supported.
+479 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-12.0.0.tgz 262ms (cache miss)
+480 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-12.0.0.tgz 265ms (cache miss)
+481 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-12.0.0.tgz 264ms (cache miss)
+482 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-12.0.0.tgz 262ms (cache miss)
+483 warn deprecated gauge@1.2.7: This package is no longer supported.
+484 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-12.0.0.tgz 268ms (cache miss)
+485 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-12.0.0.tgz 266ms (cache miss)
+486 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-12.0.0.tgz 267ms (cache miss)
+487 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-12.0.0.tgz 270ms (cache miss)
+488 http fetch GET 200 https://registry.npmjs.org/ms/-/ms-2.1.2.tgz 263ms (cache miss)
+489 http fetch GET 200 https://registry.npmjs.org/@serialport/binding-mock/-/binding-mock-10.2.2.tgz 274ms (cache miss)
+490 http fetch GET 200 https://registry.npmjs.org/@serialport/bindings-interface/-/bindings-interface-1.2.2.tgz 272ms (cache miss)
+491 http fetch GET 200 https://registry.npmjs.org/@serialport/stream/-/stream-12.0.0.tgz 283ms (cache miss)
+492 http fetch GET 200 https://registry.npmjs.org/ms/-/ms-2.1.2.tgz 269ms (cache miss)
+493 http fetch GET 200 https://registry.npmjs.org/ms/-/ms-2.1.2.tgz 276ms (cache miss)
+494 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-12.0.0.tgz 276ms (cache miss)
+495 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-12.0.0.tgz 275ms (cache miss)
+496 http fetch GET 200 https://registry.npmjs.org/serialport/-/serialport-12.0.0.tgz 289ms (cache miss)
+497 http fetch GET 200 https://registry.npmjs.org/debug/-/debug-4.3.4.tgz 282ms (cache miss)
+498 http fetch GET 200 https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.6.0.tgz 294ms (cache miss)
+499 http fetch GET 200 https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz 300ms (cache miss)
+500 http fetch GET 200 https://registry.npmjs.org/debug/-/debug-4.3.4.tgz 299ms (cache miss)
+501 http fetch GET 200 https://registry.npmjs.org/debug/-/debug-4.3.4.tgz 299ms (cache miss)
+502 http fetch GET 200 https://registry.npmjs.org/crc/-/crc-3.4.0.tgz 309ms (cache miss)
+503 http fetch GET 200 https://registry.npmjs.org/debug/-/debug-3.2.7.tgz 301ms (cache miss)
+504 http fetch GET 200 https://registry.npmjs.org/line-by-line/-/line-by-line-0.1.6.tgz 315ms (cache miss)
+505 warn deprecated fstream@1.0.12: This package is no longer supported.
+506 http fetch GET 200 https://registry.npmjs.org/commander/-/commander-11.0.0.tgz 315ms (cache miss)
+507 http fetch GET 200 https://registry.npmjs.org/node-addon-api/-/node-addon-api-5.1.0.tgz 317ms (cache miss)
+508 warn deprecated prebuild@4.5.0: No longer maintained (alternatives available)
+509 http fetch GET 200 https://registry.npmjs.org/node-addon-api/-/node-addon-api-7.0.0.tgz 336ms (cache miss)
+510 http fetch GET 200 https://registry.npmjs.org/@xstate/fsm/-/fsm-2.1.0.tgz 372ms (cache miss)
+511 http fetch GET 200 https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-12.0.1.tgz 406ms (cache miss)
+512 http fetch GET 200 https://registry.npmjs.org/@serialport/list/-/list-12.0.0.tgz 423ms (cache miss)
+513 http fetch GET 200 https://registry.npmjs.org/@serialport/stream/-/stream-10.5.0.tgz 416ms (cache miss)
+514 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-10.5.0.tgz 417ms (cache miss)
+515 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-10.5.0.tgz 425ms (cache miss)
+516 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-10.5.0.tgz 430ms (cache miss)
+517 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-10.5.0.tgz 443ms (cache miss)
+518 http fetch GET 200 https://registry.npmjs.org/debug/-/debug-4.3.7.tgz 439ms (cache miss)
+519 http fetch GET 200 https://registry.npmjs.org/serialport/-/serialport-10.5.0.tgz 441ms (cache miss)
+520 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-10.5.0.tgz 447ms (cache miss)
+521 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-10.5.0.tgz 449ms (cache miss)
+522 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-10.5.0.tgz 448ms (cache miss)
+523 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-10.5.0.tgz 456ms (cache miss)
+524 warn deprecated tar@2.2.2: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+525 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-10.5.0.tgz 475ms (cache miss)
+526 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-10.5.0.tgz 524ms (cache miss)
+527 http fetch GET 200 https://registry.npmjs.org/jsmodbus/-/jsmodbus-4.0.10.tgz 543ms (cache miss)
+528 http fetch GET 200 https://registry.npmjs.org/bson/-/bson-6.9.1.tgz 531ms (cache miss)
+529 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-11.0.0.tgz 635ms (cache miss)
+530 warn deprecated leveldown@1.4.6: Superseded by classic-level (https://github.com/Level/community#faq)
+531 http fetch GET 200 https://registry.npmjs.org/underscore/-/underscore-1.13.8.tgz 645ms (cache miss)
+532 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-modbus/-/node-red-contrib-modbus-5.45.2.tgz 667ms (cache miss)
+533 http fetch GET 200 https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-10.8.0.tgz 658ms (cache miss)
+534 http fetch GET 200 https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-11.0.0.tgz 792ms (cache miss)
+535 info run @serialport/bindings-cpp@12.0.1 install node_modules/@serialport/bindings-cpp node-gyp-build
+536 info run fs-ext@0.5.0 install node_modules/fs-ext node-gyp configure build
+537 info run leveldown@1.4.6 install node_modules/leveldown prebuild --install
+538 info run snappy@5.0.5 install node_modules/snappy ./node_modules/.bin/node-gyp rebuild
+539 info run zmq@2.15.3 install node_modules/zmq node-gyp rebuild
+540 info run @serialport/bindings-cpp@10.8.0 install node_modules/@openp4nr/modbus-serial/node_modules/@serialport/bindings-cpp node-gyp-build
+541 info run @serialport/bindings-cpp@12.0.1 install { code: 0, signal: null }
+542 info run @serialport/bindings-cpp@10.8.0 install { code: 0, signal: null }
+543 info run fs-ext@0.5.0 install { code: 1, signal: null }
+544 verbose reify failed optional dependency /data/node_modules/fs-ext
+545 silly reify mark deleted [ '/data/node_modules/fs-ext' ]
+546 info run zmq@2.15.3 install { code: 1, signal: null }
+547 verbose reify failed optional dependency /data/node_modules/zmq
+548 silly reify mark deleted [ '/data/node_modules/zmq' ]
+549 verbose reify failed optional dependency /data/node_modules/zmq/node_modules/nan
+550 silly reify mark deleted [ '/data/node_modules/zmq/node_modules/nan' ]
+551 info run snappy@5.0.5 install { code: 1, signal: null }
+552 verbose reify failed optional dependency /data/node_modules/snappy
+553 silly reify mark deleted [ '/data/node_modules/snappy' ]
+554 verbose reify failed optional dependency /data/node_modules/snappy/node_modules/nan
+555 silly reify mark deleted [ '/data/node_modules/snappy/node_modules/nan' ]
+556 verbose reify failed optional dependency /data/node_modules/snappy/node_modules/node-gyp
+557 silly reify mark deleted [
+557 silly reify   '/data/node_modules/snappy/node_modules/node-gyp',
+557 silly reify   '/data/node_modules/snappy/node_modules/.bin/node-gyp'
+557 silly reify ]
+558 info run leveldown@1.4.6 install { code: 2, signal: null }
+559 verbose reify failed optional dependency /data/node_modules/leveldown
+560 silly reify mark deleted [ '/data/node_modules/leveldown' ]
+561 verbose reify failed optional dependency /data/node_modules/bindings
+562 silly reify mark deleted [ '/data/node_modules/bindings' ]
+563 verbose reify failed optional dependency /data/node_modules/fast-future
+564 silly reify mark deleted [ '/data/node_modules/fast-future' ]
+565 verbose reify failed optional dependency /data/node_modules/leveldown/node_modules/nan
+566 silly reify mark deleted [ '/data/node_modules/leveldown/node_modules/nan' ]
+567 verbose reify failed optional dependency /data/node_modules/prebuild
+568 silly reify mark deleted [ '/data/node_modules/prebuild', '/data/node_modules/.bin/prebuild' ]
+569 verbose reify failed optional dependency /data/node_modules/execspawn
+570 silly reify mark deleted [ '/data/node_modules/execspawn' ]
+571 verbose reify failed optional dependency /data/node_modules/expand-template
+572 silly reify mark deleted [ '/data/node_modules/expand-template' ]
+573 verbose reify failed optional dependency /data/node_modules/ghreleases
+574 silly reify mark deleted [ '/data/node_modules/ghreleases' ]
+575 verbose reify failed optional dependency /data/node_modules/github-from-package
+576 silly reify mark deleted [ '/data/node_modules/github-from-package' ]
+577 verbose reify failed optional dependency /data/node_modules/mkdirp
+578 silly reify mark deleted [ '/data/node_modules/mkdirp', '/data/node_modules/.bin/mkdirp' ]
+579 verbose reify failed optional dependency /data/node_modules/node-gyp
+580 silly reify mark deleted [ '/data/node_modules/node-gyp', '/data/node_modules/.bin/node-gyp' ]
+581 verbose reify failed optional dependency /data/node_modules/node-ninja
+582 silly reify mark deleted [
+582 silly reify   '/data/node_modules/node-ninja',
+582 silly reify   '/data/node_modules/.bin/node-ninja'
+582 silly reify ]
+583 verbose reify failed optional dependency /data/node_modules/noop-logger
+584 silly reify mark deleted [ '/data/node_modules/noop-logger' ]
+585 verbose reify failed optional dependency /data/node_modules/npmlog
+586 silly reify mark deleted [ '/data/node_modules/npmlog' ]
+587 verbose reify failed optional dependency /data/node_modules/os-homedir
+588 silly reify mark deleted [ '/data/node_modules/os-homedir' ]
+589 verbose reify failed optional dependency /data/node_modules/rc
+590 silly reify mark deleted [ '/data/node_modules/rc', '/data/node_modules/.bin/rc' ]
+591 verbose reify failed optional dependency /data/node_modules/simple-get
+592 silly reify mark deleted [ '/data/node_modules/simple-get' ]
+593 verbose reify failed optional dependency /data/node_modules/tar-fs
+594 silly reify mark deleted [ '/data/node_modules/tar-fs' ]
+595 verbose reify failed optional dependency /data/node_modules/tar-stream
+596 silly reify mark deleted [ '/data/node_modules/tar-stream' ]
+597 verbose reify failed optional dependency /data/node_modules/util-extend
+598 silly reify mark deleted [ '/data/node_modules/util-extend' ]
+599 verbose reify failed optional dependency /data/node_modules/after
+600 silly reify mark deleted [ '/data/node_modules/after' ]
+601 verbose reify failed optional dependency /data/node_modules/ghrepos
+602 silly reify mark deleted [ '/data/node_modules/ghrepos' ]
+603 verbose reify failed optional dependency /data/node_modules/ghutils
+604 silly reify mark deleted [ '/data/node_modules/ghutils' ]
+605 verbose reify failed optional dependency /data/node_modules/simple-mime
+606 silly reify mark deleted [ '/data/node_modules/simple-mime' ]
+607 verbose reify failed optional dependency /data/node_modules/url-template
+608 silly reify mark deleted [ '/data/node_modules/url-template' ]
+609 verbose reify failed optional dependency /data/node_modules/fstream
+610 silly reify mark deleted [ '/data/node_modules/fstream' ]
+611 verbose reify failed optional dependency /data/node_modules/graceful-fs
+612 silly reify mark deleted [ '/data/node_modules/graceful-fs' ]
+613 verbose reify failed optional dependency /data/node_modules/nopt
+614 silly reify mark deleted [ '/data/node_modules/nopt', '/data/node_modules/.bin/nopt' ]
+615 verbose reify failed optional dependency /data/node_modules/osenv
+616 silly reify mark deleted [ '/data/node_modules/osenv' ]
+617 verbose reify failed optional dependency /data/node_modules/rimraf
+618 silly reify mark deleted [ '/data/node_modules/rimraf', '/data/node_modules/.bin/rimraf' ]
+619 verbose reify failed optional dependency /data/node_modules/node-gyp/node_modules/semver
+620 silly reify mark deleted [
+620 silly reify   '/data/node_modules/node-gyp/node_modules/semver',
+620 silly reify   '/data/node_modules/node-gyp/node_modules/.bin/semver'
+620 silly reify ]
+621 verbose reify failed optional dependency /data/node_modules/tar
+622 silly reify mark deleted [ '/data/node_modules/tar' ]
+623 verbose reify failed optional dependency /data/node_modules/which
+624 silly reify mark deleted [ '/data/node_modules/which', '/data/node_modules/.bin/which' ]
+625 verbose reify failed optional dependency /data/node_modules/path-array
+626 silly reify mark deleted [ '/data/node_modules/path-array' ]
+627 verbose reify failed optional dependency /data/node_modules/ansi
+628 silly reify mark deleted [ '/data/node_modules/ansi' ]
+629 verbose reify failed optional dependency /data/node_modules/are-we-there-yet
+630 silly reify mark deleted [ '/data/node_modules/are-we-there-yet' ]
+631 verbose reify failed optional dependency /data/node_modules/gauge
+632 silly reify mark deleted [ '/data/node_modules/gauge' ]
+633 verbose reify failed optional dependency /data/node_modules/deep-extend
+634 silly reify mark deleted [ '/data/node_modules/deep-extend' ]
+635 verbose reify failed optional dependency /data/node_modules/ini
+636 silly reify mark deleted [ '/data/node_modules/ini' ]
+637 verbose reify failed optional dependency /data/node_modules/strip-json-comments
+638 silly reify mark deleted [ '/data/node_modules/strip-json-comments' ]
+639 verbose reify failed optional dependency /data/node_modules/unzip-response
+640 silly reify mark deleted [ '/data/node_modules/unzip-response' ]
+641 verbose reify failed optional dependency /data/node_modules/chownr
+642 silly reify mark deleted [ '/data/node_modules/chownr' ]
+643 verbose reify failed optional dependency /data/node_modules/buffer-alloc
+644 silly reify mark deleted [ '/data/node_modules/buffer-alloc' ]
+645 verbose reify failed optional dependency /data/node_modules/fs-constants
+646 silly reify mark deleted [ '/data/node_modules/fs-constants' ]
+647 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/readable-stream
+648 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/readable-stream' ]
+649 verbose reify failed optional dependency /data/node_modules/to-buffer
+650 silly reify mark deleted [ '/data/node_modules/to-buffer' ]
+651 verbose reify failed optional dependency /data/node_modules/jsonist
+652 silly reify mark deleted [ '/data/node_modules/jsonist' ]
+653 verbose reify failed optional dependency /data/node_modules/abbrev
+654 silly reify mark deleted [ '/data/node_modules/abbrev' ]
+655 verbose reify failed optional dependency /data/node_modules/os-tmpdir
+656 silly reify mark deleted [ '/data/node_modules/os-tmpdir' ]
+657 verbose reify failed optional dependency /data/node_modules/block-stream
+658 silly reify mark deleted [ '/data/node_modules/block-stream' ]
+659 verbose reify failed optional dependency /data/node_modules/isexe
+660 silly reify mark deleted [ '/data/node_modules/isexe' ]
+661 verbose reify failed optional dependency /data/node_modules/array-index
+662 silly reify mark deleted [ '/data/node_modules/array-index' ]
+663 verbose reify failed optional dependency /data/node_modules/delegates
+664 silly reify mark deleted [ '/data/node_modules/delegates' ]
+665 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/readable-stream
+666 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/readable-stream' ]
+667 verbose reify failed optional dependency /data/node_modules/has-unicode
+668 silly reify mark deleted [ '/data/node_modules/has-unicode' ]
+669 verbose reify failed optional dependency /data/node_modules/lodash.pad
+670 silly reify mark deleted [ '/data/node_modules/lodash.pad' ]
+671 verbose reify failed optional dependency /data/node_modules/lodash.padend
+672 silly reify mark deleted [ '/data/node_modules/lodash.padend' ]
+673 verbose reify failed optional dependency /data/node_modules/lodash.padstart
+674 silly reify mark deleted [ '/data/node_modules/lodash.padstart' ]
+675 verbose reify failed optional dependency /data/node_modules/buffer-alloc-unsafe
+676 silly reify mark deleted [ '/data/node_modules/buffer-alloc-unsafe' ]
+677 verbose reify failed optional dependency /data/node_modules/buffer-fill
+678 silly reify mark deleted [ '/data/node_modules/buffer-fill' ]
+679 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/safe-buffer
+680 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/safe-buffer' ]
+681 verbose reify failed optional dependency /data/node_modules/tar-stream/node_modules/string_decoder
+682 silly reify mark deleted [ '/data/node_modules/tar-stream/node_modules/string_decoder' ]
+683 verbose reify failed optional dependency /data/node_modules/to-buffer/node_modules/isarray
+684 silly reify mark deleted [ '/data/node_modules/to-buffer/node_modules/isarray' ]
+685 verbose reify failed optional dependency /data/node_modules/typed-array-buffer
+686 silly reify mark deleted [ '/data/node_modules/typed-array-buffer' ]
+687 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/bl
+688 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/bl' ]
+689 verbose reify failed optional dependency /data/node_modules/hyperquest
+690 silly reify mark deleted [ '/data/node_modules/hyperquest' ]
+691 verbose reify failed optional dependency /data/node_modules/es6-symbol
+692 silly reify mark deleted [ '/data/node_modules/es6-symbol' ]
+693 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/safe-buffer
+694 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/safe-buffer' ]
+695 verbose reify failed optional dependency /data/node_modules/are-we-there-yet/node_modules/string_decoder
+696 silly reify mark deleted [ '/data/node_modules/are-we-there-yet/node_modules/string_decoder' ]
+697 verbose reify failed optional dependency /data/node_modules/is-typed-array
+698 silly reify mark deleted [ '/data/node_modules/is-typed-array' ]
+699 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/readable-stream
+700 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/readable-stream' ]
+701 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/buffer-from
+702 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/buffer-from' ]
+703 verbose reify failed optional dependency /data/node_modules/duplexer2
+704 silly reify mark deleted [ '/data/node_modules/duplexer2' ]
+705 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/through2
+706 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/through2' ]
+707 verbose reify failed optional dependency /data/node_modules/d
+708 silly reify mark deleted [ '/data/node_modules/d' ]
+709 verbose reify failed optional dependency /data/node_modules/ext
+710 silly reify mark deleted [ '/data/node_modules/ext' ]
+711 verbose reify failed optional dependency /data/node_modules/which-typed-array
+712 silly reify mark deleted [ '/data/node_modules/which-typed-array' ]
+713 verbose reify failed optional dependency /data/node_modules/jsonist/node_modules/string_decoder
+714 silly reify mark deleted [ '/data/node_modules/jsonist/node_modules/string_decoder' ]
+715 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/readable-stream
+716 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/readable-stream' ]
+717 verbose reify failed optional dependency /data/node_modules/es5-ext
+718 silly reify mark deleted [ '/data/node_modules/es5-ext' ]
+719 verbose reify failed optional dependency /data/node_modules/type
+720 silly reify mark deleted [ '/data/node_modules/type' ]
+721 verbose reify failed optional dependency /data/node_modules/available-typed-arrays
+722 silly reify mark deleted [ '/data/node_modules/available-typed-arrays' ]
+723 verbose reify failed optional dependency /data/node_modules/for-each
+724 silly reify mark deleted [ '/data/node_modules/for-each' ]
+725 verbose reify failed optional dependency /data/node_modules/has-tostringtag
+726 silly reify mark deleted [ '/data/node_modules/has-tostringtag' ]
+727 verbose reify failed optional dependency /data/node_modules/hyperquest/node_modules/isarray
+728 silly reify mark deleted [ '/data/node_modules/hyperquest/node_modules/isarray' ]
+729 verbose reify failed optional dependency /data/node_modules/es6-iterator
+730 silly reify mark deleted [ '/data/node_modules/es6-iterator' ]
+731 verbose reify failed optional dependency /data/node_modules/esniff
+732 silly reify mark deleted [ '/data/node_modules/esniff' ]
+733 verbose reify failed optional dependency /data/node_modules/next-tick
+734 silly reify mark deleted [ '/data/node_modules/next-tick' ]
+735 verbose reify failed optional dependency /data/node_modules/possible-typed-array-names
+736 silly reify mark deleted [ '/data/node_modules/possible-typed-array-names' ]
+737 verbose reify failed optional dependency /data/node_modules/is-callable
+738 silly reify mark deleted [ '/data/node_modules/is-callable' ]
+739 verbose reify failed optional dependency /data/node_modules/event-emitter
+740 silly reify mark deleted [ '/data/node_modules/event-emitter' ]
+741 silly ADD node_modules/@serialport/stream
+742 silly ADD node_modules/@serialport/stream/node_modules/ms
+743 silly ADD node_modules/@serialport/stream/node_modules/debug
+744 silly ADD node_modules/@serialport/parser-spacepacket
+745 silly ADD node_modules/@serialport/parser-slip-encoder
+746 silly ADD node_modules/@serialport/parser-regex
+747 silly ADD node_modules/@serialport/parser-ready
+748 silly ADD node_modules/@serialport/parser-packet-length
+749 silly ADD node_modules/@serialport/parser-inter-byte-timeout
+750 silly ADD node_modules/@serialport/parser-cctalk
+751 silly ADD node_modules/@serialport/parser-byte-length
+752 silly ADD node_modules/@serialport/binding-mock
+753 silly ADD node_modules/@serialport/binding-mock/node_modules/ms
+754 silly ADD node_modules/@serialport/binding-mock/node_modules/debug
+755 silly ADD node_modules/crc
+756 silly ADD node_modules/@serialport/parser-delimiter
+757 silly ADD node_modules/node-gyp-build
+758 silly ADD node_modules/node-addon-api
+759 silly ADD node_modules/@serialport/parser-readline
+760 silly ADD node_modules/@serialport/bindings-interface
+761 silly ADD node_modules/@serialport/bindings-cpp
+762 silly ADD node_modules/@serialport/bindings-cpp/node_modules/ms
+763 silly ADD node_modules/@serialport/bindings-cpp/node_modules/debug
+764 silly ADD node_modules/source-map-support
+765 silly ADD node_modules/serialport
+766 silly ADD node_modules/serialport/node_modules/ms
+767 silly ADD node_modules/serialport/node_modules/debug
+768 silly ADD node_modules/serialport/node_modules/@serialport/parser-readline
+769 silly ADD node_modules/serialport/node_modules/@serialport/parser-delimiter
+770 silly ADD node_modules/line-by-line
+771 silly ADD node_modules/jsmodbus
+772 silly ADD node_modules/jsmodbus/node_modules/ms
+773 silly ADD node_modules/jsmodbus/node_modules/debug
+774 silly ADD node_modules/@xstate/fsm
+775 silly ADD node_modules/@serialport/list
+776 silly ADD node_modules/@serialport/list/node_modules/commander
+777 silly ADD node_modules/@openp4nr/modbus-serial
+778 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/node-addon-api
+779 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/stream
+780 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-spacepacket
+781 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-slip-encoder
+782 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-regex
+783 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-ready
+784 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-readline
+785 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-packet-length
+786 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-inter-byte-timeout
+787 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-delimiter
+788 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-cctalk
+789 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/parser-byte-length
+790 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/@serialport/bindings-cpp
+791 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/ms
+792 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/serialport
+793 silly ADD node_modules/@openp4nr/modbus-serial/node_modules/debug
+794 silly ADD node_modules/node-red-contrib-modbus
+795 silly ADD node_modules/node-red-contrib-modbus/node_modules/ms
+796 silly ADD node_modules/node-red-contrib-modbus/node_modules/underscore
+797 silly ADD node_modules/node-red-contrib-modbus/node_modules/debug
+798 silly ADD node_modules/node-red-contrib-modbus/node_modules/bson
+799 silly ADD
+800 silly ADD node_modules/nan
+801 silly ADD
+802 silly ADD
+803 silly ADD
+804 silly ADD
+805 silly ADD
+806 silly ADD
+807 silly ADD
+808 silly ADD
+809 silly ADD node_modules/isarray
+810 silly ADD
+811 silly ADD node_modules/string_decoder
+812 silly ADD node_modules/safe-buffer
+813 silly ADD node_modules/readable-stream
+814 silly ADD
+815 silly ADD
+816 silly ADD
+817 silly ADD
+818 silly ADD node_modules/node-gyp
+819 silly ADD node_modules/nan
+820 silly ADD
+821 silly ADD
+822 silly ADD
+823 silly ADD
+824 silly ADD
+825 silly ADD
+826 silly ADD
+827 silly ADD
+828 silly ADD
+829 silly ADD
+830 silly ADD
+831 silly ADD
+832 silly ADD
+833 silly ADD
+834 silly ADD
+835 silly ADD node_modules/semver
+836 silly ADD
+837 silly ADD
+838 silly ADD
+839 silly ADD
+840 silly ADD
+841 silly ADD
+842 silly ADD node_modules/nan
+843 silly ADD
+844 silly ADD node_modules/string_decoder
+845 silly ADD node_modules/readable-stream
+846 silly ADD node_modules/bl
+847 silly ADD
+848 silly ADD
+849 silly ADD
+850 silly ADD
+851 silly ADD
+852 silly ADD node_modules/through2
+853 silly ADD node_modules/readable-stream
+854 silly ADD node_modules/isarray
+855 silly ADD node_modules/buffer-from
+856 silly ADD
+857 silly ADD
+858 silly ADD
+859 silly ADD
+860 silly ADD
+861 silly ADD
+862 silly ADD
+863 silly ADD
+864 silly ADD
+865 silly ADD
+866 silly ADD
+867 silly ADD
+868 silly ADD
+869 silly ADD
+870 silly ADD
+871 silly ADD
+872 silly ADD
+873 silly ADD
+874 silly ADD
+875 silly ADD
+876 silly ADD
+877 silly ADD
+878 silly ADD
+879 silly ADD
+880 silly ADD
+881 silly ADD
+882 silly ADD
+883 silly ADD
+884 silly ADD
+885 silly ADD
+886 silly ADD
+887 silly ADD
+888 silly ADD
+889 silly ADD
+890 silly ADD node_modules/string_decoder
+891 silly ADD node_modules/safe-buffer
+892 silly ADD node_modules/readable-stream
+893 silly ADD
+894 silly ADD
+895 silly ADD
+896 warn allow-scripts 5 packages have install scripts not yet covered by allowScripts:
+896 warn allow-scripts   core-js@2.6.12 (install: (install scripts present))
+896 warn allow-scripts   ejs@2.7.4 (install: (install scripts present))
+896 warn allow-scripts   kerberos@0.0.24 (install: node-gyp rebuild)
+896 warn allow-scripts   @serialport/bindings-cpp@12.0.1 (install: node-gyp-build)
+896 warn allow-scripts   @serialport/bindings-cpp@10.8.0 (install: node-gyp-build)
+896 warn allow-scripts
+896 warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+897 verbose cwd /data
+898 verbose os Linux 7.0.0-27-generic
+899 verbose node v24.16.0
+900 verbose npm  v11.16.0
+901 verbose exit 0
+902 info ok

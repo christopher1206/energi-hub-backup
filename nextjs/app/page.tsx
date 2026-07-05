@@ -104,6 +104,14 @@ interface LadeplanTime {
   pris: number;
 }
 
+interface KoekkenSensor {
+  temperature: number | null;
+  humidity: number | null;
+  battery: number | null;
+  linkquality: number | null;
+  timestamp: string | null;
+}
+
 interface LadeplanData {
   timer: LadeplanTime[];
   manglerKwh: number;
@@ -111,20 +119,6 @@ interface LadeplanData {
   bilTilsluttet: boolean;
   carSoc: number;
   deadline: string | null;
-}
-
-interface KalenderBegivenhed {
-  summary: string;
-  start: string;
-  slut: string;
-  heldag: boolean;
-  lokation: string | null;
-}
-
-interface KalenderData {
-  igangvaerende: KalenderBegivenhed[];
-  kommende: KalenderBegivenhed[];
-  opdateret: string | null;
 }
 
 function ZoneFarve({ zone }: { zone: string }) {
@@ -225,14 +219,14 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const hentKalender = async () => {
+    const hentKoekken = async () => {
       try {
-        const res = await fetch('/api/kalender');
-        setKalender(await res.json());
+        const res = await fetch('/api/koekken-sensor');
+        setKoekken(await res.json());
       } catch (e) {}
     };
-    hentKalender();
-    const interval = setInterval(hentKalender, 60000);
+    hentKoekken();
+    const interval = setInterval(hentKoekken, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -269,7 +263,7 @@ export default function Dashboard() {
   const [sliderVaerdi, setSliderVaerdi] = useState<{ lys_carport: number; lys_terrasse: number }>({ lys_carport: 254, lys_terrasse: 254 });
   const [lysAutomatik, setLysAutomatik] = useState<LysAutomatikData | null>(null);
   const [ladeplan, setLadeplan] = useState<LadeplanData | null>(null);
-  const [kalender, setKalender] = useState<KalenderData | null>(null);
+  const [koekken, setKoekken] = useState<KoekkenSensor | null>(null);
 
   const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
     if (!udendorsLys) return;
@@ -418,93 +412,63 @@ export default function Dashboard() {
         <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} />
       </div>
 
-      {/* Opvaskemaskine - live forbrug */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>🍽️ Opvaskemaskine</div>
-        {opvask ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      {/* Opvaskemaskine + Køkken - kompakt side om side */}
+      <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
+        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🍽️ Opvaskemaskine</div>
+          {opvask ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <span style={{
-                width: '10px', height: '10px', borderRadius: '50%',
+                width: '8px', height: '8px', borderRadius: '50%',
                 background: opvask.apower > 5 ? '#22c55e' : opvask.output ? '#eab308' : '#475569',
                 display: 'inline-block'
               }} />
-              <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
-                {opvask.apower > 5 ? 'Kører' : opvask.output ? 'Tændt (standby)' : 'Slukket'}
-              </span>
+              <div>
+                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{opvask.apower.toFixed(1)}</span>
+                <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                {opvask.dagens_kwh.toFixed(2)} kWh i dag
+              </div>
+              <button
+                onClick={toggleOpvask}
+                disabled={opvaskLoading}
+                style={{
+                  marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
+                  fontSize: '0.7rem', fontWeight: 600,
+                  border: opvask.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                  background: opvask.output ? '#7f1d1d' : '#14532d',
+                  color: opvask.output ? '#fca5a5' : '#86efac',
+                }}
+              >
+                {opvaskLoading ? '...' : opvask.output ? '⏻ Sluk' : '⏻ Tænd'}
+              </button>
             </div>
-            <div>
-              <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#f1f5f9' }}>{opvask.apower.toFixed(1)}</span>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', marginLeft: '4px' }}>W</span>
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              I dag: <span style={{ color: '#cbd5e1', fontWeight: 600 }}>{opvask.dagens_kwh.toFixed(2)} kWh</span>
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              {opvask.voltage.toFixed(0)} V · {opvask.current.toFixed(2)} A · {opvask.temp_c.toFixed(0)}°C
-            </div>
-            <button
-              onClick={toggleOpvask}
-              disabled={opvaskLoading}
-              style={{
-                marginLeft: 'auto', padding: '5px 14px', cursor: 'pointer', borderRadius: '8px',
-                fontSize: '0.8rem', fontWeight: 600,
-                border: opvask.output ? '1px solid #ef4444' : '1px solid #22c55e',
-                background: opvask.output ? '#7f1d1d' : '#14532d',
-                color: opvask.output ? '#fca5a5' : '#86efac',
-              }}
-            >
-              {opvaskLoading ? '...' : opvask.output ? '⏻ Sluk' : '⏻ Tænd'}
-            </button>
-          </div>
-        ) : (
-          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
-        )}
-      </div>
+          ) : (
+            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+          )}
+        </div>
 
-      {/* Arbejdskalender */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>📅 Kalender</div>
-        {kalender ? (
-          <div>
-            {kalender.igangvaerende.length > 0 && (
-              <div style={{
-                background: '#1e3a5f', border: '1px solid #3b82f6', borderRadius: '8px',
-                padding: '0.5rem 0.75rem', marginBottom: '0.5rem', fontSize: '0.8rem'
-              }}>
-                <span style={{ color: '#93c5fd', fontWeight: 600 }}>🔵 Lige nu: </span>
-                <span style={{ color: '#dbeafe' }}>{kalender.igangvaerende[0].summary}</span>
-                {kalender.igangvaerende[0].lokation && (
-                  <span style={{ color: '#93c5fd' }}> · {kalender.igangvaerende[0].lokation}</span>
-                )}
+        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🌡️ Køkken</div>
+          {koekken && koekken.temperature !== null ? (
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'baseline' }}>
+              <div>
+                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{koekken.temperature.toFixed(1)}</span>
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}> °C</span>
               </div>
-            )}
-            {kalender.kommende.length === 0 ? (
-              <div style={{ color: '#64748b', fontSize: '0.8rem' }}>Ingen kommende begivenheder</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                {kalender.kommende.map((b, i) => {
-                  const start = new Date(b.start);
-                  return (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                      <span style={{ color: '#cbd5e1' }}>
-                        {b.summary}
-                        {b.lokation && <span style={{ color: '#64748b' }}> · {b.lokation}</span>}
-                      </span>
-                      <span style={{ color: '#64748b', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
-                        {b.heldag
-                          ? start.toLocaleDateString('da-DK', { weekday: 'short', day: 'numeric', month: 'short' })
-                          : start.toLocaleDateString('da-DK', { weekday: 'short', day: 'numeric', month: 'short' }) + ' ' + start.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                  );
-                })}
+              <div>
+                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>{koekken.humidity?.toFixed(0)}</span>
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}> % fugt</span>
               </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
-        )}
+              {koekken.battery !== null && (
+                <div style={{ fontSize: '0.7rem', color: '#64748b' }}>🔋 {koekken.battery}%</div>
+              )}
+            </div>
+          ) : (
+            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+          )}
+        </div>
       </div>
 
       {/* Ladeplan - hvilke timer systemet forventer at lade i */}

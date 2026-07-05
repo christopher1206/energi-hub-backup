@@ -65,15 +65,27 @@ from(bucket: "${INFLUX_BUCKET}")
       return row ? row[tag] || '' : '';
     };
 
+    // Go-e-laderen sidder på en SEPARAT elkreds/måler, adskilt fra det
+    // Growatt-inverteren måler på. Growatts egen "grid_power" kender derfor
+    // intet til Teslaens forbrug - vi lægger det estimerede Tesla-forbrug til,
+    // så dashboardets "Køber/Sælger"-status afspejler HELE husstandens reelle
+    // nettoforbrug, ikke kun Growatt-systemets isolerede del.
+    const gridPowerRaa = getValue(energiData, 'grid_power');
+    const teslaLadStatus = getValue(energiData, 'tesla_lad');
+    const teslaAmpVaerdi = getValue(energiData, 'tesla_amp');
+    const teslaWatt = teslaLadStatus > 0.5 ? teslaAmpVaerdi * 230 * 3 : 0;
+    const gridPowerTotal = gridPowerRaa + teslaWatt;
+
     return NextResponse.json({
       batteri_soc: getValue(energiData, 'batteri_soc'),
       sol_power: getValue(energiData, 'sol_power'),
-      grid_power: getValue(energiData, 'grid_power'),
+      grid_power: gridPowerTotal,
+      grid_power_growatt_raw: gridPowerRaa,
       batteri_power: getValue(energiData, 'batteri_power'),
       batteri_temp: getValue(energiData, 'batteri_temp'),
       discharge_rate: getValue(energiData, 'discharge_rate'),
-      tesla_lad: getValue(energiData, 'tesla_lad'),
-      tesla_amp: getValue(energiData, 'tesla_amp'),
+      tesla_lad: teslaLadStatus,
+      tesla_amp: teslaAmpVaerdi,
       load_power: getValue(energiData, 'load_power'),
       pris: getValue(energiData, 'pris'),
       spotpris: getValue(energiData, 'spotpris'),

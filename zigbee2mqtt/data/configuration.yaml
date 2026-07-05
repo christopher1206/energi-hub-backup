@@ -34,3 +34,7 @@ devices:
     friendly_name: lys_carport
   '0x94deb8fffe7981b6':
     friendly_name: lys_terrasse
+  '0x00158d00048634cc':
+    friendly_name: Køkken
+  '0xbc8d7efffe64eb1b':
+    friendly_name: Detpotlys

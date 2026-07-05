@@ -2,11 +2,27 @@
     "0x94deb8fffe73ea79": {
         "state": "OFF",
         "brightness": 254,
-        "linkquality": 164
+        "linkquality": 160
     },
     "0x94deb8fffe7981b6": {
         "state": "OFF",
         "brightness": 254,
-        "linkquality": 176
+        "linkquality": 128
+    },
+    "0x00158d00048634cc": {
+        "temperature": 25.6,
+        "humidity": 54.07,
+        "pressure": 1010.8,
+        "linkquality": 172
+    },
+    "0xbc8d7efffe64eb1b": {
+        "update": {
+            "state": "available",
+            "installed_version": 50331656,
+            "latest_version": 50331683,
+            "latest_source": "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/images/IKEA/zingo-ws-soc_release_prod_v50331683_f909cf22-3452-47e3-b8b2-c59d82102e17.ota",
+            "latest_release_notes": "https://ww8.ikea.com/ikeahomesmart/releasenotes/releasenotes.html"
+        },
+        "linkquality": 200
     }
 }

@@ -739,3 +739,63 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* Kompakt visning - kun statistik-siden, så alt kan ses uden scroll */
+.stat-compact header {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+}
+
+.stat-compact .stat-sektion {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.stat-compact .stat-sektion h2 {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-compact .stat-grid {
+  gap: 0.5rem;
+}
+
+.stat-compact .stat-kort {
+  padding: 0.5rem 0.4rem;
+  gap: 0.1rem;
+}
+
+.stat-compact .stat-icon {
+  font-size: 1rem;
+}
+
+.stat-compact .stat-value {
+  font-size: 0.95rem;
+}
+
+.stat-compact .stat-unit {
+  font-size: 0.7rem;
+}
+
+.stat-compact .stat-label {
+  font-size: 0.62rem;
+}
+
+.stat-compact .periode-valg {
+  margin-bottom: 0.6rem;
+}
+
+.stat-compact .periode-btn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+.stat-compact footer {
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 900px) {
+  .stat-compact .stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}

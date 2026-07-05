@@ -9,12 +9,14 @@ const INFLUX_ORG = process.env.INFLUX_ORG || 'energihub';
 
 export async function GET() {
   try {
+    // Dashboardet viser kun sidste 24 timer - for længere historik,
+    // brug scriptet /home/christopher/energi/log-historik.sh via SSH
     const flux = `
 from(bucket: "energi2")
-  |> range(start: -30d)
+  |> range(start: -24h)
   |> filter(fn: (r) => r._measurement == "events")
   |> sort(columns: ["_time"], desc: true)
-  |> limit(n: 100)
+  |> limit(n: 200)
 `;
     const res = await fetch(`${INFLUX_URL}/api/v2/query?org=${INFLUX_ORG}`, {
       method: 'POST',
