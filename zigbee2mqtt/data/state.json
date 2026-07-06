@@ -2,12 +2,12 @@
     "0x94deb8fffe73ea79": {
         "state": "OFF",
         "brightness": 254,
-        "linkquality": 160
+        "linkquality": 204
     },
     "0x94deb8fffe7981b6": {
         "state": "OFF",
         "brightness": 254,
-        "linkquality": 128
+        "linkquality": 168
     },
     "0x00158d00048634cc": {
         "temperature": 25.6,
@@ -23,6 +23,20 @@
             "latest_source": "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/images/IKEA/zingo-ws-soc_release_prod_v50331683_f909cf22-3452-47e3-b8b2-c59d82102e17.ota",
             "latest_release_notes": "https://ww8.ikea.com/ikeahomesmart/releasenotes/releasenotes.html"
         },
-        "linkquality": 200
+        "linkquality": 208,
+        "state": "OFF"
+    },
+    "0x14b457fffe6b17f9": {
+        "update": {
+            "state": "available",
+            "installed_version": 537011747,
+            "latest_version": 604241925,
+            "latest_source": "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/images/IKEA/tradfri-motion-sensor2_release_prod_v604241925_8afa2f7c-19c3-4ddf-a96c-233714179022.ota",
+            "latest_release_notes": "https://ww8.ikea.com/ikeahomesmart/releasenotes/releasenotes.html"
+        },
+        "battery": 100,
+        "occupancy": false,
+        "illuminance_above_threshold": false,
+        "linkquality": 232
     }
 }

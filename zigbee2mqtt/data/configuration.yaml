@@ -38,3 +38,5 @@ devices:
     friendly_name: Køkken
   '0xbc8d7efffe64eb1b':
     friendly_name: Detpotlys
+  '0x14b457fffe6b17f9':
+    friendly_name: Depotsensor
