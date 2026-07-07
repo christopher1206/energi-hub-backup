@@ -104,6 +104,12 @@ interface LadeplanTime {
   pris: number;
 }
 
+interface DepotStatus {
+  state: string;
+  linkquality: number | null;
+  opdateret: string | null;
+}
+
 interface KoekkenSensor {
   temperature: number | null;
   humidity: number | null;
@@ -231,6 +237,18 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const hentDepot = async () => {
+      try {
+        const res = await fetch('/api/depot');
+        setDepot(await res.json());
+      } catch (e) {}
+    };
+    hentDepot();
+    const interval = setInterval(hentDepot, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
@@ -264,6 +282,7 @@ export default function Dashboard() {
   const [lysAutomatik, setLysAutomatik] = useState<LysAutomatikData | null>(null);
   const [ladeplan, setLadeplan] = useState<LadeplanData | null>(null);
   const [koekken, setKoekken] = useState<KoekkenSensor | null>(null);
+  const [depot, setDepot] = useState<DepotStatus | null>(null);
 
   const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
     if (!udendorsLys) return;
@@ -469,6 +488,30 @@ export default function Dashboard() {
             <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
           )}
         </div>
+      </div>
+
+      {/* Depot - bevægelsesstyret lys */}
+      <div className="card" style={{ padding: '0.65rem 0.85rem', marginBottom: '0.75rem' }}>
+        <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>💡 Depot</div>
+        {depot && depot.state !== 'ukendt' ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{
+              width: '8px', height: '8px', borderRadius: '50%',
+              background: depot.state === 'ON' ? '#eab308' : '#475569',
+              display: 'inline-block'
+            }} />
+            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: depot.state === 'ON' ? '#fbbf24' : '#94a3b8' }}>
+              {depot.state === 'ON' ? 'Tændt' : 'Slukket'}
+            </span>
+            {depot.opdateret && (
+              <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: 'auto' }}>
+                {new Date(depot.opdateret).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+        )}
       </div>
 
       {/* Ladeplan - hvilke timer systemet forventer at lade i */}

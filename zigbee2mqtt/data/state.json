@@ -2,18 +2,12 @@
     "0x94deb8fffe73ea79": {
         "state": "OFF",
         "brightness": 254,
-        "linkquality": 204
+        "linkquality": 220
     },
     "0x94deb8fffe7981b6": {
         "state": "OFF",
         "brightness": 254,
-        "linkquality": 168
-    },
-    "0x00158d00048634cc": {
-        "temperature": 25.6,
-        "humidity": 54.07,
-        "pressure": 1010.8,
-        "linkquality": 172
+        "linkquality": 180
     },
     "0xbc8d7efffe64eb1b": {
         "update": {
@@ -23,7 +17,7 @@
             "latest_source": "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/images/IKEA/zingo-ws-soc_release_prod_v50331683_f909cf22-3452-47e3-b8b2-c59d82102e17.ota",
             "latest_release_notes": "https://ww8.ikea.com/ikeahomesmart/releasenotes/releasenotes.html"
         },
-        "linkquality": 208,
+        "linkquality": 224,
         "state": "OFF"
     },
     "0x14b457fffe6b17f9": {
@@ -37,6 +31,21 @@
         "battery": 100,
         "occupancy": false,
         "illuminance_above_threshold": false,
-        "linkquality": 232
+        "linkquality": 220
+    },
+    "0x00158d00048634cc": {
+        "temperature": 24.32,
+        "humidity": 62.81,
+        "pressure": 998.6,
+        "linkquality": 164,
+        "voltage": 3205,
+        "battery": 100,
+        "power_outage_count": 48
+    },
+    "0x00158d00048734fb": {
+        "temperature": 24.88,
+        "humidity": 62.16,
+        "pressure": 1002.7,
+        "linkquality": 220
     }
 }

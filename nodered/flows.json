@@ -702,7 +702,7 @@
         "type": "function",
         "z": "d2c1c437030fcf3d",
         "name": "Beslutnings-motor",
-        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 4140; // 3-faset minimum: 6A x 690W\nconst DEADLINE_TIME = 6; // Bilen skal være klar kl. 06:00 hver dag\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Bilens behov\nconst carSoc = global.get('car_soc') || 50;\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst manglerKwh = Math.max(0, (TESLA_MAL - carSoc) * (TESLA_KWH / 100));\nconst timerNodvendige = Math.ceil(manglerKwh / TESLA_MAX_KW);\n\n// Beregn deadline-tidspunkt (næste forekomst af DEADLINE_TIME)\nconst deadline = new Date(nu);\ndeadline.setHours(DEADLINE_TIME, 0, 0, 0);\nif (deadline <= nu) {\n    deadline.setDate(deadline.getDate() + 1);\n}\n\n// Find prispunkter FRA START AF DENNE TIME og frem til deadline.\n// VIGTIGT: Bruger starten af nuværende time (ikke det præcise \"nu\"-tidspunkt),\n// ellers bliver den time vi rent faktisk står i altid ekskluderet som kandidat\n// (fordi timens tidsstempel, fx 22:00:00, altid ligger FØR \"nu\", fx 22:53) -\n// det betød at automatisk ladning ALDRIG kunne starte i den billigste time,\n// kun i timer der blev udpeget en time i forvejen.\nconst timeStart = new Date(nu);\ntimeStart.setMinutes(0, 0, 0);\n\nconst kommendeTilDeadline = priser.filter(p => {\n    const t = new Date(p.time);\n    return t >= timeStart && t <= deadline;\n});\n\n// Vælg de N billigste timer ud af dem, hvor N = timerNodvendige (mindst 1 hvis bilen mangler noget)\nconst billigsteTimerFuld = [...kommendeTilDeadline]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, Math.max(timerNodvendige, 1))\n    .sort((a, b) => new Date(a.time) - new Date(b.time));\n\nconst billigsteTimer = billigsteTimerFuld.map(p => new Date(p.time).getHours());\n\nglobal.set('ladeplan', {\n    timer: billigsteTimerFuld.map(p => ({ time: p.time, pris: p.pris })),\n    manglerKwh: manglerKwh,\n    timerNodvendige: timerNodvendige,\n    bilTilsluttet: bilTilsluttet,\n    carSoc: carSoc,\n    deadline: deadline.toISOString()\n});\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tving Tesla hvis vi er inde i den udvalgte ladeperiode og tæt på deadline\n// (sikkerhedsnet hvis prislogikken af en grund ikke rammer rigtigt)\nconst timerTilDeadline = (deadline.getTime() - nu.getTime()) / (1000 * 60 * 60);\nconst maxKwhResterende = timerTilDeadline * TESLA_MAX_KW;\nlet tvingTesla = false;\nif (bilTilsluttet && maxKwhResterende < manglerKwh && manglerKwh > 0) {\n    tvingTesla = true;\n    node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}% før ${DEADLINE_TIME}:00! Mangler ${manglerKwh.toFixed(1)} kWh, kun ${maxKwhResterende.toFixed(1)} kWh tid tilbage`);\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1-4: Growatt-batteritilstand (styrer KUN afladning/growatt-mode, ikke Tesla)\nif (erDyrAften) {\n    growattMode = 'load_first';\n    dischargeMode = 'aktiv';\n    beslutning.push(`❤️ DYR AFTENTID (${pris} kr) → Load first | Batteri + sol dækker huset`);\n} else if (erSol) {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`☀️ Sol (${sol}W) → Load first | Hus: ${loadPower}W | Overskud: ${solEfterHus}W`);\n} else if (zone === 'billig') {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`💚 BILLIG TIME (${pris} kr) → Load first`);\n} else {\n    growattMode = 'load_first';\n    dischargeMode = 'stop';\n    beslutning.push(`🟡 NORMAL TIME (${pris} kr) → Load first`);\n}\n\n// TESLA-LADEBESLUTNING: helt uafhængig af Growatt-tilstand og om solen skinner.\n// Afgøres UDELUKKENDE af om grid-prisen er billig lige nu - dag som nat,\n// hverdag som weekend. Eneste faste undtagelse er dyr aftentid (16-21),\n// som aldrig tillader ladning fra nettet uanset prisz one.\nif (zone === 'billig') {\n    if (bilTilsluttet && carSoc < 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 16;\n        beslutning.push(`🚗 Tesla lader mod deadline ${DEADLINE_TIME}:00 (${pris} kr/kWh, grid billig, ${carSoc}% → 100%, mangler ${manglerKwh.toFixed(1)} kWh)`);\n    } else if (bilTilsluttet && carSoc >= 100) {\n        beslutning.push(`🚗 Tesla allerede fuldt opladet (${carSoc}%)`);\n    } else if (!bilTilsluttet) {\n        beslutning.push(`🚗 Tesla ikke tilsluttet - springer billig ladning over`);\n    }\n}\n\n// REGEL 5: Sol overskud → lad Tesla (kun hvis Growatt 100%)\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 690); // 3-faset: 1A = 3x230V = 690W\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A 3-faset = 4140W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline er i fare - tæller over ALLE dage, ikke kun hverdage\nif (tvingTesla) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE ${DEADLINE_TIME}:00! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// REGEL 8: Tesla lader → stop batteri-afladning\n// Der er allerede billig grid-strøm (eller solcelle-overskud) til at dække\n// ladningen, så batteriet skal ikke ALSO tømmes samtidig - det ville bare\n// spilde battericapacitet vi kan få bedre brug for senere.\nif (teslaLad) {\n    if (dischargeMode !== 'stop') {\n        beslutning.push(`🔋 Tesla lader → batteri-afladning stoppet (sparer batteriet)`);\n    }\n    dischargeMode = 'stop';\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | Bil: ${bilTilsluttet ? carSoc + '% (mangler ' + manglerKwh.toFixed(1) + ' kWh, behov ' + timerNodvendige + 'h)' : 'ikke tilsluttet'} | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, dischargeMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
+        "func": "// Tjek override FØRST - kører indtil manuelt stop\nconst overrideAktiv = global.get('override_aktiv') || false;\n\nif (overrideAktiv) {\n    const soc = global.get('batteri_soc') || 0;\n    const sol = global.get('sol_power') || 0;\n    const grid = global.get('grid_power') || 0;\n    node.warn(`🚨 OVERRIDE AKTIV! Tvinger Tesla ladning til 16A`);\n    msg.payload = {\n        growattMode: 'load_first',\n        teslaLad: true,\n        teslaAmp: 16,\n        soc, sol, grid,\n        pris: 0,\n        zone: 'override',\n        beslutning: ['🚨 MANUEL OVERRIDE AKTIV']\n    };\n    return msg;\n}\n\n// Hent aktuelle værdier\nconst soc = global.get('batteri_soc') || 0;\nconst sol = global.get('sol_power') || 0;\nconst grid = global.get('grid_power') || 0;\nconst batteriPower = global.get('batteri_power') || 0;\nconst temp = global.get('batteri_temp') || 0;\nconst nuvaerende = global.get('nuvaerende');\nconst priser = global.get('priser') || [];\nconst loadPower = global.get('load_power') || 0;\n\nif (!nuvaerende) {\n    node.warn('⚠️ Ingen prisdata endnu - afventer');\n    return null;\n}\n\n// Batteri grænser\nconst GROWATT_MIN_SOC = 10;\nconst GROWATT_AFLAD_MIN = 50;\nconst TESLA_MAL = 100;\nconst TESLA_KWH = 60;\nconst TESLA_MAX_KW = 11;\nconst SOL_GRAENSE = 200;\nconst TESLA_MIN_OVERSKUD = 4140; // 3-faset minimum: 6A x 690W\nconst DEADLINE_TIME = 6; // Bilen skal være klar kl. 06:00 hver dag\n\nconst pris = nuvaerende.pris;\nconst zone = nuvaerende.zone;\nconst nu = new Date();\nconst time = nu.getHours();\nconst erDyrAften = time >= 16 && time < 21;\nconst erSol = sol > SOL_GRAENSE;\n\n// Sol overskud efter husforbrug\nconst solEfterHus = sol - loadPower;\nconst erSolOverskud = solEfterHus > TESLA_MIN_OVERSKUD;\n\n// Bilens behov\nconst carSoc = global.get('car_soc') || 50;\nconst goECar = global.get('go_e_car') || 1;\nconst bilTilsluttet = goECar > 1;\nconst manglerKwh = Math.max(0, (TESLA_MAL - carSoc) * (TESLA_KWH / 100));\nconst timerNodvendige = Math.ceil(manglerKwh / TESLA_MAX_KW);\n\n// Beregn deadline-tidspunkt (næste forekomst af DEADLINE_TIME)\nconst deadline = new Date(nu);\ndeadline.setHours(DEADLINE_TIME, 0, 0, 0);\nif (deadline <= nu) {\n    deadline.setDate(deadline.getDate() + 1);\n}\n\n// Find prispunkter FRA START AF DENNE TIME og frem til deadline.\n// VIGTIGT: Bruger starten af nuværende time (ikke det præcise \"nu\"-tidspunkt),\n// ellers bliver den time vi rent faktisk står i altid ekskluderet som kandidat\n// (fordi timens tidsstempel, fx 22:00:00, altid ligger FØR \"nu\", fx 22:53) -\n// det betød at automatisk ladning ALDRIG kunne starte i den billigste time,\n// kun i timer der blev udpeget en time i forvejen.\nconst timeStart = new Date(nu);\ntimeStart.setMinutes(0, 0, 0);\n\nconst kommendeTilDeadline = priser.filter(p => {\n    const t = new Date(p.time);\n    return t >= timeStart && t <= deadline;\n});\n\n// Vælg de N billigste timer ud af dem, hvor N = timerNodvendige (mindst 1 hvis bilen mangler noget)\nconst billigsteTimerFuld = [...kommendeTilDeadline]\n    .sort((a, b) => a.pris - b.pris)\n    .slice(0, Math.max(timerNodvendige, 1))\n    .sort((a, b) => new Date(a.time) - new Date(b.time));\n\nconst billigsteTimer = billigsteTimerFuld.map(p => new Date(p.time).getHours());\n\nglobal.set('ladeplan', {\n    timer: billigsteTimerFuld.map(p => ({ time: p.time, pris: p.pris })),\n    manglerKwh: manglerKwh,\n    timerNodvendige: timerNodvendige,\n    bilTilsluttet: bilTilsluttet,\n    carSoc: carSoc,\n    deadline: deadline.toISOString()\n});\n\nconst erBilligTeslaTime = billigsteTimer.includes(time);\n\n// Tving Tesla hvis vi er inde i den udvalgte ladeperiode og tæt på deadline\n// (sikkerhedsnet hvis prislogikken af en grund ikke rammer rigtigt)\nconst timerTilDeadline = (deadline.getTime() - nu.getTime()) / (1000 * 60 * 60);\nconst maxKwhResterende = timerTilDeadline * TESLA_MAX_KW;\nlet tvingTesla = false;\nif (bilTilsluttet && maxKwhResterende < manglerKwh && manglerKwh > 0) {\n    tvingTesla = true;\n    node.warn(`⚠️ Tesla kan ikke nå ${TESLA_MAL}% før ${DEADLINE_TIME}:00! Mangler ${manglerKwh.toFixed(1)} kWh, kun ${maxKwhResterende.toFixed(1)} kWh tid tilbage`);\n}\n\n// BESLUTNINGER\nlet growattMode = 'load_first'; // DEFAULT altid load first\nlet dischargeMode = 'normal';   // normal = kun aflade hvis dyr tid\nlet teslaLad = false;\nlet teslaAmp = 0;\nlet beslutning = [];\n\n// REGEL 1: Discharge styres nu UDELUKKENDE af klokkeslæt (før/efter 16:00).\n// Growatt kører altid Load First - Tesla-ladning (REGEL 8 nedenfor) kan\n// stadig tvinge afladning til at stoppe uanset klokkeslæt.\ngrowattMode = 'load_first';\n\nif (time >= 16) {\n    dischargeMode = 'aktiv';\n    beslutning.push(`🌆 Efter kl. 16 (${pris} kr) → Load first, afladning tilladt (100%)`);\n} else {\n    dischargeMode = 'stop';\n    beslutning.push(`🌅 Før kl. 16 (${pris} kr) → Load first, afladning forhindret (0%)`);\n}\n\n// Morgen-failsafe kl. 07:00 - eksplicit logbesked (funktionelt allerede dækket\n// af tidsreglen ovenfor, da 07:00 < 16:00, men logges separat til synlighed)\nconst idagStrFailsafe = nu.toLocaleDateString('en-GB', { timeZone: 'Europe/Copenhagen' });\nconst sidsteFailsafeDag = flow.get('morgen_failsafe_dag');\nif (time === 7 && sidsteFailsafeDag !== idagStrFailsafe) {\n    flow.set('morgen_failsafe_dag', idagStrFailsafe);\n    node.warn('🌅 Morgen-failsafe kl. 07:00: bekræfter afladning er 0%');\n}\n\n// TESLA-LADEBESLUTNING: helt uafhængig af Growatt-tilstand og om solen skinner.\n// Afgøres UDELUKKENDE af om grid-prisen er billig lige nu - dag som nat,\n// hverdag som weekend. Eneste faste undtagelse er dyr aftentid (16-21),\n// som aldrig tillader ladning fra nettet uanset prisz one.\nif (zone === 'billig') {\n    if (bilTilsluttet && carSoc < 100 && erBilligTeslaTime) {\n        teslaLad = true;\n        teslaAmp = 16;\n        beslutning.push(`🚗 Tesla lader mod deadline ${DEADLINE_TIME}:00 (${pris} kr/kWh, grid billig, ${carSoc}% → 100%, mangler ${manglerKwh.toFixed(1)} kWh)`);\n    } else if (bilTilsluttet && carSoc >= 100) {\n        beslutning.push(`🚗 Tesla allerede fuldt opladet (${carSoc}%)`);\n    } else if (!bilTilsluttet) {\n        beslutning.push(`🚗 Tesla ikke tilsluttet - springer billig ladning over`);\n    }\n}\n\n// REGEL 5: Sol overskud → lad Tesla (kun hvis Growatt 100%)\nif (erSolOverskud && soc >= 100) {\n    const teslaAmpBeregnet = Math.floor(solEfterHus / 690); // 3-faset: 1A = 3x230V = 690W\n    if (teslaAmpBeregnet >= 6) {\n        teslaLad = true;\n        teslaAmp = Math.min(16, teslaAmpBeregnet);\n        beslutning.push(`☀️ Growatt 100% + Sol overskud ${solEfterHus}W → Tesla ${teslaAmp}A`);\n    } else {\n        beslutning.push(`☀️ Sol overskud ${solEfterHus}W → For lidt til Tesla (min 6A 3-faset = 4140W)`);\n    }\n} else if (erSol && soc < 100) {\n    beslutning.push(`🔋 Growatt ${soc}% → Sol lader batteri først, Tesla venter`);\n}\n\n// REGEL 6: Tving Tesla hvis deadline er i fare - tæller over ALLE dage, ikke kun hverdage\nif (tvingTesla) {\n    teslaLad = true;\n    teslaAmp = 16;\n    beslutning.push(`🚨 DEADLINE ${DEADLINE_TIME}:00! Tesla tvinges til 16A`);\n}\n\n// REGEL 7: Batteri for varm → advar\nif (temp > 45) {\n    beslutning.push(`🌡️ Growatt batteri for varm (${temp}°C)!`);\n}\n\n// REGEL 8: Tesla lader → stop batteri-afladning\n// Der er allerede billig grid-strøm (eller solcelle-overskud) til at dække\n// ladningen, så batteriet skal ikke ALSO tømmes samtidig - det ville bare\n// spilde battericapacitet vi kan få bedre brug for senere.\nif (teslaLad) {\n    if (dischargeMode !== 'stop') {\n        beslutning.push(`🔋 Tesla lader → batteri-afladning stoppet (sparer batteriet)`);\n    }\n    dischargeMode = 'stop';\n}\n\n// Gem beslutning globalt\nglobal.set('growatt_mode', growattMode);\nglobal.set('discharge_mode', dischargeMode);\nglobal.set('tesla_lad', teslaLad);\nglobal.set('tesla_amp', teslaAmp);\n\nnode.warn(`📊 Growatt: ${soc}% | Sol: ${sol}W | Hus: ${loadPower}W | Overskud: ${solEfterHus}W | Net: ${grid}W | Pris: ${pris} kr (${zone}) | Bil: ${bilTilsluttet ? carSoc + '% (mangler ' + manglerKwh.toFixed(1) + ' kWh, behov ' + timerNodvendige + 'h)' : 'ikke tilsluttet'} | ${erDyrAften ? '🔴 DYR AFTEN' : erSol ? '☀️ SOL' : '🌙 NAT'}`);\nbeslutning.forEach(b => node.warn(b));\n\nmsg.payload = { growattMode, dischargeMode, teslaLad, teslaAmp, soc, sol, grid, pris, zone, beslutning };\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1438,7 +1438,9 @@
         "x": 690,
         "y": 440,
         "wires": [
-            []
+            [
+                "telegram-bekraeft"
+            ]
         ]
     },
     {
@@ -2564,7 +2566,9 @@
         "x": 480,
         "y": 220,
         "wires": [
-            []
+            [
+                "telegram-send"
+            ]
         ]
     },
     {
@@ -2578,7 +2582,9 @@
         "x": 480,
         "y": 280,
         "wires": [
-            []
+            [
+                "telegram-send"
+            ]
         ]
     },
     {
@@ -2606,7 +2612,9 @@
         "x": 480,
         "y": 340,
         "wires": [
-            []
+            [
+                "telegram-send"
+            ]
         ]
     },
     {
@@ -2620,7 +2628,9 @@
         "x": 480,
         "y": 400,
         "wires": [
-            []
+            [
+                "telegram-send"
+            ]
         ]
     },
     {
@@ -2698,7 +2708,7 @@
         "type": "function",
         "z": "udendors_lys_tab",
         "name": "Byg InfluxDB line protocol",
-        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.state === undefined) {\n    return null;\n}\n\nconst sted = msg.topic.split('/')[1];\nconst stedNavn = sted === 'lys_carport' ? 'Carport' : sted === 'lys_terrasse' ? 'Terrasse' : sted;\n\nconst stateVal = data.state === 'ON' ? 1 : 0;\nconst fields = [];\nfields.push(`state=${stateVal}`);\nif (data.brightness !== undefined) fields.push(`brightness=${data.brightness}`);\nif (data.linkquality !== undefined) fields.push(`linkquality=${data.linkquality}`);\n\nconst line = `udendors_lys,sted=${sted} ${fields.join(',')}`;\nconst headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nconst url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nconst msgs = [{ url, method: 'POST', headers, payload: line }];\n\nconst key = `lys_sidste_state_${sted}`;\nconst sidste = flow.get(key);\nif (sidste !== stateVal) {\n    flow.set(key, stateVal);\n    const beskrivelse = stateVal ? `${stedNavn} tændt` : `${stedNavn} slukket`;\n    msgs.push({ url, method: 'POST', headers, payload: `events,type=lys_automatik value=\"${beskrivelse}\"` });\n}\n\nreturn [msgs];",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.state === undefined) {\n    return null;\n}\n\nconst sted = msg.topic.split('/')[1];\n\n// Kun de faktiske udendørs-lamper - MQTT-emnet 'zigbee2mqtt/+' fanger ALLE\n// Zigbee-enheder (inkl. Depotlys m.fl.), så vi filtrerer eksplicit her for\n// at undgå at andre enheder fejlagtigt logges som udendørs lys-hændelser.\nif (sted !== 'lys_carport' && sted !== 'lys_terrasse') {\n    return null;\n}\n\nconst stedNavn = sted === 'lys_carport' ? 'Carport' : 'Terrasse';\n\nconst stateVal = data.state === 'ON' ? 1 : 0;\nconst fields = [];\nfields.push(`state=${stateVal}`);\nif (data.brightness !== undefined) fields.push(`brightness=${data.brightness}`);\nif (data.linkquality !== undefined) fields.push(`linkquality=${data.linkquality}`);\n\nconst line = `udendors_lys,sted=${sted} ${fields.join(',')}`;\nconst headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nconst url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nconst msgs = [{ url, method: 'POST', headers, payload: line }];\n\nconst key = `lys_sidste_state_${sted}`;\nconst sidste = flow.get(key);\nif (sidste !== stateVal) {\n    flow.set(key, stateVal);\n    const beskrivelse = stateVal ? `${stedNavn} tændt` : `${stedNavn} slukket`;\n    msgs.push({ url, method: 'POST', headers, payload: `events,type=lys_automatik value=\"${beskrivelse}\"` });\n}\n\nreturn [msgs];",
         "outputs": 1,
         "noerr": 0,
         "x": 490,
@@ -2723,6 +2733,226 @@
         "proxy": "",
         "x": 740,
         "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "depot_sensor_mqtt_in",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Depotsensor bevægelse",
+        "topic": "zigbee2mqtt/Depotsensor",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "opvask_mqtt_broker",
+        "x": 200,
+        "y": 580,
+        "wires": [
+            [
+                "depot_filter_func",
+                "depot_sensor_batteri_func"
+            ]
+        ]
+    },
+    {
+        "id": "depot_filter_func",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Kun ved bevægelse",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.occupancy === undefined) {\n    return null;\n}\n\n// Kun send videre når der REGISTRERES bevægelse - sensorens egen\n// occupancy:false ignoreres, da vi selv styrer sluk-timeren\nif (data.occupancy === true) {\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 440,
+        "y": 580,
+        "wires": [
+            [
+                "depot_trigger"
+            ]
+        ]
+    },
+    {
+        "id": "depot_trigger",
+        "type": "trigger",
+        "z": "ced8b8b6adb174ea",
+        "name": "Tænd nu, sluk efter 1 min stilhed",
+        "op1": "ON",
+        "op2": "OFF",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "60",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 680,
+        "y": 580,
+        "wires": [
+            [
+                "depot_lys_func"
+            ]
+        ]
+    },
+    {
+        "id": "depot_lys_func",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg lys-kommando",
+        "func": "msg.payload = JSON.stringify({ state: msg.payload });\nmsg.topic = 'zigbee2mqtt/Detpotlys/set';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 940,
+        "y": 580,
+        "wires": [
+            [
+                "depot_mqtt_out"
+            ]
+        ]
+    },
+    {
+        "id": "depot_mqtt_out",
+        "type": "mqtt out",
+        "z": "ced8b8b6adb174ea",
+        "name": "Send til Depotlys",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "broker": "opvask_mqtt_broker",
+        "x": 1180,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "depot_lys_status_in",
+        "type": "mqtt in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Depotlys status",
+        "topic": "zigbee2mqtt/Detpotlys",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "opvask_mqtt_broker",
+        "x": 200,
+        "y": 660,
+        "wires": [
+            [
+                "depot_status_func"
+            ]
+        ]
+    },
+    {
+        "id": "depot_status_func",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg InfluxDB + log hændelse",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.state === undefined) {\n    return null;\n}\n\nconst stateVal = data.state === 'ON' ? 1 : 0;\n\n// Gem seneste tilstand globalt til dashboard-API\nglobal.set('depot_lys_state', {\n    state: data.state,\n    linkquality: data.linkquality,\n    opdateret: new Date().toISOString()\n});\n\nconst fields = [`state=${stateVal}`];\nif (data.linkquality !== undefined) fields.push(`linkquality=${data.linkquality}`);\n\nconst line = `depot_lys ${fields.join(',')}`;\nconst headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nconst url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nconst msgs = [{ url, method: 'POST', headers, payload: line }];\n\n// Log hændelse kun ved faktisk skift\nconst key = 'depot_lys_sidste_state';\nconst sidste = flow.get(key);\nif (sidste !== stateVal) {\n    flow.set(key, stateVal);\n    const beskrivelse = stateVal ? 'Depotlys tændt (bevægelse)' : 'Depotlys slukket (ingen bevægelse i 1 min)';\n    msgs.push({ url, method: 'POST', headers, payload: `events,type=depot_lys value=\"${beskrivelse}\"` });\n}\n\nreturn [msgs];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 440,
+        "y": 660,
+        "wires": [
+            [
+                "depot_influx_write"
+            ]
+        ]
+    },
+    {
+        "id": "depot_influx_write",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "Skriv til InfluxDB",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "x": 680,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "depot_api_in",
+        "type": "http in",
+        "z": "ced8b8b6adb174ea",
+        "name": "Depot API",
+        "url": "/api/depot",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 720,
+        "wires": [
+            [
+                "depot_api_handler"
+            ]
+        ]
+    },
+    {
+        "id": "depot_api_handler",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg svar",
+        "func": "msg.payload = global.get('depot_lys_state') || { state: 'ukendt', linkquality: null, opdateret: null };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 440,
+        "y": 720,
+        "wires": [
+            [
+                "depot_api_svar"
+            ]
+        ]
+    },
+    {
+        "id": "depot_api_svar",
+        "type": "http response",
+        "z": "ced8b8b6adb174ea",
+        "name": "Depot svar",
+        "statusCode": "",
+        "headers": {},
+        "x": 680,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "depot_sensor_batteri_func",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Depotsensor batteri-tjek",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.battery === undefined) {\n    return [null, null, null];\n}\n\nlet batteriStatus = 'normal';\nif (data.battery <= 1) batteriStatus = 'kritisk';\nelse if (data.battery <= 5) batteriStatus = 'lavt';\n\nconst sidsteBatteriStatus = global.get('depot_sensor_batteri_status') || 'normal';\n\nlet telegramMsg = null;\nlet eventMsg = null;\n\nif (batteriStatus !== sidsteBatteriStatus) {\n    global.set('depot_sensor_batteri_status', batteriStatus);\n\n    const headers = {\n        'Content-Type': 'text/plain; charset=utf-8',\n        'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n    };\n    const url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\n    if (batteriStatus === 'kritisk') {\n        telegramMsg = { payload: `🔴 <b>Kritisk lavt batteri!</b>\\n\\nDepotsensoren er nede på ${data.battery}% batteri - skift det snart!` };\n        eventMsg = { url, method: 'POST', headers, payload: `events,type=alarm value=\"🔴 Depotsensor kritisk lavt batteri: ${data.battery}%\"` };\n    } else if (batteriStatus === 'lavt') {\n        telegramMsg = { payload: `🟡 <b>Lavt batteri</b>\\n\\nDepotsensoren har ${data.battery}% batteri tilbage - husk at skifte det snart.` };\n        eventMsg = { url, method: 'POST', headers, payload: `events,type=alarm value=\"🟡 Depotsensor lavt batteri: ${data.battery}%\"` };\n    } else if (sidsteBatteriStatus !== 'normal') {\n        telegramMsg = { payload: `🔋 Depotsensor batteri normaliseret: ${data.battery}%` };\n    }\n}\n\nreturn [telegramMsg, eventMsg];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 440,
+        "y": 500,
+        "wires": [
+            [
+                "telegram-send"
+            ],
+            [
+                "depot_sensor_batteri_influx_write"
+            ]
+        ]
+    },
+    {
+        "id": "depot_sensor_batteri_influx_write",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "Skriv batteri-alarm event",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "x": 700,
+        "y": 500,
         "wires": [
             []
         ]

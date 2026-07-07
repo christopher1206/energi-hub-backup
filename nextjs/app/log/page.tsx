@@ -19,6 +19,7 @@ const typeIkon: Record<string, string> = {
   lys_automatik: '💡',
   bil_tilslutning: '🔌',
   opvaskemaskine: '🍽️',
+  depot_lys: '💡',
 };
 
 const typeFarve: Record<string, string> = {
@@ -31,6 +32,7 @@ const typeFarve: Record<string, string> = {
   lys_automatik: '#eab308',
   bil_tilslutning: '#3b82f6',
   opvaskemaskine: '#a78bfa',
+  depot_lys: '#eab308',
 };
 
 export default function LogSide() {
@@ -69,7 +71,7 @@ export default function LogSide() {
 
       {/* Filter knapper */}
       <div className="periode-valg">
-        {['alle', 'discharge_skift', 'tesla_ladning', 'tesla_plan', 'override', 'alarm', 'lys_automatik', 'bil_tilslutning', 'opvaskemaskine'].map(f => (
+        {['alle', 'discharge_skift', 'tesla_ladning', 'tesla_plan', 'override', 'alarm', 'lys_automatik', 'bil_tilslutning', 'opvaskemaskine', 'depot_lys'].map(f => (
           <button
             key={f}
             className={`periode-btn ${filter === f ? 'aktiv' : ''}`}
