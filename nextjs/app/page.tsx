@@ -104,6 +104,36 @@ interface LadeplanTime {
   pris: number;
 }
 
+interface SolFaktiskTime {
+  time: string;
+  kwh: number;
+}
+
+interface SolPrognoseTime {
+  time: string;
+  kwh: number;
+}
+
+interface SolPrognose {
+  timer: SolPrognoseTime[];
+  totalKwh: number;
+  restKwhTil16: number;
+  opdateret: string | null;
+}
+
+interface DischargeStatus {
+  mode: string;
+  aarsag: string;
+  solPrognoseKwh: number;
+  manglerTilFuldKwh: number;
+  solDaekkerResten: boolean;
+  zone: string;
+  pris: number;
+  soc: number;
+  time: number;
+  opdateret: string | null;
+}
+
 interface DepotStatus {
   state: string;
   linkquality: number | null;
@@ -249,6 +279,43 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const hentDischargeStatus = async () => {
+      try {
+        const res = await fetch('/api/discharge-status');
+        setDischargeStatus(await res.json());
+      } catch (e) {}
+    };
+    hentDischargeStatus();
+    const interval = setInterval(hentDischargeStatus, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentSolPrognose = async () => {
+      try {
+        const res = await fetch('/api/sol-prognose');
+        setSolPrognose(await res.json());
+      } catch (e) {}
+    };
+    hentSolPrognose();
+    const interval = setInterval(hentSolPrognose, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentSolFaktisk = async () => {
+      try {
+        const res = await fetch('/api/sol-faktisk-timer');
+        const data = await res.json();
+        setSolFaktisk(data.timer || []);
+      } catch (e) {}
+    };
+    hentSolFaktisk();
+    const interval = setInterval(hentSolFaktisk, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
@@ -283,6 +350,9 @@ export default function Dashboard() {
   const [ladeplan, setLadeplan] = useState<LadeplanData | null>(null);
   const [koekken, setKoekken] = useState<KoekkenSensor | null>(null);
   const [depot, setDepot] = useState<DepotStatus | null>(null);
+  const [dischargeStatus, setDischargeStatus] = useState<DischargeStatus | null>(null);
+  const [solPrognose, setSolPrognose] = useState<SolPrognose | null>(null);
+  const [solFaktisk, setSolFaktisk] = useState<SolFaktiskTime[]>([]);
 
   const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
     if (!udendorsLys) return;
@@ -514,42 +584,123 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Ladeplan - hvilke timer systemet forventer at lade i */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>🔋 Ladeplan</div>
-        {ladeplan ? (
-          !ladeplan.bilTilsluttet ? (
-            <div style={{ color: '#64748b', fontSize: '0.85rem' }}>🚗 Bil ikke tilsluttet</div>
-          ) : ladeplan.manglerKwh <= 0 ? (
-            <div style={{ color: '#86efac', fontSize: '0.85rem' }}>✅ Bil allerede fuldt opladet ({ladeplan.carSoc}%)</div>
-          ) : ladeplan.timer.length === 0 ? (
-            <div style={{ color: '#fca5a5', fontSize: '0.85rem' }}>⚠️ Ingen billige timer fundet endnu (mangler {ladeplan.manglerKwh.toFixed(1)} kWh)</div>
-          ) : (
+      {/* Afladnings-status + Ladeplan side om side */}
+      <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
+        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🔋⚡ Afladnings-status</div>
+          {dischargeStatus && dischargeStatus.opdateret ? (
             <div>
-              <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}>
-                {ladeplan.carSoc}% → 100% · mangler {ladeplan.manglerKwh.toFixed(1)} kWh · {ladeplan.timerNodvendige} planlagte timer
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                <span style={{
+                  width: '8px', height: '8px', borderRadius: '50%',
+                  background: dischargeStatus.mode === 'aktiv' ? '#22c55e' : '#f59e0b',
+                  display: 'inline-block'
+                }} />
+                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: dischargeStatus.mode === 'aktiv' ? '#86efac' : '#fbbf24' }}>
+                  {dischargeStatus.mode === 'aktiv' ? 'Afladning tilladt (100%)' : 'Afladning forhindret (0%)'}
+                </span>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {ladeplan.timer.map((t, i) => {
-                  const d = new Date(t.time);
-                  return (
-                    <div key={i} style={{
-                      background: '#14532d', border: '1px solid #22c55e', borderRadius: '8px',
-                      padding: '0.4rem 0.7rem', fontSize: '0.8rem'
-                    }}>
-                      <div style={{ color: '#86efac', fontWeight: 600 }}>
-                        {d.toLocaleDateString('da-DK', { weekday: 'short' })} {d.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                      <div style={{ color: '#4ade80', fontSize: '0.75rem' }}>{t.pris.toFixed(2)} kr/kWh</div>
-                    </div>
-                  );
-                })}
+              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginBottom: '0.4rem' }}>
+                {dischargeStatus.aarsag}
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.7rem', color: '#64748b' }}>
+                <span>☀️ Sol-prognose: <span style={{ color: '#fbbf24' }}>{dischargeStatus.solPrognoseKwh} kWh</span></span>
+                <span>🔋 Mangler til fuld: <span style={{ color: '#94a3b8' }}>{dischargeStatus.manglerTilFuldKwh} kWh</span></span>
               </div>
             </div>
-          )
+          ) : (
+            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+          )}
+        </div>
+
+        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🔋 Ladeplan</div>
+          {ladeplan ? (
+            !ladeplan.bilTilsluttet ? (
+              <div style={{ color: '#64748b', fontSize: '0.8rem' }}>🚗 Bil ikke tilsluttet</div>
+            ) : ladeplan.manglerKwh <= 0 ? (
+              <div style={{ color: '#86efac', fontSize: '0.8rem' }}>✅ Bil allerede fuldt opladet ({ladeplan.carSoc}%)</div>
+            ) : ladeplan.timer.length === 0 ? (
+              <div style={{ color: '#fca5a5', fontSize: '0.8rem' }}>⚠️ Ingen billige timer fundet endnu (mangler {ladeplan.manglerKwh.toFixed(1)} kWh)</div>
+            ) : (
+              <div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.4rem' }}>
+                  {ladeplan.carSoc}% → 100% · mangler {ladeplan.manglerKwh.toFixed(1)} kWh · {ladeplan.timerNodvendige} planlagte timer
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  {ladeplan.timer.map((t, i) => {
+                    const d = new Date(t.time);
+                    return (
+                      <div key={i} style={{
+                        background: '#14532d', border: '1px solid #22c55e', borderRadius: '8px',
+                        padding: '0.3rem 0.6rem', fontSize: '0.75rem'
+                      }}>
+                        <div style={{ color: '#86efac', fontWeight: 600 }}>
+                          {d.toLocaleDateString('da-DK', { weekday: 'short' })} {d.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        <div style={{ color: '#4ade80', fontSize: '0.7rem' }}>{t.pris.toFixed(2)} kr/kWh</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )
+          ) : (
+            <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
+          )}
+        </div>
+      </div>
+
+      {/* Sol-prognose - hele dagens forventede produktion, time for time */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8' }}>☀️ Sol-prognose i dag</div>
+          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: '#64748b' }}>
+            {dagensTal && (
+              <span>Faktisk hidtil: <span style={{ color: '#4ade80', fontWeight: 600 }}>{dagensTal.dagens_sol_kwh} kWh</span></span>
+            )}
+            {solPrognose && solPrognose.opdateret && (
+              <span>Prognose i alt: <span style={{ color: '#fbbf24', fontWeight: 600 }}>{solPrognose.totalKwh} kWh</span></span>
+            )}
+          </div>
+        </div>
+        {solPrognose && solPrognose.timer.length > 0 ? (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+            {solPrognose.timer
+              .filter(t => new Date(t.time).getHours() >= 6 && new Date(t.time).getHours() <= 23)
+              .map((t, i) => {
+                const d = new Date(t.time);
+                const erNu = d.getHours() === new Date().getHours();
+                const faktisk = solFaktisk.find(f => new Date(f.time).getHours() === d.getHours());
+                return (
+                  <div key={i} style={{
+                    background: erNu ? '#78350f' : '#1e293b',
+                    border: erNu ? '1px solid #fbbf24' : '1px solid #334155',
+                    borderRadius: '6px',
+                    padding: '0.3rem 0.5rem',
+                    minWidth: '52px',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '0.7rem', color: erNu ? '#fbbf24' : '#94a3b8', fontWeight: 600 }}>
+                      {d.toLocaleTimeString('da-DK', { hour: '2-digit', timeZone: 'Europe/Copenhagen' })}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: erNu ? '#fde68a' : '#cbd5e1', fontWeight: 700 }}>
+                      {t.kwh}
+                    </div>
+                    <div style={{ fontSize: '0.65rem', color: '#4ade80', marginTop: '2px', minHeight: '0.8rem' }}>
+                      {faktisk !== undefined ? faktisk.kwh : ''}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         ) : (
           <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
         )}
+        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.65rem', color: '#64748b', marginTop: '0.4rem' }}>
+          <span><span style={{ color: '#cbd5e1' }}>■</span> Prognose</span>
+          <span><span style={{ color: '#4ade80' }}>■</span> Faktisk</span>
+        </div>
       </div>
 
       {/* Udendørs lys - carport og terrasse */}
