@@ -3222,5 +3222,80 @@
         "x": 700,
         "y": 860,
         "wires": []
+    },
+    {
+        "id": "freshness_mqtt_in",
+        "type": "mqtt in",
+        "z": "d2c1c437030fcf3d",
+        "name": "Growatt data-friskhed lytter",
+        "topic": "solar_assistant/#",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "0700ed4de89194aa",
+        "x": 220,
+        "y": 940,
+        "wires": [
+            [
+                "freshness_update_func"
+            ]
+        ]
+    },
+    {
+        "id": "freshness_update_func",
+        "type": "function",
+        "z": "d2c1c437030fcf3d",
+        "name": "Opdater sidst-set tidsstempel",
+        "func": "global.set('sidste_growatt_data_ts', Date.now());\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "freshness_check_inject",
+        "type": "inject",
+        "z": "d2c1c437030fcf3d",
+        "name": "Friskheds-tjek hvert 60. sek",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 30,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 1000,
+        "wires": [
+            [
+                "freshness_check_func"
+            ]
+        ]
+    },
+    {
+        "id": "freshness_check_func",
+        "type": "function",
+        "z": "d2c1c437030fcf3d",
+        "name": "Tjek om data er for gamle",
+        "func": "const GRAENSE_MS = 2 * 60 * 1000; // 2 minutter\n\nconst sidsteTs = global.get('sidste_growatt_data_ts');\nconst nu = Date.now();\n\nif (!sidsteTs) {\n    // Endnu ingen data modtaget siden opstart - ikke en fejl, bare ikke startet endnu\n    return null;\n}\n\nconst alderMs = nu - sidsteTs;\nconst erStale = alderMs > GRAENSE_MS;\nconst sidsteAlarmStatus = flow.get('growatt_freshness_alarm') || false;\n\nif (erStale && !sidsteAlarmStatus) {\n    flow.set('growatt_freshness_alarm', true);\n    const alderMin = (alderMs / 60000).toFixed(1);\n    node.warn(`🔴 Growatt-data er ${alderMin} minutter gamle - ingen nye data modtaget!`);\n    return [\n        { payload: `🔴 <b>Growatt-data er stoppet!</b>\\n\\nIngen nye data modtaget i ${alderMin} minutter. Tjek growatt-poll-tjenesten på Raspberry Pi'en (growatt-bridge).` },\n        { payload: { event: 'alarm', beskrivelse: `🔴 Growatt-data stoppet - ${alderMin} min gamle` } }\n    ];\n} else if (!erStale && sidsteAlarmStatus) {\n    flow.set('growatt_freshness_alarm', false);\n    node.warn('🟢 Growatt-data er friske igen');\n    return [\n        { payload: '🟢 Growatt-data modtages normalt igen.' },\n        { payload: { event: 'alarm', beskrivelse: '🟢 Growatt-data normaliseret' } }\n    ];\n}\n\nreturn [null, null];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 480,
+        "y": 1000,
+        "wires": [
+            [
+                "telegram-send"
+            ],
+            [
+                "gem-event"
+            ]
+        ]
     }
 ]

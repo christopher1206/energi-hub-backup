@@ -152,10 +152,11 @@ function InfoBar({ pris, spotpris, zone, vejr, width, compact }: { pris: number;
   );
 }
 
-export default function EnergiFlow({ data, dagensTal, vejr }: {
+export default function EnergiFlow({ data, dagensTal, vejr, tabNegativKr }: {
   data: EnergiData;
   dagensTal: DagensTal | null;
   vejr: Vejr;
+  tabNegativKr?: number;
 }) {
   const isMobile = useIsMobile();
   const { sol_power: sol, grid_power: grid, batteri_power: bat, batteri_soc: soc, load_power: load, tesla_lad: teslaLad, tesla_amp: teslaAmp, pris, zone } = data;
@@ -241,6 +242,7 @@ export default function EnergiFlow({ data, dagensTal, vejr }: {
           { label: 'Købt i dag', value: d ? `${d.dagens_grid_kob_kwh} kWh` : '–', farve: '#ef4444' },
           { label: 'Solgt i dag', value: d ? `${d.dagens_grid_solgt_kwh} kWh` : '–', farve: '#22c55e' },
           { label: 'Betalt', value: d ? `${d.dagens_grid_kob_kr} kr` : '–', farve: '#f59e0b' },
+          ...(tabNegativKr && tabNegativKr < 0 ? [{ label: 'Solgt v. negativ pris', value: `${tabNegativKr.toFixed(2)} kr`, farve: '#ef4444' }] : []),
         ]} />
 
       <Node cx={HUS[0]} cy={HUS[1]} w={L.nodeW.hus} h={isMobile?190:140} farve="#8b5cf6" aktiv={true} compact={isMobile}

@@ -170,6 +170,19 @@ export async function GET(req: NextRequest) {
         |> integral(unit: 1h, column: "_value")
     `;
 
+    // Hvad ville HELE husforbruget have kostet, hvis alt var købt fra nettet
+    // til den FAKTISKE pris hver time - bruges til at beregne reel besparelse
+    // (i stedet for en hardkodet gennemsnitspris, som var markant unøjagtig).
+    const teoretiskFuldPrisFlux = `
+      data = from(bucket: "${INFLUX_BUCKET}")
+        |> range(start: time(v: "${rangeStart}"))
+        |> filter(fn: (r) => r._measurement == "energi" and (r._field == "load_power" or r._field == "pris"))
+        |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+      data
+        |> map(fn: (r) => ({ r with _value: (if exists r.load_power then r.load_power else 0.0) / 1000.0 * (if exists r.pris then r.pris else 0.0) }))
+        |> integral(unit: 1h, column: "_value")
+    `;
+
     const tempMeanFlux = `
       from(bucket: "${INFLUX_BUCKET}")
         |> range(start: time(v: "${rangeStart}"))
@@ -195,7 +208,7 @@ export async function GET(req: NextRequest) {
         |> mean(column: "_value")
     `;
 
-    const [sol, load, gridKob, gridSolgt, batUd, batInd, tesla, gridKobKr, gridSolgtKr, tempMean, tempMin, tempMax, fugtMean] = await Promise.all([
+    const [sol, load, gridKob, gridSolgt, batUd, batInd, tesla, gridKobKr, gridSolgtKr, teoretiskFuldPris, tempMean, tempMin, tempMax, fugtMean] = await Promise.all([
       fluxQuery(solFlux),
       fluxQuery(loadFlux),
       fluxQuery(gridKobFlux),
@@ -205,6 +218,7 @@ export async function GET(req: NextRequest) {
       fluxQuery(teslaFlux),
       fluxQuery(gridKobKrFlux),
       fluxQuery(gridSolgtKrFlux).catch(() => []),
+      fluxQuery(teoretiskFuldPrisFlux).catch(() => []),
       fluxQuery(tempMeanFlux).catch(() => []),
       fluxQuery(tempMinFlux).catch(() => []),
       fluxQuery(tempMaxFlux).catch(() => []),
@@ -223,8 +237,8 @@ export async function GET(req: NextRequest) {
     const gridKobKrTotal = parseFloat(sum(gridKobKr).toFixed(2));
     const gridSolgtKrTotal = parseFloat(sum(gridSolgtKr).toFixed(2));
 
-    const gennemsnitsElpris = 2.5;
-    const sparetIPeriode = parseFloat(((solKwh - gridKobKwh) * gennemsnitsElpris).toFixed(2));
+    const teoretiskFuldPrisKr = sum(teoretiskFuldPris);
+    const sparetIPeriode = parseFloat((teoretiskFuldPrisKr - gridKobKrTotal).toFixed(2));
     const selvforsyningIPeriode = loadKwh > 0 ? parseFloat(((1 - gridKobKwh / loadKwh) * 100).toFixed(1)) : 0;
 
     return NextResponse.json({

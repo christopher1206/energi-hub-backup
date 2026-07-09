@@ -104,6 +104,11 @@ interface LadeplanTime {
   pris: number;
 }
 
+interface TabNegativPris {
+  tabKr: number;
+  timestamp: string | null;
+}
+
 interface SolFaktiskTime {
   time: string;
   kwh: number;
@@ -316,6 +321,18 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const hentTabNegativ = async () => {
+      try {
+        const res = await fetch('/api/tab-negativ-pris');
+        setTabNegativ(await res.json());
+      } catch (e) {}
+    };
+    hentTabNegativ();
+    const interval = setInterval(hentTabNegativ, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
@@ -330,16 +347,28 @@ export default function Dashboard() {
     setOverrideLoading(false);
   };
 
+  const [bilFejl, setBilFejl] = useState(false);
+
   const gemBilSoc = async () => {
     const soc = parseFloat(bilInput);
     if (isNaN(soc) || soc < 0 || soc > 100) return;
     try {
-      await fetch('/api/bil', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ soc }) });
-      setBil({ soc, opdateret: new Date().toISOString() });
+      const postRes = await fetch('/api/bil', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ soc }) });
+      if (!postRes.ok) throw new Error('Gem fejlede');
+
+      // Hent den FAKTISK gemte værdi tilbage fra serveren, i stedet for blot
+      // at antage POST'en lykkedes - undgår at vise "gemt" ved en stille fejl.
+      const getRes = await fetch('/api/bil');
+      const bekraeftet = await getRes.json();
+      setBil(bekraeftet);
       setBilInput('');
       setBilGemt(true);
+      setBilFejl(false);
       setTimeout(() => setBilGemt(false), 3000);
-    } catch (e) {}
+    } catch (e) {
+      setBilFejl(true);
+      setTimeout(() => setBilFejl(false), 4000);
+    }
   };
 
   const [opvaskLoading, setOpvaskLoading] = useState(false);
@@ -353,6 +382,7 @@ export default function Dashboard() {
   const [dischargeStatus, setDischargeStatus] = useState<DischargeStatus | null>(null);
   const [solPrognose, setSolPrognose] = useState<SolPrognose | null>(null);
   const [solFaktisk, setSolFaktisk] = useState<SolFaktiskTime[]>([]);
+  const [tabNegativ, setTabNegativ] = useState<TabNegativPris | null>(null);
 
   const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
     if (!udendorsLys) return;
@@ -456,10 +486,10 @@ export default function Dashboard() {
             }}
           />
           <button onClick={gemBilSoc} style={{
-            padding: '4px 12px', background: bilGemt ? '#166534' : '#1d4ed8',
+            padding: '4px 12px', background: bilFejl ? '#7f1d1d' : bilGemt ? '#166534' : '#1d4ed8',
             border: 'none', borderRadius: '8px', color: 'white', fontSize: '0.8rem', cursor: 'pointer'
           }}>
-            {bilGemt ? '✅' : 'Gem'}
+            {bilFejl ? '❌ Fejl' : bilGemt ? '✅' : 'Gem'}
           </button>
         </div>
 
@@ -498,7 +528,7 @@ export default function Dashboard() {
       {/* Live energiflow */}
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⚡ Live energiflow</div>
-        <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} />
+        <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} tabNegativKr={tabNegativ?.tabKr} />
       </div>
 
       {/* Opvaskemaskine + Køkken - kompakt side om side */}

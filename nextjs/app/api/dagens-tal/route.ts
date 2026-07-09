@@ -139,7 +139,20 @@ export async function GET() {
         |> integral(unit: 1h, column: "_value")
     `;
 
-    const [sol, load, gridKob, gridSolgt, batUd, batInd, tesla, gridKobKr] = await Promise.all([
+    // Hvad ville HELE husforbruget have kostet, hvis alt var købt fra nettet
+    // til den FAKTISKE pris hver time - bruges til at beregne reel besparelse
+    // (i stedet for en hardkodet gennemsnitspris, som var markant unøjagtig).
+    const teoretiskFuldPrisFlux = `
+      data = from(bucket: "${INFLUX_BUCKET}")
+        |> range(start: time(v: "${midnight}"))
+        |> filter(fn: (r) => r._measurement == "energi" and (r._field == "load_power" or r._field == "pris"))
+        |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+      data
+        |> map(fn: (r) => ({ r with _value: (if exists r.load_power then r.load_power else 0.0) / 1000.0 * (if exists r.pris then r.pris else 0.0) }))
+        |> integral(unit: 1h, column: "_value")
+    `;
+
+    const [sol, load, gridKob, gridSolgt, batUd, batInd, tesla, gridKobKr, teoretiskFuldPris] = await Promise.all([
       fluxQuery(solFlux),
       fluxQuery(loadFlux),
       fluxQuery(gridKobFlux),
@@ -148,6 +161,7 @@ export async function GET() {
       fluxQuery(batIndFlux),
       fluxQuery(teslaFlux),
       fluxQuery(gridKobKrFlux),
+      fluxQuery(teoretiskFuldPrisFlux),
     ]);
 
     const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
@@ -161,8 +175,10 @@ export async function GET() {
     const teslaKwh = sum(tesla);
     const gridKobKrTotal = parseFloat(sum(gridKobKr).toFixed(2));
 
-    const gennemsnitsElpris = 2.5;
-    const sparetIDag = parseFloat(((solKwh - gridKobKwh) * gennemsnitsElpris).toFixed(2));
+    // Reel besparelse = hvad hele husforbruget ville have kostet til de
+    // FAKTISKE priser, minus hvad vi rent faktisk betalte for det købte.
+    const teoretiskFuldPrisKr = sum(teoretiskFuldPris);
+    const sparetIDag = parseFloat((teoretiskFuldPrisKr - gridKobKrTotal).toFixed(2));
     const selvforsyningIDag = loadKwh > 0 ? parseFloat(((1 - gridKobKwh / loadKwh) * 100).toFixed(1)) : 0;
 
     return NextResponse.json({
