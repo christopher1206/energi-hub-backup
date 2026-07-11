@@ -28,15 +28,15 @@
             "latest_source": "https://raw.githubusercontent.com/Koenkk/zigbee-OTA/master/images/IKEA/tradfri-motion-sensor2_release_prod_v604241925_8afa2f7c-19c3-4ddf-a96c-233714179022.ota",
             "latest_release_notes": "https://ww8.ikea.com/ikeahomesmart/releasenotes/releasenotes.html"
         },
-        "battery": 100,
+        "battery": 87,
         "occupancy": false,
         "illuminance_above_threshold": false,
         "linkquality": 232
     },
     "0x00158d00048634cc": {
-        "temperature": 24.61,
-        "humidity": 60.27,
-        "pressure": 1011.4,
+        "temperature": 26.61,
+        "humidity": 59.92,
+        "pressure": 1014.4,
         "linkquality": 196,
         "voltage": 3125,
         "battery": 100,
