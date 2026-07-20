@@ -18,7 +18,7 @@
             "latest_release_notes": "https://ww8.ikea.com/ikeahomesmart/releasenotes/releasenotes.html"
         },
         "linkquality": 224,
-        "state": "OFF"
+        "state": "ON"
     },
     "0x14b457fffe6b17f9": {
         "update": {
@@ -34,11 +34,11 @@
         "linkquality": 232
     },
     "0x00158d00048634cc": {
-        "temperature": 27.77,
-        "humidity": 49.97,
-        "pressure": 1004.8,
+        "temperature": 26.42,
+        "humidity": 49.2,
+        "pressure": 1010.9,
         "linkquality": 196,
-        "voltage": 3125,
+        "voltage": 3115,
         "battery": 100,
         "power_outage_count": 48
     },
