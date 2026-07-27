@@ -252,7 +252,7 @@
         "type": "function",
         "z": "f8fcc2eca1886938",
         "name": "Beregn pris-zoner",
-        "func": "// Tjek for API fejl eller tom data\nif (msg.payload.statusCode) {\n    node.warn(`⚠️ API fejl: ${msg.payload.message}`);\n    return null;\n}\n\nconst records = Array.isArray(msg.payload) ? msg.payload : msg.payload.records;\n\nif (!records || records.length === 0) {\n    node.warn('⚠️ Tom data modtaget - sandsynligvis i morgens priser ikke klar endnu');\n    return null;\n}\n\n// Ryd gammel cache hvis den ikke har spotpris felt\nconst eksisterendeCheck = global.get('priser_raw') || [];\nif (eksisterendeCheck.length > 0 && !eksisterendeCheck[0].spotpris) {\n    global.set('priser_raw', []);\n    node.warn('🔄 Rydder gammel priscache - opdaterer med afgifter');\n}\n\n// Faste omkostninger pr. kWh (ekskl. moms) - fra EWII faktura maj 2026\nconst ENERGINET_NET = 0.04300;\nconst ENERGINET_SYSTEM = 0.07200;\nconst ELAFGIFT_REDUCERET = 0.00800;\nconst EWII_TILLAEG = 0.03000;\n\n// Radius C nettarif - tidsdifferentieret (typiske takster, Radius C)\n// ⚠️ Multiplikatorer er estimerede - bør verificeres mod radiuselnet.dk\nconst getNettarif = (hour) => {\n    if (hour >= 0 && hour < 6)   return 0.05583 * 0.5;   // Lavlast nat\n    if (hour >= 6 && hour < 17)  return 0.05583;         // Normallast\n    if (hour >= 17 && hour < 21) return 0.05583 * 3;     // Højlast myldretid\n    return 0.05583;                                       // Normallast aften\n};\n\nconst getFastTillæg = (hour) => {\n    const nettarif = getNettarif(hour);\n    return ENERGINET_NET + ENERGINET_SYSTEM + ELAFGIFT_REDUCERET + EWII_TILLAEG + nettarif;\n};\n\n// Konverter til DKK/kWh inkl. afgifter og moms\nconst nyePriser = records.map(r => {\n    const hour = new Date(r.time_start).getHours();\n    const spotpris = parseFloat(r.DKK_per_kWh.toFixed(4));\n    const realPris = parseFloat(((spotpris + getFastTillæg(hour)) * 1.25).toFixed(4));\n    return {\n        time: r.time_start,\n        pris: realPris,\n        spotpris: spotpris,\n        hour: hour\n    };\n});\n\n// Merge med eksisterende priser (behold begge dage)\nconst eksisterende = global.get('priser_raw') || [];\n\n// Fjern dubletter baseret på time\nconst merged = [...eksisterende];\nnyePriser.forEach(ny => {\n    const findes = merged.find(e => e.time === ny.time);\n    if (!findes) merged.push(ny);\n});\n\n// Sorter efter tid\nmerged.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());\n\n// Gem rådata til næste merge\nglobal.set('priser_raw', merged);\n\nnode.warn(`📦 Rådata: ${merged.length} timer total`);\n\n// Dynamiske zoner baseret på alle kendte priser\nconst sorteret = [...merged].sort((a, b) => a.pris - b.pris);\nconst antalTimer = sorteret.length;\nconst billigGraense = sorteret[Math.floor(antalTimer / 3)].pris;\nconst dyrGraense = sorteret[Math.floor(antalTimer * 2 / 3)].pris;\n\nconst markeretPriser = merged.map(p => ({\n    ...p,\n    zone: p.pris <= billigGraense ? 'billig' : p.pris >= dyrGraense ? 'dyr' : 'normal'\n}));\n\n// Find nuværende time\nconst nu = new Date();\nconst nuvaerende = markeretPriser.find(p => {\n    const t = new Date(p.time);\n    return t.getHours() === nu.getHours() &&\n           t.getDate() === nu.getDate() &&\n           t.getMonth() === nu.getMonth();\n});\n\nif (!nuvaerende) {\n    node.warn(`⚠️ Ingen pris for nuværende time`);\n}\n\n// Tjek om vi har nattetimer\nconst harNatTimer = markeretPriser.some(p => {\n    const t = new Date(p.time);\n    return t > nu && t.getDate() !== nu.getDate() && t.getHours() < 6;\n});\n\n// Gem globalt\nglobal.set('priser', markeretPriser);\nglobal.set('billigGraense', billigGraense);\nglobal.set('dyrGraense', dyrGraense);\nglobal.set('nuvaerende', nuvaerende);\nglobal.set('har_nok_prisdata', harNatTimer);\n\nnode.warn(`✅ Priser: ${markeretPriser.length} timer | Nat: ${harNatTimer ? '✅' : '⏳ venter'}`);\nnode.warn(`💚 Billig < ${billigGraense} kr/kWh`);\nnode.warn(`❤️ Dyr > ${dyrGraense} kr/kWh`);\nif (nuvaerende) {\n    node.warn(`⚡ Nu: ${nuvaerende.pris} kr/kWh (spot: ${nuvaerende.spotpris}) - ${nuvaerende.zone.toUpperCase()}`);\n}\n\nmsg.payload = { priser: markeretPriser, billigGraense, dyrGraense, nuvaerende, harNatTimer };\nreturn msg;",
+        "func": "// Tjek for API fejl eller tom data\nif (msg.payload.statusCode) {\n    node.warn(`⚠️ API fejl: ${msg.payload.message}`);\n    return null;\n}\n\nconst records = Array.isArray(msg.payload) ? msg.payload : msg.payload.records;\n\nif (!records || records.length === 0) {\n    node.warn('⚠️ Tom data modtaget - sandsynligvis i morgens priser ikke klar endnu');\n    return null;\n}\n\n// Ryd gammel cache hvis den ikke har spotpris felt\nconst eksisterendeCheck = global.get('priser_raw') || [];\nif (eksisterendeCheck.length > 0 && !eksisterendeCheck[0].spotpris) {\n    global.set('priser_raw', []);\n    node.warn('🔄 Rydder gammel priscache - opdaterer med afgifter');\n}\n\n// Faste omkostninger pr. kWh (ekskl. moms) - fra EWII faktura maj 2026\nconst ENERGINET_NET = 0.04300;\nconst ENERGINET_SYSTEM = 0.07200;\nconst ELAFGIFT_REDUCERET = 0.00800;\nconst EWII_TILLAEG = 0.03000;\n\n// Radius C nettarif - tidsdifferentieret (typiske takster, Radius C)\n// ⚠️ Multiplikatorer er estimerede - bør verificeres mod radiuselnet.dk\n// Trefor El-net Trekantområdet, tarifkategori C, SOMMER-perioder (eks. moms)\n// Bekræftet mod Trefors officielle prisstatistik-PDF (gældende fra 1. januar 2026).\n// ⚠️ Trefor har SEPARATE, højere vinter-takster (spidslast op til 0,5877 kr!)\n// - dette er endnu ikke implementeret, kun sommer-satserne bruges lige nu.\nconst getNettarif = (hour) => {\n    if (hour >= 0 && hour < 6)   return 0.0653;   // Lavlast (nat)\n    if (hour >= 17 && hour < 21) return 0.2547;   // Spidslast (myldretid)\n    return 0.0980;                                 // Højlast (06-17 & 21-24)\n};\n\nconst getFastTillæg = (hour) => {\n    const nettarif = getNettarif(hour);\n    return ENERGINET_NET + ENERGINET_SYSTEM + ELAFGIFT_REDUCERET + EWII_TILLAEG + nettarif;\n};\n\n// Konverter til DKK/kWh inkl. afgifter og moms\nconst nyePriser = records.map(r => {\n    const hour = new Date(r.time_start).getHours();\n    const spotpris = parseFloat(r.DKK_per_kWh.toFixed(4));\n    const realPris = parseFloat(((spotpris + getFastTillæg(hour)) * 1.25).toFixed(4));\n    return {\n        time: r.time_start,\n        pris: realPris,\n        spotpris: spotpris,\n        hour: hour\n    };\n});\n\n// Merge med eksisterende priser (behold begge dage)\nconst eksisterende = global.get('priser_raw') || [];\n\n// Fjern dubletter baseret på time\nconst merged = [...eksisterende];\nnyePriser.forEach(ny => {\n    const findes = merged.find(e => e.time === ny.time);\n    if (!findes) merged.push(ny);\n});\n\n// Sorter efter tid\nmerged.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());\n\n// Gem rådata til næste merge\nglobal.set('priser_raw', merged);\n\nnode.warn(`📦 Rådata: ${merged.length} timer total`);\n\n// Dynamiske zoner baseret på alle kendte priser\nconst sorteret = [...merged].sort((a, b) => a.pris - b.pris);\nconst antalTimer = sorteret.length;\nconst billigGraense = sorteret[Math.floor(antalTimer / 3)].pris;\nconst dyrGraense = sorteret[Math.floor(antalTimer * 2 / 3)].pris;\n\nconst markeretPriser = merged.map(p => ({\n    ...p,\n    zone: p.pris <= billigGraense ? 'billig' : p.pris >= dyrGraense ? 'dyr' : 'normal'\n}));\n\n// Find nuværende time\nconst nu = new Date();\nconst nuvaerende = markeretPriser.find(p => {\n    const t = new Date(p.time);\n    return t.getHours() === nu.getHours() &&\n           t.getDate() === nu.getDate() &&\n           t.getMonth() === nu.getMonth();\n});\n\nif (!nuvaerende) {\n    node.warn(`⚠️ Ingen pris for nuværende time`);\n}\n\n// Tjek om vi har nattetimer\nconst harNatTimer = markeretPriser.some(p => {\n    const t = new Date(p.time);\n    return t > nu && t.getDate() !== nu.getDate() && t.getHours() < 6;\n});\n\n// Gem globalt\nglobal.set('priser', markeretPriser);\nglobal.set('billigGraense', billigGraense);\nglobal.set('dyrGraense', dyrGraense);\nglobal.set('nuvaerende', nuvaerende);\nglobal.set('har_nok_prisdata', harNatTimer);\n\nnode.warn(`✅ Priser: ${markeretPriser.length} timer | Nat: ${harNatTimer ? '✅' : '⏳ venter'}`);\nnode.warn(`💚 Billig < ${billigGraense} kr/kWh`);\nnode.warn(`❤️ Dyr > ${dyrGraense} kr/kWh`);\nif (nuvaerende) {\n    node.warn(`⚡ Nu: ${nuvaerende.pris} kr/kWh (spot: ${nuvaerende.spotpris}) - ${nuvaerende.zone.toUpperCase()}`);\n}\n\nmsg.payload = { priser: markeretPriser, billigGraense, dyrGraense, nuvaerende, harNatTimer };\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2631,7 +2631,8 @@
             [
                 "telegram-send"
             ]
-        ]
+        ],
+        "disabled": true
     },
     {
         "id": "uge_status_check",
@@ -3289,6 +3290,50 @@
         "noerr": 0,
         "x": 480,
         "y": 1000,
+        "wires": [
+            [
+                "telegram-send"
+            ],
+            [
+                "gem-event"
+            ]
+        ]
+    },
+    {
+        "id": "koekken_freshness_inject",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Køkken data-friskhed hvert 30. min",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "1800",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 60,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 1060,
+        "wires": [
+            [
+                "koekken_freshness_check"
+            ]
+        ]
+    },
+    {
+        "id": "koekken_freshness_check",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Tjek Køkken data-friskhed",
+        "func": "const GRAENSE_MS = 6 * 60 * 60 * 1000; // 6 timer\n\nconst seneste = global.get('koekken_seneste');\nconst nu = Date.now();\n\nif (!seneste || !seneste.opdateret) {\n    return [null, null];\n}\n\nconst alderMs = nu - new Date(seneste.opdateret).getTime();\nconst erStale = alderMs > GRAENSE_MS;\nconst sidsteAlarmStatus = flow.get('koekken_freshness_alarm') || false;\n\nif (erStale && !sidsteAlarmStatus) {\n    flow.set('koekken_freshness_alarm', true);\n    const alderTimer = (alderMs / 3600000).toFixed(1);\n    node.warn(`🔴 Køkken-sensor: ingen data i ${alderTimer} timer!`);\n    return [\n        { payload: `🔴 <b>Køkken-sensor har ikke sendt data i ${alderTimer} timer!</b>\\n\\nTjek batteri/kontakt/Zigbee-forbindelse.` },\n        { payload: { event: 'alarm', beskrivelse: `🔴 Køkken-sensor ingen data i ${alderTimer} timer` } }\n    ];\n} else if (!erStale && sidsteAlarmStatus) {\n    flow.set('koekken_freshness_alarm', false);\n    node.warn('🟢 Køkken-sensor sender data igen');\n    return [\n        { payload: '🟢 Køkken-sensor sender data igen.' },\n        { payload: { event: 'alarm', beskrivelse: '🟢 Køkken-sensor data normaliseret' } }\n    ];\n}\n\nreturn [null, null];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 480,
+        "y": 1060,
         "wires": [
             [
                 "telegram-send"
