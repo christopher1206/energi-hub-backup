@@ -4,7 +4,7 @@
         "sunrise": "5:27",
         "sunset": "21:31"
     },
-    "morgen_joke_sidste_dag": "30/07/2026",
+    "morgen_joke_sidste_dag": "31/07/2026",
     "morgen_joke_brugte": [
         15,
         33,
@@ -25,9 +25,10 @@
         11,
         37,
         8,
-        59
+        59,
+        52
     ],
-    "fakta_sidste_slot": "30/07/2026_22",
+    "fakta_sidste_slot": "31/07/2026_12",
     "fakta_brugte": [
         6,
         35,
@@ -47,7 +48,10 @@
         0,
         32,
         15,
-        36
+        36,
+        23,
+        9,
+        8
     ],
     "lobe_motivation_sidste_dag": "30/07/2026",
     "uge_status_sidste_dag": "04/07/2026",
@@ -70,7 +74,8 @@
         15,
         12,
         17,
-        16
+        16,
+        19
     ],
-    "it_joke_sidste_dag": "30/07/2026"
+    "it_joke_sidste_dag": "31/07/2026"
 }

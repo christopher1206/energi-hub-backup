@@ -80,16 +80,6 @@ interface OpvaskemaskineData {
   timestamp: string;
 }
 
-interface VinkoelerskabData {
-  apower: number;
-  voltage: number;
-  current: number;
-  temp_c: number;
-  output: boolean;
-  dagens_kwh: number;
-  timestamp: string;
-}
-
 interface UdendorsLysEnhed {
   state: boolean;
   brightness: number;
@@ -192,8 +182,6 @@ export default function Dashboard() {
   const [tid, setTid] = useState('');
   const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
   const [opvask, setOpvask] = useState<OpvaskemaskineData | null>(null);
-  const [vinkoeler, setVinkoeler] = useState<VinkoelerskabData | null>(null);
-  const [vinkoelerLoading, setVinkoelerLoading] = useState(false);
 
   useEffect(() => {
     const hent = async () => {
@@ -230,18 +218,6 @@ export default function Dashboard() {
     };
     hentOpvask();
     const interval = setInterval(hentOpvask, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const hentVinkoeler = async () => {
-      try {
-        const res = await fetch('/api/vinkoelerskab');
-        setVinkoeler(await res.json());
-      } catch (e) {}
-    };
-    hentVinkoeler();
-    const interval = setInterval(hentVinkoeler, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -448,21 +424,6 @@ export default function Dashboard() {
     setOpvaskLoading(false);
   };
 
-  const toggleVinkoeler = async () => {
-    if (!vinkoeler) return;
-    setVinkoelerLoading(true);
-    try {
-      await fetch('/api/vinkoelerskab', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ on: !vinkoeler.output }),
-      });
-      const res = await fetch('/api/vinkoelerskab');
-      setVinkoeler(await res.json());
-    } catch (e) {}
-    setVinkoelerLoading(false);
-  };
-
   if (!data) return <div className="loading"><div className="spinner" /><p>Henter data...</p></div>;
 
   return (
@@ -622,44 +583,6 @@ export default function Dashboard() {
               {koekken.battery !== null && (
                 <div style={{ fontSize: '0.7rem', color: '#64748b' }}>🔋 {koekken.battery}%</div>
               )}
-            </div>
-          ) : (
-            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
-          )}
-        </div>
-      </div>
-
-      {/* Vinkølerskab */}
-      <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
-        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🍷 Vinkølerskab</div>
-          {vinkoeler ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <span style={{
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: vinkoeler.apower > 5 ? '#22c55e' : vinkoeler.output ? '#eab308' : '#475569',
-                display: 'inline-block'
-              }} />
-              <div>
-                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{vinkoeler.apower.toFixed(1)}</span>
-                <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                {vinkoeler.dagens_kwh.toFixed(2)} kWh i dag
-              </div>
-              <button
-                onClick={toggleVinkoeler}
-                disabled={vinkoelerLoading}
-                style={{
-                  marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
-                  fontSize: '0.7rem', fontWeight: 600,
-                  border: vinkoeler.output ? '1px solid #ef4444' : '1px solid #22c55e',
-                  background: vinkoeler.output ? '#7f1d1d' : '#14532d',
-                  color: vinkoeler.output ? '#fca5a5' : '#86efac',
-                }}
-              >
-                {vinkoelerLoading ? '...' : vinkoeler.output ? '⏻ Sluk' : '⏻ Tænd'}
-              </button>
             </div>
           ) : (
             <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
