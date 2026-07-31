@@ -1,11 +1,11 @@
 {
     "go_e_car_sidst": 1,
-    "sol_power": 600,
+    "sol_power": 250,
     "grid_power": 0,
-    "load_power": 3090,
-    "batteri_power": -2490,
-    "batteri_soc": 47,
-    "batteri_temp": 30,
+    "load_power": 2260,
+    "batteri_power": -2000,
+    "batteri_soc": 20,
+    "batteri_temp": 31,
     "har_nok_prisdata": true,
     "priser_raw": [
         {
@@ -9998,10 +9998,10 @@
     "billigGraense": 1.0734,
     "dyrGraense": 1.5609,
     "nuvaerende": {
-        "time": "2026-07-31T17:00:00+02:00",
-        "pris": 1.8599,
-        "spotpris": 1.0802,
-        "hour": 17,
+        "time": "2026-07-31T18:00:00+02:00",
+        "pris": 2.0232,
+        "spotpris": 1.2109,
+        "hour": 18,
         "zone": "dyr"
     },
     "growatt_mode": "load_first",
@@ -10015,10 +10015,10 @@
     "go_e_amp": 16,
     "go_e_wh": 26412.10299,
     "vejr_temp_max": 17,
-    "vejr_temp_min": 13,
-    "vejr_tekst": "regn",
-    "vejr_skyer": 80,
-    "vejr_sol_potentiale": "☁️ Lavt solpotentiale",
+    "vejr_temp_min": 10,
+    "vejr_tekst": "skydække",
+    "vejr_skyer": 46,
+    "vejr_sol_potentiale": "⛅ Moderat solpotentiale",
     "battery_energy_in": 30.51,
     "battery_energy_out": 28.72,
     "grid_energy_in": 144.47,
@@ -10103,21 +10103,21 @@
     },
     "depot_lys_state": {
         "state": "OFF",
-        "linkquality": 200,
-        "opdateret": "2026-07-31T14:48:56.639Z"
+        "linkquality": 216,
+        "opdateret": "2026-07-31T16:06:59.915Z"
     },
     "sol_prognose_rest_kwh": 0,
     "discharge_status": {
         "mode": "aktiv",
         "aarsag": "🌆 Efter kl. 16 → afladning tilladt",
         "solPrognoseKwh": 0,
-        "manglerTilFuldKwh": 3.45,
+        "manglerTilFuldKwh": 5.2,
         "solDaekkerResten": false,
         "zone": "dyr",
-        "pris": 1.8599,
-        "soc": 47,
-        "time": 17,
-        "opdateret": "2026-07-31T15:35:36.098Z"
+        "pris": 2.0232,
+        "soc": 20,
+        "time": 18,
+        "opdateret": "2026-07-31T16:12:45.321Z"
     },
     "sol_prognose_dagens_total": {
         "timer": [
@@ -10188,9 +10188,9 @@
         ],
         "totalKwh": 9.78,
         "restKwhTil16": 0,
-        "opdateret": "2026-07-31T15:28:42.668Z"
+        "opdateret": "2026-07-31T16:11:25.709Z"
     },
-    "sidste_growatt_data_ts": 1785512140673,
+    "sidste_growatt_data_ts": 1785514365326,
     "badstor_seneste": {
         "temperature": 24.88,
         "humidity": 62.16,

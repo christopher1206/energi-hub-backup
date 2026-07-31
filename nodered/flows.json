@@ -3651,5 +3651,85 @@
                 "telegram-send"
             ]
         ]
+    },
+    {
+        "id": "fest-fact-inj",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Fest: Vidste du (hele timer 12-23)",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 12-23 * * *",
+        "once": false,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 60,
+        "wires": [
+            [
+                "fest-fact-fn"
+            ]
+        ]
+    },
+    {
+        "id": "fest-fact-fn",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Vaelg fact",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460,
+        "y": 60,
+        "wires": [
+            [
+                "telegram-send"
+            ]
+        ],
+        "func": "const nu = new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Copenhagen'}));\nconst y=nu.getFullYear(); const m=String(nu.getMonth()+1).padStart(2,'0'); const d=String(nu.getDate()).padStart(2,'0');\nif ((y+'-'+m+'-'+d) !== '2026-08-01') { return null; }\nconst facts=[\"🐙 En blæksprutte har tre hjerter — og det ene stopper, når den svømmer.\", \"🍌 Bananer er let radioaktive. Man måler faktisk stråling i 'banan-doser'.\", \"🦩 Flamingoer er ikke lyserøde af natur — det er rejerne, de spiser.\", \"🍯 Honning bliver aldrig dårligt. Man har fundet 3000 år gammel honning i egyptiske grave.\", \"🦈 Hajer er ældre end træer — de har svømmet rundt i ~400 millioner år.\", \"🇩🇰 Danmark har ikke ét eneste bjerg. Vores højeste top er 170,86 m.\", \"🐌 En snegl kan sove i op til tre år i træk.\", \"🧠 Du kan ikke kilde dig selv — hjernen forudser din egen berøring.\", \"🌕 Der er efterladt over 96 sække affald på Månen.\", \"🍅 Ketchup blev i 1830'erne solgt som medicin mod maveonde.\", \"🐝 Bier kan genkende menneskeansigter.\", \"🇫🇷 Frankrig havde en konge, der kun regerede i 20 minutter (Ludvig XIX, 1830).\", \"🦖 T-rex levede tættere på os i tid end på Stegosaurus.\", \"🌊 Der findes bedre kort over Mars end over Jordens havbund.\", \"🐧 Pingviner frier med en småsten.\", \"☕ Verdens mest solgte varme drik er te — ikke kaffe.\", \"🎈 Helium slipper langsomt op på Jorden.\", \"🦥 Dovendyr kan holde vejret længere end delfiner — op til 40 minutter.\", \"🕰️ Oxford Universitet er ældre end Aztekerriget.\", \"🐄 Køer har bedste venner og bliver stressede, når de skilles fra dem.\", \"🍺 I middelalderens Danmark drak man øl til morgenmad — vandet var for beskidt.\", \"🌩️ Et lyn er cirka 5 gange varmere end Solens overflade.\", \"🦴 Du blev født med ~300 knogler, men ender med 206.\", \"🐫 En kamels pukkel er fyldt med fedt, ikke vand.\", \"🍫 Aztekerne brugte kakaobønner som penge.\"];\nlet s=context.get('sf'); let i=Math.floor(Math.random()*facts.length);\nif(facts.length>1){while(i===s){i=Math.floor(Math.random()*facts.length);}} context.set('sf',i);\nmsg.payload='🎉 <b>Vidste du?</b>\\n\\n'+facts[i];\nreturn msg;"
+    },
+    {
+        "id": "fest-joke-inj",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Fest: Vits (halve timer 12-22)",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "30 12-22 * * *",
+        "once": false,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "fest-joke-fn"
+            ]
+        ]
+    },
+    {
+        "id": "fest-joke-fn",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Vaelg vits",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460,
+        "y": 120,
+        "wires": [
+            [
+                "telegram-send"
+            ]
+        ],
+        "func": "const nu = new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Copenhagen'}));\nconst y=nu.getFullYear(); const m=String(nu.getMonth()+1).padStart(2,'0'); const d=String(nu.getDate()).padStart(2,'0');\nif ((y+'-'+m+'-'+d) !== '2026-08-01') { return null; }\nconst jokes=[\"Jeg fortalte en vits om en tagsten... den gik lige hen over hovedet på ham.\", \"Hvad sagde det ene bræt til det andet? 'Skal vi hænge ud?'\", \"Min chef sagde 'gå efter dine drømme'. Så jeg gik hjem og lagde mig til at sove.\", \"Hvorfor kan skeletter ikke lide fester? De har ingen krop at danse med.\", \"Jeg ville lave en vits om kemi, men fik ingen reaktion.\", \"Hvad kalder man en boomerang, der ikke kommer tilbage? En pind.\", \"Min hund kan tryllekunster. Han er en labracadabrador.\", \"Hvorfor blev tomaten rød? Den så salatdressingen.\", \"Jeg og min seng har et særligt forhold — vi bliver bedre og bedre til at ligge stille sammen.\", \"Man siger størrelsen ikke betyder noget. Det siger folk med stort tv også.\", \"Jeg kan lide mine vittigheder som mine drinks — korte og med en overraskende slutning.\", \"Sex er som at rette matematik: enten gør du det selv, eller også venter du på facitlisten.\", \"Naboen bankede på kl. 3 og spurgte om salt. Jeg tror ikke helt, det var salt, han manglede.\", \"Hvad er forskellen på en god og en dårlig elsker? Cirka 15 minutter og en kop kaffe.\", \"Jeg stoppede med at stole på trapper. De har altid noget for.\", \"Jeg købte et verdensatlas. Nu ved jeg ikke, hvor jeg skal begynde.\", \"Hvad siger et nul til et ottetal? 'Fedt bælte!'\", \"Jeg prøvede tantra-yoga. Nu kan jeg holde vejret længere end min sidste date holdt interessen.\", \"Min terapeut siger jeg har problemer med intimitet. Jeg sagde, det ikke rager ham.\", \"Hvorfor tæller man får for at falde i søvn? 'Kylling, kylling' virker ikke.\"];\nlet s=context.get('sj'); let i=Math.floor(Math.random()*jokes.length);\nif(jokes.length>1){while(i===s){i=Math.floor(Math.random()*jokes.length);}} context.set('sj',i);\nmsg.payload='😏 <b>Fest-vits</b>\\n\\n'+jokes[i];\nreturn msg;"
     }
 ]
