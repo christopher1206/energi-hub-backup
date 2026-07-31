@@ -61,81 +61,104 @@ async function fluxQuery(flux: string): Promise<any[]> {
   return rows;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const dag = new URL(request.url).searchParams.get('dag'); // 'igaar' | null
     const midnight = copenhagenMidnightUTC();
+    // Standard: fra i dag 00:00 og frem (aaben slut).
+    // dag=igaar: hele gaarsdagen [i gaar 00:00, i dag 00:00).
+    const rangeStart = dag === 'igaar'
+      ? new Date(new Date(midnight).getTime() - 24 * 3600 * 1000).toISOString()
+      : midnight;
+    const rangeStopClause = dag === 'igaar' ? `, stop: time(v: "${midnight}")` : '';
 
     // Sol produktion i dag (kWh)
     const solFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "sol_power")
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Hus forbrug i dag (kWh)
     const loadFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "load_power")
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Net - købt (positiv del af grid_power)
     const gridKobFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "grid_power")
         |> map(fn: (r) => ({ r with _value: if r._value > 0.0 then r._value else 0.0 }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Net - solgt (negativ del af grid_power, vendt positiv)
     const gridSolgtFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "grid_power")
         |> map(fn: (r) => ({ r with _value: if r._value < 0.0 then -r._value else 0.0 }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Batteri - udladet (positiv del af batteri_power, antaget: positiv = ud af batteri)
     const batUdFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "batteri_power")
         |> map(fn: (r) => ({ r with _value: if r._value > 0.0 then r._value else 0.0 }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Batteri - ladet ind (negativ del af batteri_power, vendt positiv)
     const batIndFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "batteri_power")
         |> map(fn: (r) => ({ r with _value: if r._value < 0.0 then -r._value else 0.0 }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Net - kr brugt på købt strøm i dag (grid_power x pris integreret over tid)
     const gridKobKrFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "grid_power" or r._field == "pris"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
         |> map(fn: (r) => ({ r with _value: (if exists r.grid_power and r.grid_power > 0.0 then r.grid_power else 0.0) / 1000.0 * (if exists r.pris then r.pris else 0.0) }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
     // Tesla - estimeret kWh (kun mens tesla_lad = 1, baseret på tesla_amp, 3-faset 230V)
     const teslaFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "tesla_amp" or r._field == "tesla_lad"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
         |> map(fn: (r) => ({ r with _value: (if exists r.tesla_lad and r.tesla_lad > 0.5 then 1.0 else 0.0) * (if exists r.tesla_amp then r.tesla_amp else 0.0) * 230.0 * 3.0 / 1000.0 }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
@@ -144,11 +167,13 @@ export async function GET() {
     // (i stedet for en hardkodet gennemsnitspris, som var markant unøjagtig).
     const teoretiskFuldPrisFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${midnight}"))
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "load_power" or r._field == "pris"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
         |> map(fn: (r) => ({ r with _value: (if exists r.load_power then r.load_power else 0.0) / 1000.0 * (if exists r.pris then r.pris else 0.0) }))
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
         |> integral(unit: 1h, column: "_value")
     `;
 
@@ -193,6 +218,8 @@ export async function GET() {
       sparet_i_dag: sparetIDag,
       selvforsyning_i_dag: selvforsyningIDag,
       midnight_brugt: midnight,
+      range_start_brugt: rangeStart,
+      dag_brugt: dag || "idag",
       timestamp: new Date().toISOString(),
     });
   } catch (e: any) {

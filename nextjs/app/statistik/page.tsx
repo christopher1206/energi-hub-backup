@@ -43,6 +43,12 @@ interface StatData {
   timestamp: string;
 }
 
+interface ApparatForbrug {
+  navn: string;
+  icon: string;
+  kwh: number;
+}
+
 function StatKort({ icon, titel, value, unit, farve }: { icon: string; titel: string; value: string | number; unit?: string; farve?: string }) {
   return (
     <div className="stat-kort">
@@ -61,6 +67,7 @@ export default function StatistikSide() {
   const [periode, setPeriode] = useState<'time' | 'dag' | 'uge' | 'maaned' | 'aar'>('dag');
   const [periodeData, setPeriodeData] = useState<PeriodeData | null>(null);
   const [periodeLoading, setPeriodeLoading] = useState(false);
+  const [apparater, setApparater] = useState<ApparatForbrug[]>([]);
 
   useEffect(() => {
     const hent = async () => {
@@ -88,6 +95,19 @@ export default function StatistikSide() {
     const i = setInterval(hentPeriode, 60000);
     return () => clearInterval(i);
   }, [periode]);
+
+  useEffect(() => {
+    const hentApparater = async () => {
+      try {
+        const res = await fetch('/api/apparat-forbrug');
+        const d = await res.json();
+        setApparater(d.apparater || []);
+      } catch (e) {}
+    };
+    hentApparater();
+    const i = setInterval(hentApparater, 60000);
+    return () => clearInterval(i);
+  }, []);
 
   if (loading) return <div className="loading"><div className="spinner"/><p>Henter statistik...</p></div>;
   if (!data) return <div className="loading"><p>Ingen data</p></div>;
@@ -166,6 +186,18 @@ export default function StatistikSide() {
           <StatKort icon="📤" titel="Netto salg til net" value={nettoGrid} unit=" kWh" farve={nettoGrid > 0 ? '#22c55e' : '#ef4444'} />
         </div>
       </div>
+
+      {/* Apparat-forbrug (plugs) */}
+      {apparater.length > 0 && (
+        <div className="stat-sektion">
+          <h2>🔌 Apparat-forbrug i dag</h2>
+          <div className="stat-grid">
+            {apparater.map((a) => (
+              <StatKort key={a.navn} icon={a.icon} titel={a.navn} value={a.kwh.toFixed(2)} unit=" kWh" farve="#38bdf8" />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Sol */}
       <div className="stat-sektion">

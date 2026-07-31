@@ -80,6 +80,26 @@ interface OpvaskemaskineData {
   timestamp: string;
 }
 
+interface NilanventilationloftData {
+  apower: number;
+  voltage: number;
+  current: number;
+  temp_c: number;
+  output: boolean;
+  dagens_kwh: number;
+  timestamp: string;
+}
+
+interface VilladsgamerpcData {
+  apower: number;
+  voltage: number;
+  current: number;
+  temp_c: number;
+  output: boolean;
+  dagens_kwh: number;
+  timestamp: string;
+}
+
 interface VinkoelerskabData {
   apower: number;
   voltage: number;
@@ -179,6 +199,40 @@ function ZoneFarve({ zone }: { zone: string }) {
   return <span className="zone-normal">● NORMAL</span>;
 }
 
+
+function HusUnderfordeling({ husW, plugs }: {
+  husW: number;
+  plugs: { navn: string; icon: string; w: number; farve: string }[];
+}) {
+  const sum = plugs.reduce((a, b) => a + (b.w || 0), 0);
+  const ovrigt = Math.max(0, husW - sum);
+  const alle = [...plugs, { navn: 'Øvrigt', icon: '❓', w: ovrigt, farve: '#475569' }];
+  const total = husW > 0 ? husW : (sum || 1);
+  return (
+    <div className="card" style={{ padding: '0.65rem 0.85rem', marginBottom: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.45rem' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>🏠 Hus-forbrug lige nu — fordeling</span>
+        <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#8b5cf6' }}>{husW} W</span>
+      </div>
+      <div style={{ display: 'flex', height: '10px', borderRadius: '5px', overflow: 'hidden', marginBottom: '0.5rem', background: '#1e293b' }}>
+        {alle.map((a) => (
+          <div key={a.navn} title={`${a.navn}: ${a.w.toFixed(1)} W`}
+            style={{ width: `${(a.w / total) * 100}%`, background: a.farve }} />
+        ))}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+        {alle.map((a) => (
+          <div key={a.navn} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#94a3b8' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: a.farve, display: 'inline-block' }} />
+            <span>{a.icon} {a.navn}</span>
+            <span style={{ color: '#f1f5f9', fontWeight: 600 }}>{a.w.toFixed(1)} W</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [data, setData] = useState<EnergiData | null>(null);
   const [bil, setBil] = useState<BilData>({ soc: 50, opdateret: null });
@@ -192,6 +246,10 @@ export default function Dashboard() {
   const [tid, setTid] = useState('');
   const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
   const [opvask, setOpvask] = useState<OpvaskemaskineData | null>(null);
+  const [nilanventilationloft, setNilanventilationloft] = useState<NilanventilationloftData | null>(null);
+  const [nilanventilationloftLoading, setNilanventilationloftLoading] = useState(false);
+  const [villadsgamerpc, setVilladsgamerpc] = useState<VilladsgamerpcData | null>(null);
+  const [villadsgamerpcLoading, setVilladsgamerpcLoading] = useState(false);
   const [vinkoeler, setVinkoeler] = useState<VinkoelerskabData | null>(null);
   const [vinkoelerLoading, setVinkoelerLoading] = useState(false);
 
@@ -230,6 +288,30 @@ export default function Dashboard() {
     };
     hentOpvask();
     const interval = setInterval(hentOpvask, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentNilanventilationloft = async () => {
+      try {
+        const res = await fetch('/api/nilanventilationloft');
+        setNilanventilationloft(await res.json());
+      } catch (e) {}
+    };
+    hentNilanventilationloft();
+    const interval = setInterval(hentNilanventilationloft, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentVilladsgamerpc = async () => {
+      try {
+        const res = await fetch('/api/villadsgamerpc');
+        setVilladsgamerpc(await res.json());
+      } catch (e) {}
+    };
+    hentVilladsgamerpc();
+    const interval = setInterval(hentVilladsgamerpc, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -448,6 +530,36 @@ export default function Dashboard() {
     setOpvaskLoading(false);
   };
 
+  const toggleNilanventilationloft = async () => {
+    if (!nilanventilationloft) return;
+    setNilanventilationloftLoading(true);
+    try {
+      await fetch('/api/nilanventilationloft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ on: !nilanventilationloft.output }),
+      });
+      const res = await fetch('/api/nilanventilationloft');
+      setNilanventilationloft(await res.json());
+    } catch (e) {}
+    setNilanventilationloftLoading(false);
+  };
+
+  const toggleVilladsgamerpc = async () => {
+    if (!villadsgamerpc) return;
+    setVilladsgamerpcLoading(true);
+    try {
+      await fetch('/api/villadsgamerpc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ on: !villadsgamerpc.output }),
+      });
+      const res = await fetch('/api/villadsgamerpc');
+      setVilladsgamerpc(await res.json());
+    } catch (e) {}
+    setVilladsgamerpcLoading(false);
+  };
+
   const toggleVinkoeler = async () => {
     if (!vinkoeler) return;
     setVinkoelerLoading(true);
@@ -568,103 +680,158 @@ export default function Dashboard() {
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⚡ Live energiflow</div>
         <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} tabNegativKr={tabNegativ?.tabKr} />
+        <HusUnderfordeling
+          husW={data.load_power}
+          plugs={[
+            { navn: 'Opvaskemaskine', icon: '🍽️', w: opvask?.apower ?? 0, farve: '#22c55e' },
+            { navn: 'Vinkøler', icon: '🍷', w: vinkoeler?.apower ?? 0, farve: '#a855f7' },
+            { navn: 'Gamer PC', icon: '🎮', w: villadsgamerpc?.apower ?? 0, farve: '#3b82f6' },
+            { navn: 'Ventilation', icon: '🌬️', w: nilanventilationloft?.apower ?? 0, farve: '#38bdf8' },
+          ]}
+        />
       </div>
 
-      {/* Opvaskemaskine + Køkken - kompakt side om side */}
+      {/* Plug-kort 2-og-2 */}
       <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
-        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🍽️ Opvaskemaskine</div>
-          {opvask ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <span style={{
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: opvask.apower > 5 ? '#22c55e' : opvask.output ? '#eab308' : '#475569',
-                display: 'inline-block'
-              }} />
-              <div>
-                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{opvask.apower.toFixed(1)}</span>
-                <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                {opvask.dagens_kwh.toFixed(2)} kWh i dag
-              </div>
-              <button
-                onClick={toggleOpvask}
-                disabled={opvaskLoading}
-                style={{
-                  marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
-                  fontSize: '0.7rem', fontWeight: 600,
-                  border: opvask.output ? '1px solid #ef4444' : '1px solid #22c55e',
-                  background: opvask.output ? '#7f1d1d' : '#14532d',
-                  color: opvask.output ? '#fca5a5' : '#86efac',
-                }}
-              >
-                {opvaskLoading ? '...' : opvask.output ? '⏻ Sluk' : '⏻ Tænd'}
-              </button>
-            </div>
-          ) : (
-            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
-          )}
-        </div>
-
-        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🌡️ Køkken</div>
-          {koekken && koekken.temperature !== null ? (
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'baseline' }}>
-              <div>
-                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{koekken.temperature.toFixed(1)}</span>
-                <span style={{ fontSize: '0.7rem', color: '#64748b' }}> °C</span>
-              </div>
-              <div>
-                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>{koekken.humidity?.toFixed(0)}</span>
-                <span style={{ fontSize: '0.7rem', color: '#64748b' }}> % fugt</span>
-              </div>
-              {koekken.battery !== null && (
-                <div style={{ fontSize: '0.7rem', color: '#64748b' }}>🔋 {koekken.battery}%</div>
-              )}
-            </div>
-          ) : (
-            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
-          )}
-        </div>
+          <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🍽️ Opvaskemaskine</div>
+                    {opvask ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <span style={{
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: opvask.apower > 5 ? '#22c55e' : opvask.output ? '#eab308' : '#475569',
+                          display: 'inline-block'
+                        }} />
+                        <div>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{opvask.apower.toFixed(1)}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          {opvask.dagens_kwh.toFixed(2)} kWh i dag
+                        </div>
+                        <button
+                          onClick={toggleOpvask}
+                          disabled={opvaskLoading}
+                          style={{
+                            marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
+                            fontSize: '0.7rem', fontWeight: 600,
+                            border: opvask.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                            background: opvask.output ? '#7f1d1d' : '#14532d',
+                            color: opvask.output ? '#fca5a5' : '#86efac',
+                          }}
+                        >
+                          {opvaskLoading ? '...' : opvask.output ? '⏻ Sluk' : '⏻ Tænd'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+                    )}
+                  </div>
+          <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🍷 Vinkølerskab</div>
+                    {vinkoeler ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <span style={{
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: vinkoeler.apower > 5 ? '#22c55e' : vinkoeler.output ? '#eab308' : '#475569',
+                          display: 'inline-block'
+                        }} />
+                        <div>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{vinkoeler.apower.toFixed(1)}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          {vinkoeler.dagens_kwh.toFixed(2)} kWh i dag
+                        </div>
+                        <button
+                          onClick={toggleVinkoeler}
+                          disabled={vinkoelerLoading}
+                          style={{
+                            marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
+                            fontSize: '0.7rem', fontWeight: 600,
+                            border: vinkoeler.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                            background: vinkoeler.output ? '#7f1d1d' : '#14532d',
+                            color: vinkoeler.output ? '#fca5a5' : '#86efac',
+                          }}
+                        >
+                          {vinkoelerLoading ? '...' : vinkoeler.output ? '⏻ Sluk' : '⏻ Tænd'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+                    )}
+                  </div>
       </div>
 
-      {/* Vinkølerskab */}
       <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
-        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🍷 Vinkølerskab</div>
-          {vinkoeler ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <span style={{
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: vinkoeler.apower > 5 ? '#22c55e' : vinkoeler.output ? '#eab308' : '#475569',
-                display: 'inline-block'
-              }} />
-              <div>
-                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{vinkoeler.apower.toFixed(1)}</span>
-                <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                {vinkoeler.dagens_kwh.toFixed(2)} kWh i dag
-              </div>
-              <button
-                onClick={toggleVinkoeler}
-                disabled={vinkoelerLoading}
-                style={{
-                  marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
-                  fontSize: '0.7rem', fontWeight: 600,
-                  border: vinkoeler.output ? '1px solid #ef4444' : '1px solid #22c55e',
-                  background: vinkoeler.output ? '#7f1d1d' : '#14532d',
-                  color: vinkoeler.output ? '#fca5a5' : '#86efac',
-                }}
-              >
-                {vinkoelerLoading ? '...' : vinkoeler.output ? '⏻ Sluk' : '⏻ Tænd'}
-              </button>
-            </div>
-          ) : (
-            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
-          )}
-        </div>
+          <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🎮 Villads Gamer PC</div>
+                    {villadsgamerpc ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <span style={{
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: villadsgamerpc.apower > 5 ? '#22c55e' : villadsgamerpc.output ? '#eab308' : '#475569',
+                          display: 'inline-block'
+                        }} />
+                        <div>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{villadsgamerpc.apower.toFixed(1)}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          {villadsgamerpc.dagens_kwh.toFixed(2)} kWh i dag
+                        </div>
+                        <button
+                          onClick={toggleVilladsgamerpc}
+                          disabled={villadsgamerpcLoading}
+                          style={{
+                            marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
+                            fontSize: '0.7rem', fontWeight: 600,
+                            border: villadsgamerpc.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                            background: villadsgamerpc.output ? '#7f1d1d' : '#14532d',
+                            color: villadsgamerpc.output ? '#fca5a5' : '#86efac',
+                          }}
+                        >
+                          {villadsgamerpcLoading ? '...' : villadsgamerpc.output ? '⏻ Sluk' : '⏻ Tænd'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+                    )}
+                  </div>
+          <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🌬️ Nilan Ventilation Loft</div>
+                    {nilanventilationloft ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <span style={{
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: nilanventilationloft.apower > 5 ? '#22c55e' : nilanventilationloft.output ? '#eab308' : '#475569',
+                          display: 'inline-block'
+                        }} />
+                        <div>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{nilanventilationloft.apower.toFixed(1)}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          {nilanventilationloft.dagens_kwh.toFixed(2)} kWh i dag
+                        </div>
+                        <button
+                          onClick={toggleNilanventilationloft}
+                          disabled={nilanventilationloftLoading}
+                          style={{
+                            marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
+                            fontSize: '0.7rem', fontWeight: 600,
+                            border: nilanventilationloft.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                            background: nilanventilationloft.output ? '#7f1d1d' : '#14532d',
+                            color: nilanventilationloft.output ? '#fca5a5' : '#86efac',
+                          }}
+                        >
+                          {nilanventilationloftLoading ? '...' : nilanventilationloft.output ? '⏻ Sluk' : '⏻ Tænd'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+                    )}
+                  </div>
       </div>
 
       {/* Depot - bevægelsesstyret lys */}

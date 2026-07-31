@@ -5,3 +5,4 @@ nextjs/node_modules/
 nextjs/.next/
 *.db
 .env
+_backup_*/
