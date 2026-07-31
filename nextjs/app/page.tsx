@@ -233,6 +233,8 @@ function HusUnderfordeling({ husW, plugs }: {
   );
 }
 
+interface SalgMaaned { solgt_kwh: number; indtjent_kr: number; gns_pris: number; maaned: string; }
+
 export default function Dashboard() {
   const [data, setData] = useState<EnergiData | null>(null);
   const [bil, setBil] = useState<BilData>({ soc: 50, opdateret: null });
@@ -246,6 +248,7 @@ export default function Dashboard() {
   const [tid, setTid] = useState('');
   const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
   const [opvask, setOpvask] = useState<OpvaskemaskineData | null>(null);
+  const [salg, setSalg] = useState<SalgMaaned | null>(null);
   const [nilanventilationloft, setNilanventilationloft] = useState<NilanventilationloftData | null>(null);
   const [nilanventilationloftLoading, setNilanventilationloftLoading] = useState(false);
   const [villadsgamerpc, setVilladsgamerpc] = useState<VilladsgamerpcData | null>(null);
@@ -289,6 +292,15 @@ export default function Dashboard() {
     hentOpvask();
     const interval = setInterval(hentOpvask, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentSalg = async () => {
+      try { const r = await fetch('/api/salg-maaned'); const d = await r.json(); if (!d.fejl) setSalg(d); } catch (e) {}
+    };
+    hentSalg();
+    const i = setInterval(hentSalg, 60000);
+    return () => clearInterval(i);
   }, []);
 
   useEffect(() => {
@@ -680,6 +692,17 @@ export default function Dashboard() {
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⚡ Live energiflow</div>
         <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} tabNegativKr={tabNegativ?.tabKr} />
+        {salg && (
+          <div className="card" style={{ padding: '0.65rem 0.85rem', marginBottom: '0.75rem', border: '1px solid #14532d' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>💰 Salg denne måned</span>
+              <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#22c55e' }}>{salg.indtjent_kr.toFixed(2)} kr</span>
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.25rem' }}>
+              {salg.solgt_kwh.toFixed(1)} kWh solgt · ⌀ {salg.gns_pris.toFixed(2)} kr/kWh · <i>variabel timepris, ekskl. moms</i>
+            </div>
+          </div>
+        )}
         <HusUnderfordeling
           husW={data.load_power}
           plugs={[

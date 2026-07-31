@@ -6,3 +6,4 @@ nextjs/.next/
 *.db
 .env
 _backup_*/
+_backup_*/

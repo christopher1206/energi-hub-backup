@@ -63,14 +63,44 @@ async function fluxQuery(flux: string): Promise<any[]> {
 
 export async function GET(request: Request) {
   try {
-    const dag = new URL(request.url).searchParams.get('dag'); // 'igaar' | null
+    const sp = new URL(request.url).searchParams;
+    const dag = sp.get('dag');           // 'igaar' | null
+    const periode = sp.get('periode');   // 'uge' | 'maaned' | null
     const midnight = copenhagenMidnightUTC();
-    // Standard: fra i dag 00:00 og frem (aaben slut).
-    // dag=igaar: hele gaarsdagen [i gaar 00:00, i dag 00:00).
-    const rangeStart = dag === 'igaar'
-      ? new Date(new Date(midnight).getTime() - 24 * 3600 * 1000).toISOString()
-      : midnight;
-    const rangeStopClause = dag === 'igaar' ? `, stop: time(v: "${midnight}")` : '';
+    const mMs = new Date(midnight).getTime();
+    // Beregn interval:
+    //  default        : [i dag 00:00, aaben)
+    //  dag=igaar       : [i gaar 00:00, i dag 00:00)
+    //  periode=uge     : [denne uges mandag 00:00, i dag 00:00)  (koerer soendag aften)
+    //  periode=maaned  : [1. i forrige maaned, 1. i denne maaned)
+    let rangeStart = midnight;
+    let rangeStop = '';
+    if (dag === 'igaar') {
+      rangeStart = new Date(mMs - 24 * 3600 * 1000).toISOString();
+      rangeStop = midnight;
+    } else if (periode === 'uge') {
+      // dansk ugedag: mandag=1..soendag=7
+      const cph = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }));
+      const dow = (cph.getDay() + 6) % 7; // 0=mandag
+      rangeStart = new Date(mMs - dow * 24 * 3600 * 1000).toISOString();
+      rangeStop = midnight; // til i dag 00:00 (soendag morgen) -> hele uge-til-nu
+    } else if (periode === 'maaned') {
+      // Robust: byg 1. i maaneden som dansk lokaltid, konverter til korrekt UTC.
+      const cph = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }));
+      const denneAar = cph.getFullYear();
+      const denneMdr = cph.getMonth();
+      // Helper: giv UTC-iso for lokal-midnat paa given (aar, maaned, dag) i Europe/Copenhagen
+      const lokalMidnatUTC = (aar: number, mdr: number) => {
+        const guess = new Date(Date.UTC(aar, mdr, 1, 0, 0, 0));
+        const asCph = new Date(guess.toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }));
+        const asUtc = new Date(guess.toLocaleString('en-US', { timeZone: 'UTC' }));
+        const offMin = (asCph.getTime() - asUtc.getTime()) / 60000;
+        return new Date(guess.getTime() - offMin * 60000).toISOString();
+      };
+      rangeStart = lokalMidnatUTC(denneAar, denneMdr - 1);
+      rangeStop = lokalMidnatUTC(denneAar, denneMdr);
+    }
+    const rangeStopClause = rangeStop ? `, stop: time(v: "${rangeStop}")` : '';
 
     // Sol produktion i dag (kWh)
     const solFlux = `
@@ -111,6 +141,18 @@ export async function GET(request: Request) {
         |> map(fn: (r) => ({ r with _value: if r._value < 0.0 then -r._value else 0.0 }))
         |> group(columns: ["_start", "_stop"])
         |> sort(columns: ["_time"])
+        |> integral(unit: 1h, column: "_value")
+    `;
+
+    // Indtjening paa salg (Vindstoed variabel timepris: spotpris - 0,023 kr/kWh)
+    const gridSalgKrFlux = `
+      from(bucket: "${INFLUX_BUCKET}")
+        |> range(start: time(v: "${rangeStart}")${rangeStopClause})
+        |> filter(fn: (r) => r._measurement == "energi" and (r._field == "grid_power" or r._field == "spotpris"))
+        |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+        |> group(columns: ["_start", "_stop"])
+        |> sort(columns: ["_time"])
+        |> map(fn: (r) => ({ r with _value: (if r.grid_power < 0.0 then -r.grid_power else 0.0) * (r.spotpris - 0.023) / 1000.0 }))
         |> integral(unit: 1h, column: "_value")
     `;
 
@@ -177,11 +219,12 @@ export async function GET(request: Request) {
         |> integral(unit: 1h, column: "_value")
     `;
 
-    const [sol, load, gridKob, gridSolgt, batUd, batInd, tesla, gridKobKr, teoretiskFuldPris] = await Promise.all([
+    const [sol, load, gridKob, gridSolgt, gridSalgKr, batUd, batInd, tesla, gridKobKr, teoretiskFuldPris] = await Promise.all([
       fluxQuery(solFlux),
       fluxQuery(loadFlux),
       fluxQuery(gridKobFlux),
       fluxQuery(gridSolgtFlux),
+      fluxQuery(gridSalgKrFlux),
       fluxQuery(batUdFlux),
       fluxQuery(batIndFlux),
       fluxQuery(teslaFlux),
@@ -195,6 +238,7 @@ export async function GET(request: Request) {
     const loadKwh = sum(load) / 1000;
     const gridKobKwh = sum(gridKob) / 1000;
     const gridSolgtKwh = sum(gridSolgt) / 1000;
+    const indtjentSalgKr = sum(gridSalgKr);
     const batUdKwh = sum(batUd) / 1000;
     const batIndKwh = sum(batInd) / 1000;
     const teslaKwh = sum(tesla);
@@ -211,6 +255,7 @@ export async function GET(request: Request) {
       dagens_load_kwh: parseFloat(loadKwh.toFixed(2)),
       dagens_grid_kob_kwh: parseFloat(gridKobKwh.toFixed(2)),
       dagens_grid_solgt_kwh: parseFloat(gridSolgtKwh.toFixed(2)),
+      indtjent_salg_kr: parseFloat(indtjentSalgKr.toFixed(2)),
       dagens_batteri_ud_kwh: parseFloat(batUdKwh.toFixed(2)),
       dagens_batteri_ind_kwh: parseFloat(batIndKwh.toFixed(2)),
       dagens_tesla_kwh: parseFloat(teslaKwh.toFixed(2)),

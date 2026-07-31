@@ -3519,5 +3519,137 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "uge-rapport-inj",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Uge-rapport",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 20 * * 0",
+        "once": false,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 0,
+        "wires": [
+            [
+                "uge-byg-url"
+            ]
+        ]
+    },
+    {
+        "id": "uge-byg-url",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg uge-url",
+        "func": "const now = new Date();\nconst uge = Math.ceil(((now - new Date(now.getFullYear(),0,1)) / 86400000 + new Date(now.getFullYear(),0,1).getDay()+1)/7);\nmsg.url = 'http://192.168.1.253:3000/api/dagens-tal?periode=uge';\nmsg.method = 'GET';\nmsg.rapportTitel = 'Uge-rapport (uge ' + uge + ')';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 0,
+        "wires": [
+            [
+                "cf47-periode"
+            ]
+        ]
+    },
+    {
+        "id": "maaned-rapport-inj",
+        "type": "inject",
+        "z": "ced8b8b6adb174ea",
+        "name": "Maaned-rapport",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 08 1 * *",
+        "once": false,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 0,
+        "wires": [
+            [
+                "maaned-byg-url"
+            ]
+        ]
+    },
+    {
+        "id": "maaned-byg-url",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg maaned-url",
+        "func": "const f = new Date(Date.now()); f.setDate(0);\nconst maaned = f.toLocaleDateString('da-DK',{timeZone:'Europe/Copenhagen',month:'long',year:'numeric'});\nmsg.url = 'http://192.168.1.253:3000/api/dagens-tal?periode=maaned';\nmsg.method = 'GET';\nmsg.rapportTitel = 'Måneds-rapport — ' + maaned;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 0,
+        "wires": [
+            [
+                "cf47-periode"
+            ]
+        ]
+    },
+    {
+        "id": "cf47-periode",
+        "type": "http request",
+        "z": "ced8b8b6adb174ea",
+        "name": "HTTP periode",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.1.253:3000/api/dagens-tal",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 580,
+        "y": 0,
+        "wires": [
+            [
+                "rapport-fmt-periode"
+            ]
+        ]
+    },
+    {
+        "id": "rapport-fmt-periode",
+        "type": "function",
+        "z": "ced8b8b6adb174ea",
+        "name": "Byg periode-rapport",
+        "func": "const data = msg.payload;\nconst soc = global.get('batteri_soc') || 0;\nconst carSoc = global.get('car_soc') || 50;\nconst titel = msg.rapportTitel || 'Rapport';\nif (!data || data.fejl) { msg.payload = '📊 <b>'+titel+'</b>\\n\\nKunne ikke hente data'; return msg; }\nmsg.payload = '📊 <b>'+titel+'</b>\\n\\n' +\n  '☀️ Sol produceret: ' + data.dagens_sol_kwh + ' kWh\\n' +\n  '🏠 Hus forbrug: ' + data.dagens_load_kwh + ' kWh\\n' +\n  '🔌 Købt fra net: ' + data.dagens_grid_kob_kwh + ' kWh (' + data.dagens_grid_kob_kr + ' kr)\\n' +\n  '📤 Solgt til net: ' + data.dagens_grid_solgt_kwh + ' kWh\\n' +\n  '💰 Tjent på salg: ' + (data.indtjent_salg_kr != null ? data.indtjent_salg_kr : '?') + ' kr\\n' +\n  '⬆️ Batteri ladet: ' + data.dagens_batteri_ind_kwh + ' kWh\\n' +\n  '⬇️ Batteri afladet: ' + data.dagens_batteri_ud_kwh + ' kWh\\n' +\n  '💰 Sparet: ' + data.sparet_i_dag + ' kr\\n' +\n  '📊 Selvforsyning: ' + data.selvforsyning_i_dag + '%\\n\\n' +\n  '🔋 Growatt nu: ' + soc + '%\\n' +\n  '🚗 King kong: ' + carSoc + '%';\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 0,
+        "wires": [
+            [
+                "telegram-send"
+            ]
+        ]
     }
 ]

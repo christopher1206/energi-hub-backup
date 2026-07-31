@@ -49,6 +49,8 @@ interface ApparatForbrug {
   kwh: number;
 }
 
+interface SalgMaaned { solgt_kwh: number; indtjent_kr: number; gns_pris: number; maaned: string; }
+
 function StatKort({ icon, titel, value, unit, farve }: { icon: string; titel: string; value: string | number; unit?: string; farve?: string }) {
   return (
     <div className="stat-kort">
@@ -68,6 +70,7 @@ export default function StatistikSide() {
   const [periodeData, setPeriodeData] = useState<PeriodeData | null>(null);
   const [periodeLoading, setPeriodeLoading] = useState(false);
   const [apparater, setApparater] = useState<ApparatForbrug[]>([]);
+  const [salg, setSalg] = useState<SalgMaaned | null>(null);
 
   useEffect(() => {
     const hent = async () => {
@@ -106,6 +109,15 @@ export default function StatistikSide() {
     };
     hentApparater();
     const i = setInterval(hentApparater, 60000);
+    return () => clearInterval(i);
+  }, []);
+
+  useEffect(() => {
+    const hentSalg = async () => {
+      try { const r = await fetch('/api/salg-maaned'); const d = await r.json(); if (!d.fejl) setSalg(d); } catch (e) {}
+    };
+    hentSalg();
+    const i = setInterval(hentSalg, 60000);
     return () => clearInterval(i);
   }, []);
 
@@ -195,6 +207,18 @@ export default function StatistikSide() {
             {apparater.map((a) => (
               <StatKort key={a.navn} icon={a.icon} titel={a.navn} value={a.kwh.toFixed(2)} unit=" kWh" farve="#38bdf8" />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Salg af strøm */}
+      {salg && (
+        <div className="stat-sektion">
+          <h2>💰 Salg af strøm ({salg.maaned})</h2>
+          <div className="stat-grid">
+            <StatKort icon="💰" titel="Indtjent" value={salg.indtjent_kr.toFixed(2)} unit=" kr" farve="#22c55e" />
+            <StatKort icon="📤" titel="Solgt" value={salg.solgt_kwh.toFixed(1)} unit=" kWh" farve="#38bdf8" />
+            <StatKort icon="🏷️" titel="Gns. salgspris" value={salg.gns_pris.toFixed(2)} unit=" kr/kWh" farve="#eab308" />
           </div>
         </div>
       )}
