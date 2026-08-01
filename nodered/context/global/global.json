@@ -1,12 +1,12 @@
 {
-    "go_e_car_sidst": 1,
-    "sol_power": 250,
-    "grid_power": 0,
-    "load_power": 2260,
-    "batteri_power": -2000,
-    "batteri_soc": 20,
-    "batteri_temp": 31,
-    "har_nok_prisdata": true,
+    "go_e_car_sidst": 3,
+    "sol_power": 0,
+    "grid_power": 354.3,
+    "load_power": 350,
+    "batteri_power": 0,
+    "batteri_soc": 11,
+    "batteri_temp": 26,
+    "har_nok_prisdata": false,
     "priser_raw": [
         {
             "time": "2026-07-01T00:00:00+02:00",
@@ -9998,10 +9998,10 @@
     "billigGraense": 1.0734,
     "dyrGraense": 1.5609,
     "nuvaerende": {
-        "time": "2026-07-31T18:00:00+02:00",
-        "pris": 2.0232,
-        "spotpris": 1.2109,
-        "hour": 18,
+        "time": "2026-08-01T03:00:00+02:00",
+        "pris": 1.714,
+        "spotpris": 1.1529,
+        "hour": 3,
         "zone": "dyr"
     },
     "growatt_mode": "load_first",
@@ -10011,9 +10011,9 @@
     "growatt_kommando": "Load first",
     "discharge_rate": 100,
     "sidste_discharge_rate": 100,
-    "go_e_car": 1,
+    "go_e_car": 3,
     "go_e_amp": 16,
-    "go_e_wh": 26412.10299,
+    "go_e_wh": 0,
     "vejr_temp_max": 17,
     "vejr_temp_min": 10,
     "vejr_tekst": "skydække",
@@ -10025,21 +10025,21 @@
     "grid_energy_out": 45.49,
     "load_energy_total": 232.7,
     "pv_energy_total": 138.27,
-    "car_soc": 66,
-    "car_soc_opdateret": "2026-07-29T21:05:54.353Z",
+    "car_soc": 77,
+    "car_soc_opdateret": "2026-07-31T16:59:22.746Z",
     "car_soc_goe_wh_nulpunkt": 27040.35272,
     "alarm_batteri_lavt": 1782966665927,
     "tg_offset": 338004508,
     "alarm_batteri_fuld": 1782925265690,
     "alarm_bil_tilsluttet": 1782962165905,
-    "alarm_batteri_status": "normal",
+    "alarm_batteri_status": "lavt",
     "alarm_sol_hoej_status": false,
-    "go_e_wh_sidste": 26412.10299,
-    "car_charged_wh_akkumuleret": 73279.51614000005,
+    "go_e_wh_sidste": 0,
+    "car_charged_wh_akkumuleret": 0,
     "sidste_tesla_lad": false,
     "override_aktiv": false,
     "override_slut": null,
-    "sidste_bil_tilsluttet": false,
+    "sidste_bil_tilsluttet": true,
     "ladeplan": {
         "timer": [
             {
@@ -10051,10 +10051,10 @@
                 "pris": 1.712
             }
         ],
-        "manglerKwh": 20.4,
+        "manglerKwh": 13.799999999999999,
         "timerNodvendige": 2,
-        "bilTilsluttet": false,
-        "carSoc": 66,
+        "bilTilsluttet": true,
+        "carSoc": 77,
         "deadline": "2026-08-01T04:00:00.000Z"
     },
     "kalender_igangvaerende": [
@@ -10103,94 +10103,94 @@
     },
     "depot_lys_state": {
         "state": "OFF",
-        "linkquality": 216,
-        "opdateret": "2026-07-31T16:06:59.915Z"
+        "linkquality": 220,
+        "opdateret": "2026-07-31T20:27:53.819Z"
     },
-    "sol_prognose_rest_kwh": 0,
+    "sol_prognose_rest_kwh": 11.952,
     "discharge_status": {
         "mode": "aktiv",
-        "aarsag": "🌆 Efter kl. 16 → afladning tilladt",
-        "solPrognoseKwh": 0,
-        "manglerTilFuldKwh": 5.2,
-        "solDaekkerResten": false,
+        "aarsag": "☀️ Sol dækker resten uanset pris → afladning tilladt",
+        "solPrognoseKwh": 11.95,
+        "manglerTilFuldKwh": 5.79,
+        "solDaekkerResten": true,
         "zone": "dyr",
-        "pris": 2.0232,
-        "soc": 20,
-        "time": 18,
-        "opdateret": "2026-07-31T16:12:45.321Z"
+        "pris": 1.714,
+        "soc": 11,
+        "time": 3,
+        "opdateret": "2026-08-01T01:59:27.068Z"
     },
     "sol_prognose_dagens_total": {
         "timer": [
             {
-                "time": "2026-07-31T04:00:00.000Z",
+                "time": "2026-08-01T04:00:00.000Z",
                 "kwh": 0.02
             },
             {
-                "time": "2026-07-31T05:00:00.000Z",
+                "time": "2026-08-01T05:00:00.000Z",
                 "kwh": 0.16
             },
             {
-                "time": "2026-07-31T06:00:00.000Z",
-                "kwh": 0.36
+                "time": "2026-08-01T06:00:00.000Z",
+                "kwh": 0.39
             },
             {
-                "time": "2026-07-31T07:00:00.000Z",
-                "kwh": 0.54
+                "time": "2026-08-01T07:00:00.000Z",
+                "kwh": 0.71
             },
             {
-                "time": "2026-07-31T08:00:00.000Z",
-                "kwh": 0.7
+                "time": "2026-08-01T08:00:00.000Z",
+                "kwh": 1.09
             },
             {
-                "time": "2026-07-31T09:00:00.000Z",
-                "kwh": 0.86
+                "time": "2026-08-01T09:00:00.000Z",
+                "kwh": 1.43
             },
             {
-                "time": "2026-07-31T10:00:00.000Z",
-                "kwh": 0.98
+                "time": "2026-08-01T10:00:00.000Z",
+                "kwh": 1.66
             },
             {
-                "time": "2026-07-31T11:00:00.000Z",
-                "kwh": 1.05
+                "time": "2026-08-01T11:00:00.000Z",
+                "kwh": 1.74
             },
             {
-                "time": "2026-07-31T12:00:00.000Z",
-                "kwh": 1.07
+                "time": "2026-08-01T12:00:00.000Z",
+                "kwh": 1.71
             },
             {
-                "time": "2026-07-31T13:00:00.000Z",
-                "kwh": 1.02
+                "time": "2026-08-01T13:00:00.000Z",
+                "kwh": 1.61
             },
             {
-                "time": "2026-07-31T14:00:00.000Z",
-                "kwh": 0.92
+                "time": "2026-08-01T14:00:00.000Z",
+                "kwh": 1.44
             },
             {
-                "time": "2026-07-31T15:00:00.000Z",
-                "kwh": 0.77
+                "time": "2026-08-01T15:00:00.000Z",
+                "kwh": 1.14
             },
             {
-                "time": "2026-07-31T16:00:00.000Z",
-                "kwh": 0.59
+                "time": "2026-08-01T16:00:00.000Z",
+                "kwh": 0.8
             },
             {
-                "time": "2026-07-31T17:00:00.000Z",
-                "kwh": 0.4
+                "time": "2026-08-01T17:00:00.000Z",
+                "kwh": 0.53
             },
             {
-                "time": "2026-07-31T18:00:00.000Z",
-                "kwh": 0.23
+                "time": "2026-08-01T18:00:00.000Z",
+                "kwh": 0.27
             },
             {
-                "time": "2026-07-31T19:00:00.000Z",
+                "time": "2026-08-01T19:00:00.000Z",
                 "kwh": 0.1
             }
         ],
-        "totalKwh": 9.78,
-        "restKwhTil16": 0,
-        "opdateret": "2026-07-31T16:11:25.709Z"
+        "totalKwh": 14.81,
+        "restKwhTil16": 11.95,
+        "opdateret": "2026-08-01T01:41:26.605Z"
     },
-    "sidste_growatt_data_ts": 1785514365326,
+    "sidste_growatt_data_ts": 1785549571629,
     "badstor_seneste": {
         "temperature": 24.88,
         "humidity": 62.16,
