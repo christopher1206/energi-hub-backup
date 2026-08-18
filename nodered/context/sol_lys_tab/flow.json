@@ -1,10 +1,10 @@
 {
     "lys_udendors_state": false,
     "lys_sol_tider": {
-        "sunrise": "5:59",
-        "sunset": "20:54"
+        "sunrise": "6:00",
+        "sunset": "20:52"
     },
-    "morgen_joke_sidste_dag": "16/08/2026",
+    "morgen_joke_sidste_dag": "17/08/2026",
     "morgen_joke_brugte": [
         15,
         33,
@@ -42,47 +42,16 @@
         58,
         9,
         21,
-        42
+        42,
+        43
     ],
-    "fakta_sidste_slot": "16/08/2026_22",
+    "fakta_sidste_slot": "17/08/2026_22",
     "fakta_brugte": [
-        2,
-        9,
-        33,
         31,
-        12,
-        27,
-        16,
-        37,
-        29,
-        26,
-        23,
-        28,
-        1,
-        39,
-        20,
-        38,
-        36,
-        6,
-        19,
-        21,
-        8,
-        35,
-        0,
-        11,
-        34,
-        14,
-        32,
-        5,
-        3,
-        15,
-        10,
         18,
-        24,
-        25,
-        17
+        2
     ],
-    "lobe_motivation_sidste_dag": "16/08/2026",
+    "lobe_motivation_sidste_dag": "17/08/2026",
     "uge_status_sidste_dag": "04/07/2026",
     "it_joke_brugte": [
         5,
@@ -94,7 +63,8 @@
         12,
         10,
         7,
-        3
+        3,
+        15
     ],
-    "it_joke_sidste_dag": "14/08/2026"
+    "it_joke_sidste_dag": "17/08/2026"
 }
