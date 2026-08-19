@@ -80,6 +80,16 @@ interface OpvaskemaskineData {
   timestamp: string;
 }
 
+interface TvData {
+  apower: number;
+  voltage: number;
+  current: number;
+  temp_c: number;
+  output: boolean;
+  dagens_kwh: number;
+  timestamp: string;
+}
+
 interface NilanventilationloftData {
   apower: number;
   voltage: number;
@@ -248,6 +258,8 @@ export default function Dashboard() {
   const [tid, setTid] = useState('');
   const [dagensTal, setDagensTal] = useState<DagensTal | null>(null);
   const [opvask, setOpvask] = useState<OpvaskemaskineData | null>(null);
+  const [tv, setTv] = useState<TvData | null>(null);
+  const [tvLoading, setTvLoading] = useState(false);
   const [salg, setSalg] = useState<SalgMaaned | null>(null);
   const [nilanventilationloft, setNilanventilationloft] = useState<NilanventilationloftData | null>(null);
   const [nilanventilationloftLoading, setNilanventilationloftLoading] = useState(false);
@@ -291,6 +303,18 @@ export default function Dashboard() {
     };
     hentOpvask();
     const interval = setInterval(hentOpvask, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hentTv = async () => {
+      try {
+        const res = await fetch('/api/tv');
+        setTv(await res.json());
+      } catch (e) {}
+    };
+    hentTv();
+    const interval = setInterval(hentTv, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -540,6 +564,21 @@ export default function Dashboard() {
       setOpvask(await res.json());
     } catch (e) {}
     setOpvaskLoading(false);
+  };
+
+  const toggleTv = async () => {
+    if (!tv) return;
+    setTvLoading(true);
+    try {
+      await fetch('/api/tv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ on: !tv.output }),
+      });
+      const res = await fetch('/api/tv');
+      setTv(await res.json());
+    } catch (e) {}
+    setTvLoading(false);
   };
 
   const toggleNilanventilationloft = async () => {
@@ -855,6 +894,99 @@ export default function Dashboard() {
                       <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
                     )}
                   </div>
+      </div>
+
+      {/* tv */}
+      <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
+        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🌬️ tv</div>
+                    {tv ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <span style={{
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: tv.apower > 5 ? '#22c55e' : tv.output ? '#eab308' : '#475569',
+                          display: 'inline-block'
+                        }} />
+                        <div>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{tv.apower.toFixed(1)}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '3px' }}>W</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          {tv.dagens_kwh.toFixed(2)} kWh i dag
+                        </div>
+                        <button
+                          onClick={toggleTv}
+                          disabled={tvLoading}
+                          style={{
+                            marginLeft: 'auto', padding: '3px 10px', cursor: 'pointer', borderRadius: '6px',
+                            fontSize: '0.7rem', fontWeight: 600,
+                            border: tv.output ? '1px solid #ef4444' : '1px solid #22c55e',
+                            background: tv.output ? '#7f1d1d' : '#14532d',
+                            color: tv.output ? '#fca5a5' : '#86efac',
+                          }}
+                        >
+                          {tvLoading ? '...' : tv.output ? '⏻ Sluk' : '⏻ Tænd'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+                    )}
+                  </div>
+      </div>
+
+
+      {/* Depot - bevægelsesstyret lys */}
+      <div className="card" style={{ padding: '0.65rem 0.85rem', marginBottom: '0.75rem' }}>
+        <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>💡 Depot</div>
+        {depot && depot.state !== 'ukendt' ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{
+              width: '8px', height: '8px', borderRadius: '50%',
+              background: depot.state === 'ON' ? '#eab308' : '#475569',
+              display: 'inline-block'
+            }} />
+            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: depot.state === 'ON' ? '#fbbf24' : '#94a3b8' }}>
+              {depot.state === 'ON' ? 'Tændt' : 'Slukket'}
+            </span>
+            {depot.opdateret && (
+              <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: 'auto' }}>
+                {new Date(depot.opdateret).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+        )}
+      </div>
+
+      {/* Afladnings-status + Ladeplan side om side */}
+      <div className="two-col-responsive" style={{ marginBottom: '0.75rem' }}>
+        <div className="card" style={{ padding: '0.65rem 0.85rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>🔋⚡ Afladnings-status</div>
+          {dischargeStatus && dischargeStatus.opdateret ? (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                <span style={{
+                  width: '8px', height: '8px', borderRadius: '50%',
+                  background: dischargeStatus.mode === 'aktiv' ? '#22c55e' : '#f59e0b',
+                  display: 'inline-block'
+                }} />
+                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: dischargeStatus.mode === 'aktiv' ? '#86efac' : '#fbbf24' }}>
+                  {dischargeStatus.mode === 'aktiv' ? 'Afladning tilladt (100%)' : 'Afladning forhindret (0%)'}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginBottom: '0.4rem' }}>
+                {dischargeStatus.aarsag}
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.7rem', color: '#64748b' }}>
+                <span>☀️ Sol-prognose: <span style={{ color: '#fbbf24' }}>{dischargeStatus.solPrognoseKwh} kWh</span></span>
+                <span>🔋 Mangler til fuld: <span style={{ color: '#94a3b8' }}>{dischargeStatus.manglerTilFuldKwh} kWh</span></span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ color: '#475569', fontSize: '0.75rem' }}>Henter...</div>
+          )}
+        </div>
       </div>
 
       {/* Depot - bevægelsesstyret lys */}

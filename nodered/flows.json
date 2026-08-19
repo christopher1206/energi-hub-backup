@@ -3731,5 +3731,64 @@
             ]
         ],
         "func": "const nu = new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Copenhagen'}));\nconst y=nu.getFullYear(); const m=String(nu.getMonth()+1).padStart(2,'0'); const d=String(nu.getDate()).padStart(2,'0');\nif ((y+'-'+m+'-'+d) !== '2026-08-01') { return null; }\nconst jokes=[\"Jeg fortalte en vits om en tagsten... den gik lige hen over hovedet på ham.\", \"Hvad sagde det ene bræt til det andet? 'Skal vi hænge ud?'\", \"Min chef sagde 'gå efter dine drømme'. Så jeg gik hjem og lagde mig til at sove.\", \"Hvorfor kan skeletter ikke lide fester? De har ingen krop at danse med.\", \"Jeg ville lave en vits om kemi, men fik ingen reaktion.\", \"Hvad kalder man en boomerang, der ikke kommer tilbage? En pind.\", \"Min hund kan tryllekunster. Han er en labracadabrador.\", \"Hvorfor blev tomaten rød? Den så salatdressingen.\", \"Jeg og min seng har et særligt forhold — vi bliver bedre og bedre til at ligge stille sammen.\", \"Man siger størrelsen ikke betyder noget. Det siger folk med stort tv også.\", \"Jeg kan lide mine vittigheder som mine drinks — korte og med en overraskende slutning.\", \"Sex er som at rette matematik: enten gør du det selv, eller også venter du på facitlisten.\", \"Naboen bankede på kl. 3 og spurgte om salt. Jeg tror ikke helt, det var salt, han manglede.\", \"Hvad er forskellen på en god og en dårlig elsker? Cirka 15 minutter og en kop kaffe.\", \"Jeg stoppede med at stole på trapper. De har altid noget for.\", \"Jeg købte et verdensatlas. Nu ved jeg ikke, hvor jeg skal begynde.\", \"Hvad siger et nul til et ottetal? 'Fedt bælte!'\", \"Jeg prøvede tantra-yoga. Nu kan jeg holde vejret længere end min sidste date holdt interessen.\", \"Min terapeut siger jeg har problemer med intimitet. Jeg sagde, det ikke rager ham.\", \"Hvorfor tæller man får for at falde i søvn? 'Kylling, kylling' virker ikke.\"];\nlet s=context.get('sj'); let i=Math.floor(Math.random()*jokes.length);\nif(jokes.length>1){while(i===s){i=Math.floor(Math.random()*jokes.length);}} context.set('sj',i);\nmsg.payload='😏 <b>Fest-vits</b>\\n\\n'+jokes[i];\nreturn msg;"
+    },
+    {
+        "id": "tv_tab",
+        "type": "tab",
+        "label": "tv",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "tv_mqtt_in",
+        "type": "mqtt in",
+        "z": "tv_tab",
+        "name": "Shelly tv status",
+        "topic": "tv/status/switch:0",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "opvask_mqtt_broker",
+        "inputs": 0,
+        "x": 220,
+        "y": 100,
+        "wires": [
+            [
+                "tv_function"
+            ]
+        ]
+    },
+    {
+        "id": "tv_function",
+        "type": "function",
+        "z": "tv_tab",
+        "name": "Byg InfluxDB line protocol",
+        "func": "const data = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\nif (data.apower === undefined) {\n    return null;\n}\n\nconst fields = [];\nfields.push(`apower=${data.apower}`);\nif (data.voltage !== undefined) fields.push(`voltage=${data.voltage}`);\nif (data.current !== undefined) fields.push(`current=${data.current}`);\nif (data.output !== undefined) fields.push(`output=${data.output ? 1 : 0}`);\nif (data.aenergy && data.aenergy.total !== undefined) fields.push(`aenergy_total=${data.aenergy.total}`);\nif (data.temperature && data.temperature.tC !== undefined) fields.push(`temp_c=${data.temperature.tC}`);\n\nconst line = `tv ${fields.join(',')}`;\nconst headers = {\n    'Content-Type': 'text/plain; charset=utf-8',\n    'Authorization': `Token ${env.get('INFLUX_TOKEN')}`\n};\nconst url = 'http://influxdb:8086/api/v2/write?org=energihub&bucket=energi2&precision=s';\n\nconst msgs = [{ url, method: 'POST', headers, payload: line }];\n\nif (data.output !== undefined) {\n    const sidste = flow.get('tv_sidste_output');\n    if (sidste !== data.output) {\n        flow.set('tv_sidste_output', data.output);\n        const beskrivelse = data.output ? 'tv tændt' : 'tv slukket';\n        msgs.push({ url, method: 'POST', headers, payload: `events,type=tv value=\"${beskrivelse}\"` });\n    }\n}\n\nreturn [msgs];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 100,
+        "wires": [
+            [
+                "tv_http"
+            ]
+        ]
+    },
+    {
+        "id": "tv_http",
+        "type": "http request",
+        "z": "tv_tab",
+        "name": "Skriv til InfluxDB (tv)",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "x": 730,
+        "y": 100,
+        "wires": [
+            []
+        ]
     }
 ]
