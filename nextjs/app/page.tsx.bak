@@ -310,10 +310,7 @@ export default function Dashboard() {
     const hentTv = async () => {
       try {
         const res = await fetch('/api/tv');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (typeof data.apower !== 'number') return;
-        setTv(data);
+        setTv(await res.json());
       } catch (e) {}
     };
     hentTv();
@@ -579,10 +576,7 @@ export default function Dashboard() {
         body: JSON.stringify({ on: !tv.output }),
       });
       const res = await fetch('/api/tv');
-      if (!res.ok) return;
-        const data = await res.json();
-        if (typeof data.apower !== 'number') return;
-        setTv(data);
+      setTv(await res.json());
     } catch (e) {}
     setTvLoading(false);
   };
@@ -941,81 +935,6 @@ export default function Dashboard() {
       </div>
 
 
-      {/* Udendørs lys - carport og terrasse */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>💡 Udendørs lys</div>
-        {udendorsLys ? (
-          <div className="two-col-responsive">
-            {(['lys_carport', 'lys_terrasse'] as const).map(sted => (
-              <div key={sted} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
-                    {sted === 'lys_carport' ? '🚗 Carport' : '🌳 Terrasse'}
-                  </span>
-                  <button
-                    onClick={() => toggleLys(sted)}
-                    disabled={lysLoading[sted]}
-                    style={{
-                      padding: '4px 12px', cursor: 'pointer', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600,
-                      border: udendorsLys[sted].state ? '1px solid #ef4444' : '1px solid #22c55e',
-                      background: udendorsLys[sted].state ? '#7f1d1d' : '#14532d',
-                      color: udendorsLys[sted].state ? '#fca5a5' : '#86efac',
-                    }}
-                  >
-                    {lysLoading[sted] ? '...' : udendorsLys[sted].state ? 'Sluk' : 'Tænd'}
-                  </button>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span style={{
-                    width: '8px', height: '8px', borderRadius: '50%',
-                    background: udendorsLys[sted].state ? '#22c55e' : '#475569',
-                    display: 'inline-block'
-                  }} />
-                  <span style={{ fontSize: '0.75rem', color: udendorsLys[sted].state ? '#86efac' : '#64748b', fontWeight: 600 }}>
-                    {udendorsLys[sted].state ? 'TÆNDT' : 'SLUKKET'}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={254}
-                  value={sliderVaerdi[sted]}
-                  onChange={e => setSliderVaerdi(prev => ({ ...prev, [sted]: parseInt(e.target.value) }))}
-                  onMouseUp={e => sendLysstyrke(sted, parseInt((e.target as HTMLInputElement).value))}
-                  onTouchEnd={e => sendLysstyrke(sted, parseInt((e.target as HTMLInputElement).value))}
-                  style={{ width: '100%' }}
-                />
-                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                  Lysstyrke: {Math.round((sliderVaerdi[sted] / 254) * 100)}%
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
-        )}
-        {lysAutomatik && (
-          <div style={{
-            marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px solid #1e293b',
-            display: 'flex', flexWrap: 'wrap', gap: '0.4rem 1rem', fontSize: '0.75rem', color: '#64748b'
-          }}>
-            <span>🌅 Solopgang: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sunrise ?? '–'}</strong></span>
-            <span>🌇 Solnedgang: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sunset ?? '–'}</strong></span>
-            <span>🌙 Nat-stop: <strong style={{ color: '#94a3b8' }}>23:58</strong></span>
-            <span>☀️ Morgen-tænd: <strong style={{ color: '#94a3b8' }}>05:30*</strong></span>
-            {lysAutomatik.sidste_haendelse && (
-              <span style={{ width: '100%' }}>
-                Seneste automatik: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sidste_haendelse.beskrivelse}</strong>
-                {' '}kl. {new Date(lysAutomatik.sidste_haendelse.tid).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
-            <span style={{ width: '100%', fontSize: '0.65rem', color: '#475569' }}>
-              *springes over hvis solen allerede er stået op
-            </span>
-          </div>
-        )}
-      </div>
-
       {/* Depot - bevægelsesstyret lys */}
       <div className="card" style={{ padding: '0.65rem 0.85rem', marginBottom: '0.75rem' }}>
         <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>💡 Depot</div>
@@ -1211,6 +1130,81 @@ export default function Dashboard() {
           <span><span style={{ color: '#cbd5e1' }}>■</span> Prognose</span>
           <span><span style={{ color: '#4ade80' }}>■</span> Faktisk</span>
         </div>
+      </div>
+
+      {/* Udendørs lys - carport og terrasse */}
+      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>💡 Udendørs lys</div>
+        {udendorsLys ? (
+          <div className="two-col-responsive">
+            {(['lys_carport', 'lys_terrasse'] as const).map(sted => (
+              <div key={sted} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+                    {sted === 'lys_carport' ? '🚗 Carport' : '🌳 Terrasse'}
+                  </span>
+                  <button
+                    onClick={() => toggleLys(sted)}
+                    disabled={lysLoading[sted]}
+                    style={{
+                      padding: '4px 12px', cursor: 'pointer', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600,
+                      border: udendorsLys[sted].state ? '1px solid #ef4444' : '1px solid #22c55e',
+                      background: udendorsLys[sted].state ? '#7f1d1d' : '#14532d',
+                      color: udendorsLys[sted].state ? '#fca5a5' : '#86efac',
+                    }}
+                  >
+                    {lysLoading[sted] ? '...' : udendorsLys[sted].state ? 'Sluk' : 'Tænd'}
+                  </button>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{
+                    width: '8px', height: '8px', borderRadius: '50%',
+                    background: udendorsLys[sted].state ? '#22c55e' : '#475569',
+                    display: 'inline-block'
+                  }} />
+                  <span style={{ fontSize: '0.75rem', color: udendorsLys[sted].state ? '#86efac' : '#64748b', fontWeight: 600 }}>
+                    {udendorsLys[sted].state ? 'TÆNDT' : 'SLUKKET'}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={254}
+                  value={sliderVaerdi[sted]}
+                  onChange={e => setSliderVaerdi(prev => ({ ...prev, [sted]: parseInt(e.target.value) }))}
+                  onMouseUp={e => sendLysstyrke(sted, parseInt((e.target as HTMLInputElement).value))}
+                  onTouchEnd={e => sendLysstyrke(sted, parseInt((e.target as HTMLInputElement).value))}
+                  style={{ width: '100%' }}
+                />
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                  Lysstyrke: {Math.round((sliderVaerdi[sted] / 254) * 100)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
+        )}
+        {lysAutomatik && (
+          <div style={{
+            marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px solid #1e293b',
+            display: 'flex', flexWrap: 'wrap', gap: '0.4rem 1rem', fontSize: '0.75rem', color: '#64748b'
+          }}>
+            <span>🌅 Solopgang: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sunrise ?? '–'}</strong></span>
+            <span>🌇 Solnedgang: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sunset ?? '–'}</strong></span>
+            <span>🌙 Nat-stop: <strong style={{ color: '#94a3b8' }}>23:58</strong></span>
+            <span>☀️ Morgen-tænd: <strong style={{ color: '#94a3b8' }}>05:30*</strong></span>
+            {lysAutomatik.sidste_haendelse && (
+              <span style={{ width: '100%' }}>
+                Seneste automatik: <strong style={{ color: '#94a3b8' }}>{lysAutomatik.sidste_haendelse.beskrivelse}</strong>
+                {' '}kl. {new Date(lysAutomatik.sidste_haendelse.tid).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+            <span style={{ width: '100%', fontSize: '0.65rem', color: '#475569' }}>
+              *springes over hvis solen allerede er stået op
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Begivenheder — kompakt enkelt kort */}
