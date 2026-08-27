@@ -3794,49 +3794,5 @@
         "wires": [
             []
         ]
-    },
-    {
-        "id": "notif-timer",
-        "type": "inject",
-        "z": "ced8b8b6adb174ea",
-        "name": "Notif-tjek hvert 10s",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "10",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 300,
-        "y": 1240,
-        "wires": [
-            [
-                "notif-detektor"
-            ]
-        ]
-    },
-    {
-        "id": "notif-detektor",
-        "type": "function",
-        "z": "ced8b8b6adb174ea",
-        "name": "Notif: lade/Growatt-skift",
-        "func": "const goECar = global.get('go_e_car') || 1;\nconst bilTil = goECar > 1;\nconst teslaLad = global.get('tesla_lad') || false;\nconst solLad = global.get('sol_lad_aktiv') || false;\nconst psm = global.get('tesla_psm') || 2;\nconst amp = global.get('tesla_amp') || 0;\nconst faktiskPsm = global.get('go_e_psm_sidst') || psm;\nconst fase = faktiskPsm === 1 ? '1-faset' : '3-faset';\nconst override = global.get('override_aktiv') || false;\nconst carSoc = Math.min(100, Math.round((global.get('car_soc') || 50) + (global.get('car_charged_wh_akkumuleret') || 0) / 600));\nconst batSoc = global.get('batteri_soc') || 0;\nconst nuv = global.get('nuvaerende');\nconst pris = nuv ? nuv.pris : 0;\nconst zone = nuv ? nuv.zone : 'ukendt';\nconst out = [];\n\nlet bilState;\nif (!bilTil) { bilState = 'afbrudt'; }\nelse if (override) { bilState = 'override'; }\nelse if (teslaLad && solLad) { bilState = 'sol-' + (faktiskPsm === 1 ? '1f' : '3f'); }\nelse if (teslaLad) { bilState = 'grid-' + (faktiskPsm === 1 ? '1f' : '3f'); }\nelse { bilState = 'venter'; }\nconst sidsteBil = global.get('notif_bil_state');\nif (sidsteBil === undefined) { global.set('notif_bil_state', bilState); }\nelse if (sidsteBil !== bilState) {\n    global.set('notif_bil_state', bilState);\n    const nyTil = (sidsteBil === 'afbrudt');\n    const pre = nyTil ? '🔌 <b>King kong tilsluttet</b>\\n\\n' : '';\n    let t = '';\n    if (bilState === 'afbrudt') { t = '🔌 <b>King kong afbrudt fra laderen</b>\\n🚗 SoC: ' + carSoc + '% (est)'; }\n    else if (bilState === 'override') { t = '🚨 <b>King kong: MANUEL override aktiv</b>\\n🚗 SoC: ' + carSoc + '% (est)'; }\n    else if (bilState.indexOf('sol') === 0) { t = pre + '☀️ <b>Lader på SOL</b> (' + fase + ', ' + amp + 'A)\\n🚗 SoC: ' + carSoc + '% (est)\\n🔋 Growatt: ' + batSoc + '%'; }\n    else if (bilState.indexOf('grid') === 0) { t = pre + '🔌 <b>Lader fra NETTET</b> (' + fase + ', ' + amp + 'A)\\n🚗 SoC: ' + carSoc + '% (est)\\n💰 ' + pris + ' kr/kWh (' + zone + ')'; }\n    else { t = (nyTil ? pre + '⏸️ Afventer billigste timer / sol' : '⏹️ <b>King kong: ladning stoppet</b>') + '\\n🚗 SoC: ' + carSoc + '% (est)\\n🔋 Growatt: ' + batSoc + '% · 💰 ' + pris + ' kr (' + zone + ')'; }\n    if (t) out.push({ payload: t });\n}\n\nconst dRate = global.get('discharge_rate');\nconst wMode = global.get('growatt_kommando') || 'Load first';\nconst dStatus = global.get('discharge_status') || {};\nconst gState = wMode + '|' + dRate;\nconst sidsteG = global.get('notif_growatt_state');\nif (sidsteG === undefined) { global.set('notif_growatt_state', gState); }\nelse if (sidsteG !== gState) {\n    global.set('notif_growatt_state', gState);\n    const aarsag = dStatus.aarsag || '';\n    let g;\n    if (dRate >= 100) { g = '🔋 <b>Growatt: afladning AKTIV (100%)</b>\\n' + aarsag + '\\nBatteri: ' + batSoc + '% · 💰 ' + pris + ' kr (' + zone + ')'; }\n    else { g = '🔋 <b>Growatt: afladning STOPPET (0%)</b>\\n' + aarsag + '\\nBatteri: ' + batSoc + '% · 💰 ' + pris + ' kr (' + zone + ')'; }\n    out.push({ payload: g });\n}\n\nreturn out.length ? [out] : null;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 560,
-        "y": 1240,
-        "wires": [
-            [
-                "telegram-send"
-            ]
-        ]
     }
 ]
