@@ -1,11 +1,11 @@
 {
-    "go_e_car_sidst": 2,
+    "go_e_car_sidst": 3,
     "sol_power": 0,
-    "grid_power": 11633.2,
-    "load_power": 5056.4,
+    "grid_power": 395.5,
+    "load_power": 380,
     "batteri_power": 0,
-    "batteri_soc": 11,
-    "batteri_temp": 22,
+    "batteri_soc": 14,
+    "batteri_temp": 23,
     "har_nok_prisdata": false,
     "priser_raw": [
         {
@@ -11527,6 +11527,150 @@
             "pris": 1.3789,
             "spotpris": 0.8521,
             "hour": 23
+        },
+        {
+            "time": "2026-09-19T00:00:00+02:00",
+            "pris": 0.7375,
+            "spotpris": 0.3717,
+            "hour": 0
+        },
+        {
+            "time": "2026-09-19T01:00:00+02:00",
+            "pris": 0.5522,
+            "spotpris": 0.2235,
+            "hour": 1
+        },
+        {
+            "time": "2026-09-19T02:00:00+02:00",
+            "pris": 0.4386,
+            "spotpris": 0.1326,
+            "hour": 2
+        },
+        {
+            "time": "2026-09-19T03:00:00+02:00",
+            "pris": 0.3351,
+            "spotpris": 0.0498,
+            "hour": 3
+        },
+        {
+            "time": "2026-09-19T04:00:00+02:00",
+            "pris": 0.324,
+            "spotpris": 0.0409,
+            "hour": 4
+        },
+        {
+            "time": "2026-09-19T05:00:00+02:00",
+            "pris": 0.3197,
+            "spotpris": 0.0375,
+            "hour": 5
+        },
+        {
+            "time": "2026-09-19T06:00:00+02:00",
+            "pris": 0.3642,
+            "spotpris": 0.0404,
+            "hour": 6
+        },
+        {
+            "time": "2026-09-19T07:00:00+02:00",
+            "pris": 0.3739,
+            "spotpris": 0.0481,
+            "hour": 7
+        },
+        {
+            "time": "2026-09-19T08:00:00+02:00",
+            "pris": 0.3792,
+            "spotpris": 0.0524,
+            "hour": 8
+        },
+        {
+            "time": "2026-09-19T09:00:00+02:00",
+            "pris": 0.3705,
+            "spotpris": 0.0454,
+            "hour": 9
+        },
+        {
+            "time": "2026-09-19T10:00:00+02:00",
+            "pris": 0.3146,
+            "spotpris": 0.0007,
+            "hour": 10
+        },
+        {
+            "time": "2026-09-19T11:00:00+02:00",
+            "pris": 0.312,
+            "spotpris": -0.0014,
+            "hour": 11
+        },
+        {
+            "time": "2026-09-19T12:00:00+02:00",
+            "pris": 0.312,
+            "spotpris": -0.0014,
+            "hour": 12
+        },
+        {
+            "time": "2026-09-19T13:00:00+02:00",
+            "pris": 0.313,
+            "spotpris": -0.0006,
+            "hour": 13
+        },
+        {
+            "time": "2026-09-19T14:00:00+02:00",
+            "pris": 0.3028,
+            "spotpris": -0.0088,
+            "hour": 14
+        },
+        {
+            "time": "2026-09-19T15:00:00+02:00",
+            "pris": 0.3044,
+            "spotpris": -0.0075,
+            "hour": 15
+        },
+        {
+            "time": "2026-09-19T16:00:00+02:00",
+            "pris": 0.314,
+            "spotpris": 0.0002,
+            "hour": 16
+        },
+        {
+            "time": "2026-09-19T17:00:00+02:00",
+            "pris": 0.5737,
+            "spotpris": 0.0513,
+            "hour": 17
+        },
+        {
+            "time": "2026-09-19T18:00:00+02:00",
+            "pris": 0.9767,
+            "spotpris": 0.3737,
+            "hour": 18
+        },
+        {
+            "time": "2026-09-19T19:00:00+02:00",
+            "pris": 1.2079,
+            "spotpris": 0.5586,
+            "hour": 19
+        },
+        {
+            "time": "2026-09-19T20:00:00+02:00",
+            "pris": 1.2664,
+            "spotpris": 0.6054,
+            "hour": 20
+        },
+        {
+            "time": "2026-09-19T21:00:00+02:00",
+            "pris": 1.0271,
+            "spotpris": 0.5707,
+            "hour": 21
+        },
+        {
+            "time": "2026-09-19T22:00:00+02:00",
+            "pris": 0.8751,
+            "spotpris": 0.4491,
+            "hour": 22
+        },
+        {
+            "time": "2026-09-19T23:00:00+02:00",
+            "pris": 0.6867,
+            "spotpris": 0.2984,
+            "hour": 23
         }
     ],
     "priser": [
@@ -11717,7 +11861,7 @@
             "pris": 1.2679,
             "spotpris": 0.9809,
             "hour": 2,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-07-02T03:00:00+02:00",
@@ -13509,7 +13653,7 @@
             "pris": 1.2731,
             "spotpris": 0.698,
             "hour": 18,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-07-12T19:00:00+02:00",
@@ -13600,7 +13744,7 @@
             "pris": 1.7255,
             "spotpris": 1.1716,
             "hour": 7,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-07-13T08:00:00+02:00",
@@ -14132,7 +14276,7 @@
             "pris": 1.2632,
             "spotpris": 0.8017,
             "hour": 11,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-07-16T12:00:00+02:00",
@@ -15791,7 +15935,7 @@
             "pris": 1.275,
             "spotpris": 0.8112,
             "hour": 8,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-07-26T09:00:00+02:00",
@@ -16120,7 +16264,7 @@
             "pris": 1.7237,
             "spotpris": 1.128,
             "hour": 7,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-07-28T08:00:00+02:00",
@@ -16652,7 +16796,7 @@
             "pris": 1.2695,
             "spotpris": 0.7646,
             "hour": 11,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-07-31T12:00:00+02:00",
@@ -16680,7 +16824,7 @@
             "pris": 1.2648,
             "spotpris": 0.7608,
             "hour": 15,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-07-31T16:00:00+02:00",
@@ -16953,7 +17097,7 @@
             "pris": 1.7268,
             "spotpris": 1.1304,
             "hour": 6,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-08-02T07:00:00+02:00",
@@ -17191,7 +17335,7 @@
             "pris": 1.2721,
             "spotpris": 0.7667,
             "hour": 16,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-08-03T17:00:00+02:00",
@@ -17919,7 +18063,7 @@
             "pris": 1.7236,
             "spotpris": 1.1606,
             "hour": 0,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-08-08T01:00:00+02:00",
@@ -18206,7 +18350,7 @@
             "pris": 1.2751,
             "spotpris": 0.6124,
             "hour": 17,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-08-09T18:00:00+02:00",
@@ -18430,7 +18574,7 @@
             "pris": 1.2615,
             "spotpris": 0.7909,
             "hour": 1,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-08-11T02:00:00+02:00",
@@ -20488,7 +20632,7 @@
             "pris": 1.2685,
             "spotpris": 0.7638,
             "hour": 7,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-08-23T08:00:00+02:00",
@@ -21342,7 +21486,7 @@
             "pris": 1.7241,
             "spotpris": 1.1283,
             "hour": 9,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-08-28T10:00:00+02:00",
@@ -21496,7 +21640,7 @@
             "pris": 1.2611,
             "spotpris": 0.7579,
             "hour": 7,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-08-29T08:00:00+02:00",
@@ -22203,7 +22347,7 @@
             "pris": 1.2702,
             "spotpris": 0.7652,
             "hour": 12,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-09-02T13:00:00+02:00",
@@ -22441,7 +22585,7 @@
             "pris": 1.7239,
             "spotpris": 1.1281,
             "hour": 22,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-09-03T23:00:00+02:00",
@@ -22455,7 +22599,7 @@
             "pris": 1.264,
             "spotpris": 0.7929,
             "hour": 0,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-09-04T01:00:00+02:00",
@@ -22959,7 +23103,7 @@
             "pris": 1.7258,
             "spotpris": 1.1623,
             "hour": 0,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-09-07T01:00:00+02:00",
@@ -24408,7 +24552,7 @@
             "pris": 1.268,
             "spotpris": 0.7634,
             "hour": 15,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-09-15T16:00:00+02:00",
@@ -24569,7 +24713,7 @@
             "pris": 1.2679,
             "spotpris": 0.7633,
             "hour": 14,
-            "zone": "billig"
+            "zone": "normal"
         },
         {
             "time": "2026-09-16T15:00:00+02:00",
@@ -24660,7 +24804,7 @@
             "pris": 1.7245,
             "spotpris": 1.1613,
             "hour": 3,
-            "zone": "normal"
+            "zone": "dyr"
         },
         {
             "time": "2026-09-17T04:00:00+02:00",
@@ -24969,32 +25113,200 @@
             "spotpris": 0.8521,
             "hour": 23,
             "zone": "normal"
+        },
+        {
+            "time": "2026-09-19T00:00:00+02:00",
+            "pris": 0.7375,
+            "spotpris": 0.3717,
+            "hour": 0,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T01:00:00+02:00",
+            "pris": 0.5522,
+            "spotpris": 0.2235,
+            "hour": 1,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T02:00:00+02:00",
+            "pris": 0.4386,
+            "spotpris": 0.1326,
+            "hour": 2,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T03:00:00+02:00",
+            "pris": 0.3351,
+            "spotpris": 0.0498,
+            "hour": 3,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T04:00:00+02:00",
+            "pris": 0.324,
+            "spotpris": 0.0409,
+            "hour": 4,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T05:00:00+02:00",
+            "pris": 0.3197,
+            "spotpris": 0.0375,
+            "hour": 5,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T06:00:00+02:00",
+            "pris": 0.3642,
+            "spotpris": 0.0404,
+            "hour": 6,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T07:00:00+02:00",
+            "pris": 0.3739,
+            "spotpris": 0.0481,
+            "hour": 7,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T08:00:00+02:00",
+            "pris": 0.3792,
+            "spotpris": 0.0524,
+            "hour": 8,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T09:00:00+02:00",
+            "pris": 0.3705,
+            "spotpris": 0.0454,
+            "hour": 9,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T10:00:00+02:00",
+            "pris": 0.3146,
+            "spotpris": 0.0007,
+            "hour": 10,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T11:00:00+02:00",
+            "pris": 0.312,
+            "spotpris": -0.0014,
+            "hour": 11,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T12:00:00+02:00",
+            "pris": 0.312,
+            "spotpris": -0.0014,
+            "hour": 12,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T13:00:00+02:00",
+            "pris": 0.313,
+            "spotpris": -0.0006,
+            "hour": 13,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T14:00:00+02:00",
+            "pris": 0.3028,
+            "spotpris": -0.0088,
+            "hour": 14,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T15:00:00+02:00",
+            "pris": 0.3044,
+            "spotpris": -0.0075,
+            "hour": 15,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T16:00:00+02:00",
+            "pris": 0.314,
+            "spotpris": 0.0002,
+            "hour": 16,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T17:00:00+02:00",
+            "pris": 0.5737,
+            "spotpris": 0.0513,
+            "hour": 17,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T18:00:00+02:00",
+            "pris": 0.9767,
+            "spotpris": 0.3737,
+            "hour": 18,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T19:00:00+02:00",
+            "pris": 1.2079,
+            "spotpris": 0.5586,
+            "hour": 19,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T20:00:00+02:00",
+            "pris": 1.2664,
+            "spotpris": 0.6054,
+            "hour": 20,
+            "zone": "normal"
+        },
+        {
+            "time": "2026-09-19T21:00:00+02:00",
+            "pris": 1.0271,
+            "spotpris": 0.5707,
+            "hour": 21,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T22:00:00+02:00",
+            "pris": 0.8751,
+            "spotpris": 0.4491,
+            "hour": 22,
+            "zone": "billig"
+        },
+        {
+            "time": "2026-09-19T23:00:00+02:00",
+            "pris": 0.6867,
+            "spotpris": 0.2984,
+            "hour": 23,
+            "zone": "billig"
         }
     ],
-    "billigGraense": 1.2751,
-    "dyrGraense": 1.727,
+    "billigGraense": 1.2594,
+    "dyrGraense": 1.7236,
     "nuvaerende": {
-        "time": "2026-09-18T03:00:00+02:00",
-        "pris": 1.3897,
-        "spotpris": 0.8935,
+        "time": "2026-09-19T03:00:00+02:00",
+        "pris": 0.3351,
+        "spotpris": 0.0498,
         "hour": 3,
-        "zone": "normal"
+        "zone": "billig"
     },
     "growatt_mode": "load_first",
     "discharge_mode": "stop",
-    "tesla_lad": true,
-    "tesla_amp": 16,
+    "tesla_lad": false,
+    "tesla_amp": 0,
     "growatt_kommando": "Load first",
     "discharge_rate": 0,
     "sidste_discharge_rate": 0,
-    "go_e_car": 2,
+    "go_e_car": 3,
     "go_e_amp": 16,
-    "go_e_wh": 2188.619971,
-    "vejr_temp_max": 16,
-    "vejr_temp_min": 11,
-    "vejr_tekst": "spredt skydække",
-    "vejr_skyer": 86,
-    "vejr_sol_potentiale": "☁️ Lavt solpotentiale",
+    "go_e_wh": 0,
+    "vejr_temp_max": 17,
+    "vejr_temp_min": 12,
+    "vejr_tekst": "let regn",
+    "vejr_skyer": 54,
+    "vejr_sol_potentiale": "⛅ Moderat solpotentiale",
     "battery_energy_in": 30.51,
     "battery_energy_out": 28.72,
     "grid_energy_in": 144.47,
@@ -25010,32 +25322,24 @@
     "alarm_bil_tilsluttet": 1782962165905,
     "alarm_batteri_status": "lavt",
     "alarm_sol_hoej_status": false,
-    "go_e_wh_sidste": 2188.619971,
-    "car_charged_wh_akkumuleret": 2188.619971,
-    "sidste_tesla_lad": true,
+    "go_e_wh_sidste": 0,
+    "car_charged_wh_akkumuleret": 24142.63603,
+    "sidste_tesla_lad": false,
     "override_aktiv": false,
     "override_slut": null,
     "sidste_bil_tilsluttet": true,
     "ladeplan": {
         "timer": [
             {
-                "time": "2026-09-18T03:00:00+02:00",
-                "pris": 1.3897
-            },
-            {
-                "time": "2026-09-18T04:00:00+02:00",
-                "pris": 1.3654
-            },
-            {
-                "time": "2026-09-18T05:00:00+02:00",
-                "pris": 1.3475
+                "time": "2026-09-19T05:00:00+02:00",
+                "pris": 0.3197
             }
         ],
-        "manglerKwh": 22.2,
-        "timerNodvendige": 3,
+        "manglerKwh": 0.6,
+        "timerNodvendige": 1,
         "bilTilsluttet": true,
-        "carSoc": 63,
-        "deadline": "2026-09-18T04:00:00.000Z"
+        "carSoc": 99,
+        "deadline": "2026-09-19T04:00:00.000Z"
     },
     "kalender_igangvaerende": [
         {
@@ -25083,82 +25387,78 @@
     },
     "depot_lys_state": {
         "state": "OFF",
-        "linkquality": 220,
-        "opdateret": "2026-09-17T20:22:19.772Z"
+        "linkquality": 204,
+        "opdateret": "2026-09-18T20:04:03.860Z"
     },
-    "sol_prognose_rest_kwh": 8.261,
+    "sol_prognose_rest_kwh": 6.644,
     "discharge_status": {
-        "mode": "aktiv",
-        "aarsag": "☀️ Sol dækker resten uanset pris → afladning tilladt",
-        "solPrognoseKwh": 8.26,
-        "manglerTilFuldKwh": 5.79,
-        "solDaekkerResten": true,
-        "zone": "normal",
-        "pris": 1.3897,
-        "soc": 11,
+        "mode": "stop",
+        "aarsag": "🌅 Sol dækker ikke, normal/billig pris → afladning forhindret",
+        "solPrognoseKwh": 6.64,
+        "manglerTilFuldKwh": 5.59,
+        "solDaekkerResten": false,
+        "zone": "billig",
+        "pris": 0.3351,
+        "soc": 14,
         "time": 3,
-        "opdateret": "2026-09-18T01:59:43.582Z"
+        "opdateret": "2026-09-19T01:59:49.391Z"
     },
     "sol_prognose_dagens_total": {
         "timer": [
             {
-                "time": "2026-09-18T05:00:42.000Z",
-                "kwh": 0
+                "time": "2026-09-19T06:00:00.000Z",
+                "kwh": 0.13
             },
             {
-                "time": "2026-09-18T06:00:00.000Z",
-                "kwh": 0.15
+                "time": "2026-09-19T07:00:00.000Z",
+                "kwh": 0.39
             },
             {
-                "time": "2026-09-18T07:00:00.000Z",
-                "kwh": 0.44
+                "time": "2026-09-19T08:00:00.000Z",
+                "kwh": 0.62
             },
             {
-                "time": "2026-09-18T08:00:00.000Z",
-                "kwh": 0.72
+                "time": "2026-09-19T09:00:00.000Z",
+                "kwh": 0.81
             },
             {
-                "time": "2026-09-18T09:00:00.000Z",
-                "kwh": 0.98
+                "time": "2026-09-19T10:00:00.000Z",
+                "kwh": 0.94
             },
             {
-                "time": "2026-09-18T10:00:00.000Z",
-                "kwh": 1.17
+                "time": "2026-09-19T11:00:00.000Z",
+                "kwh": 1.01
             },
             {
-                "time": "2026-09-18T11:00:00.000Z",
-                "kwh": 1.25
+                "time": "2026-09-19T12:00:00.000Z",
+                "kwh": 1.01
             },
             {
-                "time": "2026-09-18T12:00:00.000Z",
-                "kwh": 1.29
+                "time": "2026-09-19T13:00:00.000Z",
+                "kwh": 0.94
             },
             {
-                "time": "2026-09-18T13:00:00.000Z",
-                "kwh": 1.24
+                "time": "2026-09-19T14:00:00.000Z",
+                "kwh": 0.8
             },
             {
-                "time": "2026-09-18T14:00:00.000Z",
-                "kwh": 1.03
+                "time": "2026-09-19T15:00:00.000Z",
+                "kwh": 0.61
             },
             {
-                "time": "2026-09-18T15:00:00.000Z",
-                "kwh": 0.74
+                "time": "2026-09-19T16:00:00.000Z",
+                "kwh": 0.4
             },
             {
-                "time": "2026-09-18T16:00:00.000Z",
-                "kwh": 0.45
-            },
-            {
-                "time": "2026-09-18T17:00:00.000Z",
-                "kwh": 0.2
+                "time": "2026-09-19T17:00:00.000Z",
+                "kwh": 0.19
             }
         ],
-        "totalKwh": 9.68,
-        "restKwhTil16": 8.26,
-        "opdateret": "2026-09-18T01:52:55.768Z"
+        "totalKwh": 7.87,
+        "restKwhTil16": 6.64,
+        "opdateret": "2026-09-19T01:52:55.827Z"
     },
-    "sidste_growatt_data_ts": 1789696788188,
+    "sidste_growatt_data_ts": 1789783194284,
     "badstor_seneste": {
         "temperature": 24.88,
         "humidity": 62.16,
@@ -25166,7 +25466,7 @@
     },
     "sol_lad_aktiv": false,
     "tesla_psm": 2,
-    "notif_bil_state": "grid-3f",
+    "notif_bil_state": "venter",
     "notif_growatt_state": "Load first|0",
     "go_e_psm_sidst": 2,
     "go_e_psm_skift_tid": "2026-08-27T02:28:23.416Z"
