@@ -53,6 +53,15 @@ interface Vejr {
   solPotentiale: string;
 }
 
+interface NetladStatus {
+  aktiv: boolean;
+  udloeb?: number | null;
+  status?: string;
+  soc?: number | null;
+  manglerKwh?: number;
+  valgte?: { time: string; pris: number }[];
+}
+
 interface OverrideStatus {
   aktiv: boolean;
 }
@@ -154,24 +163,10 @@ interface SolFaktiskTime {
   kwh: number;
 }
 
-interface SolPrognoseTime {
-  time: string;
-  kwh: number;
-}
-
-interface SolPrognose {
-  timer: SolPrognoseTime[];
-  totalKwh: number;
-  restKwhTil16: number;
-  opdateret: string | null;
-}
-
 interface DischargeStatus {
   mode: string;
   aarsag: string;
-  solPrognoseKwh: number;
   manglerTilFuldKwh: number;
-  solDaekkerResten: boolean;
   zone: string;
   pris: number;
   soc: number;
@@ -243,7 +238,6 @@ function HusUnderfordeling({ husW, plugs }: {
   );
 }
 
-interface SalgMaaned { solgt_kwh: number; indtjent_kr: number; gns_pris: number; maaned: string; }
 
 export default function Dashboard() {
   const [data, setData] = useState<EnergiData | null>(null);
@@ -253,6 +247,8 @@ export default function Dashboard() {
   const [vejr, setVejr] = useState<Vejr>({ tekst: '', tempMin: null, tempMax: null, skyer: null, solPotentiale: '' });
   const [override, setOverride] = useState<OverrideStatus>({ aktiv: false });
   const [overrideLoading, setOverrideLoading] = useState(false);
+  const [netlad, setNetlad] = useState<NetladStatus>({ aktiv: false });
+  const [netladLoading, setNetladLoading] = useState(false);
   const [bilInput, setBilInput] = useState('');
   const [bilGemt, setBilGemt] = useState(false);
   const [tid, setTid] = useState('');
@@ -260,7 +256,6 @@ export default function Dashboard() {
   const [opvask, setOpvask] = useState<OpvaskemaskineData | null>(null);
   const [tv, setTv] = useState<TvData | null>(null);
   const [tvLoading, setTvLoading] = useState(false);
-  const [salg, setSalg] = useState<SalgMaaned | null>(null);
   const [nilanventilationloft, setNilanventilationloft] = useState<NilanventilationloftData | null>(null);
   const [nilanventilationloftLoading, setNilanventilationloftLoading] = useState(false);
   const [villadsgamerpc, setVilladsgamerpc] = useState<VilladsgamerpcData | null>(null);
@@ -323,7 +318,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     const hentSalg = async () => {
-      try { const r = await fetch('/api/salg-maaned'); const d = await r.json(); if (!d.fejl) setSalg(d); } catch (e) {}
     };
     hentSalg();
     const i = setInterval(hentSalg, 60000);
@@ -440,30 +434,7 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const hentSolPrognose = async () => {
-      try {
-        const res = await fetch('/api/sol-prognose');
-        setSolPrognose(await res.json());
-      } catch (e) {}
-    };
-    hentSolPrognose();
-    const interval = setInterval(hentSolPrognose, 300000);
-    return () => clearInterval(interval);
-  }, []);
 
-  useEffect(() => {
-    const hentSolFaktisk = async () => {
-      try {
-        const res = await fetch('/api/sol-faktisk-timer');
-        const data = await res.json();
-        setSolFaktisk(data.timer || []);
-      } catch (e) {}
-    };
-    hentSolFaktisk();
-    const interval = setInterval(hentSolFaktisk, 300000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const hentTabNegativ = async () => {
@@ -481,6 +452,44 @@ export default function Dashboard() {
     const t = setInterval(() => setTid(new Date().toLocaleTimeString('da-DK')), 1000);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    const hentNetlad = async () => {
+      try {
+        const res = await fetch('/api/netlad');
+        setNetlad(await res.json());
+      } catch (e) {}
+    };
+    hentNetlad();
+    const interval = setInterval(hentNetlad, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const toggleNetlad = async () => {
+    setNetladLoading(true);
+    try {
+      await fetch('/api/netlad', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ aktiv: !netlad.aktiv }) });
+      await new Promise(r => setTimeout(r, 1500));
+      const res = await fetch('/api/netlad');
+      setNetlad(await res.json());
+    } catch (e) {}
+    setNetladLoading(false);
+  };
+
+  const netladTekst = (): string => {
+    if (!netlad.aktiv) return 'Slukket';
+    const hm = (iso: string) => new Date(iso).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' });
+    const naeste = (netlad.valgte || []).find(v => new Date(v.time).getTime() + 3600000 > Date.now());
+    switch (netlad.status) {
+      case 'lader': return '⚡ Lader fra nettet';
+      case 'venter': return naeste ? 'Venter til ' + hm(naeste.time) : 'Venter';
+      case 'fuld': return 'Fuld – holder til kl. 17';
+      case 'bil': return 'Bilen lader – batteriet venter';
+      case 'ingen_data': return 'Mangler batteridata';
+      case 'ingen_priser': return 'Mangler priser';
+      default: return 'Tændt';
+    }
+  };
 
   const toggleOverride = async () => {
     setOverrideLoading(true);
@@ -525,8 +534,6 @@ export default function Dashboard() {
   const [koekken, setKoekken] = useState<KoekkenSensor | null>(null);
   const [depot, setDepot] = useState<DepotStatus | null>(null);
   const [dischargeStatus, setDischargeStatus] = useState<DischargeStatus | null>(null);
-  const [solPrognose, setSolPrognose] = useState<SolPrognose | null>(null);
-  const [solFaktisk, setSolFaktisk] = useState<SolFaktiskTime[]>([]);
   const [tabNegativ, setTabNegativ] = useState<TabNegativPris | null>(null);
 
   const toggleLys = async (sted: 'lys_carport' | 'lys_terrasse') => {
@@ -704,6 +711,25 @@ export default function Dashboard() {
         {/* Separator */}
         <div style={{ width: '1px', height: '24px', background: '#1e293b' }} />
 
+        {/* Netopladning knap */}
+        <button
+          onClick={toggleNetlad}
+          disabled={netladLoading}
+          style={{
+            padding: '0.5rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
+            textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.15rem',
+            border: netlad.aktiv ? '1px solid #22c55e' : '1px solid #334155',
+            background: netlad.aktiv ? '#14532d' : '#1e293b',
+            color: netlad.aktiv ? '#86efac' : '#94a3b8',
+          }}
+        >
+          <span>{netladLoading ? '...' : netlad.aktiv ? '⏹ Stop netopladning' : '🔌 Lad Growatt fra nettet'}</span>
+          <span style={{ fontSize: '0.7rem', fontWeight: 400 }}>
+            {netladTekst()}
+            {netlad.aktiv && ' · til kl. 17' + (netlad.manglerKwh ? ' · mangler ' + String(netlad.manglerKwh).replace('.', ',') + ' kWh' : '')}
+          </span>
+        </button>
+
         {/* Override knap */}
         <button
           onClick={toggleOverride}
@@ -737,17 +763,6 @@ export default function Dashboard() {
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>⚡ Live energiflow</div>
         <EnergiFlow data={data} dagensTal={dagensTal} vejr={vejr} tabNegativKr={tabNegativ?.tabKr} />
-        {salg && (
-          <div className="card" style={{ padding: '0.65rem 0.85rem', marginBottom: '0.75rem', border: '1px solid #14532d' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>💰 Salg denne måned</span>
-              <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#22c55e' }}>{salg.indtjent_kr.toFixed(2)} kr</span>
-            </div>
-            <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.25rem' }}>
-              {salg.solgt_kwh.toFixed(1)} kWh solgt · ⌀ {salg.gns_pris.toFixed(2)} kr/kWh · <i>variabel timepris, ekskl. moms</i>
-            </div>
-          </div>
-        )}
         <HusUnderfordeling
           husW={data.load_power}
           plugs={[
@@ -1060,7 +1075,6 @@ export default function Dashboard() {
                 {dischargeStatus.aarsag}
               </div>
               <div style={{ display: 'flex', gap: '1rem', fontSize: '0.7rem', color: '#64748b' }}>
-                <span>☀️ Sol-prognose: <span style={{ color: '#fbbf24' }}>{dischargeStatus.solPrognoseKwh} kWh</span></span>
                 <span>🔋 Mangler til fuld: <span style={{ color: '#94a3b8' }}>{dischargeStatus.manglerTilFuldKwh} kWh</span></span>
               </div>
             </div>
@@ -1114,7 +1128,6 @@ export default function Dashboard() {
                 {dischargeStatus.aarsag}
               </div>
               <div style={{ display: 'flex', gap: '1rem', fontSize: '0.7rem', color: '#64748b' }}>
-                <span>☀️ Sol-prognose: <span style={{ color: '#fbbf24' }}>{dischargeStatus.solPrognoseKwh} kWh</span></span>
                 <span>🔋 Mangler til fuld: <span style={{ color: '#94a3b8' }}>{dischargeStatus.manglerTilFuldKwh} kWh</span></span>
               </div>
             </div>
@@ -1161,59 +1174,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Sol-prognose - hele dagens forventede produktion, time for time */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8' }}>☀️ Sol-prognose i dag</div>
-          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: '#64748b' }}>
-            {dagensTal && (
-              <span>Faktisk hidtil: <span style={{ color: '#4ade80', fontWeight: 600 }}>{dagensTal.dagens_sol_kwh} kWh</span></span>
-            )}
-            {solPrognose && solPrognose.opdateret && (
-              <span>Prognose i alt: <span style={{ color: '#fbbf24', fontWeight: 600 }}>{solPrognose.totalKwh} kWh</span></span>
-            )}
-          </div>
-        </div>
-        {solPrognose && solPrognose.timer.length > 0 ? (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-            {solPrognose.timer
-              .filter(t => new Date(t.time).getHours() >= 6 && new Date(t.time).getHours() <= 23)
-              .map((t, i) => {
-                const d = new Date(t.time);
-                const erNu = d.getHours() === new Date().getHours();
-                const faktisk = solFaktisk.find(f => new Date(f.time).getHours() === d.getHours());
-                return (
-                  <div key={i} style={{
-                    background: erNu ? '#78350f' : '#1e293b',
-                    border: erNu ? '1px solid #fbbf24' : '1px solid #334155',
-                    borderRadius: '6px',
-                    padding: '0.3rem 0.5rem',
-                    minWidth: '52px',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: '0.7rem', color: erNu ? '#fbbf24' : '#94a3b8', fontWeight: 600 }}>
-                      {d.toLocaleTimeString('da-DK', { hour: '2-digit', timeZone: 'Europe/Copenhagen' })}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: erNu ? '#fde68a' : '#cbd5e1', fontWeight: 700 }}>
-                      {t.kwh}
-                    </div>
-                    <div style={{ fontSize: '0.65rem', color: '#4ade80', marginTop: '2px', minHeight: '0.8rem' }}>
-                      {faktisk !== undefined ? faktisk.kwh : ''}
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        ) : (
-          <div style={{ color: '#475569', fontSize: '0.8rem' }}>Henter...</div>
-        )}
-        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.65rem', color: '#64748b', marginTop: '0.4rem' }}>
-          <span><span style={{ color: '#cbd5e1' }}>■</span> Prognose</span>
-          <span><span style={{ color: '#4ade80' }}>■</span> Faktisk</span>
-        </div>
-      </div>
-
-      {/* Begivenheder — kompakt enkelt kort */}
+{/* Begivenheder — kompakt enkelt kort */}
       <div className="card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <div className="two-col-responsive">
           <div>

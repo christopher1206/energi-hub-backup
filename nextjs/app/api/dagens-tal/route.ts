@@ -100,6 +100,26 @@ export async function GET(request: Request) {
       rangeStart = lokalMidnatUTC(denneAar, denneMdr - 1);
       rangeStop = lokalMidnatUTC(denneAar, denneMdr);
     }
+    // Nulstilling: statistik starter 2026-11-11 00:00 dansk tid (= 2026-11-10T23:00:00Z)
+    const NULSTIL_START = '2026-11-10T23:00:00.000Z';
+    if (new Date(rangeStart).getTime() < new Date(NULSTIL_START).getTime()) rangeStart = NULSTIL_START;
+    if (
+      new Date(rangeStart).getTime() >= Date.now() ||
+      (rangeStop && new Date(rangeStop).getTime() <= new Date(rangeStart).getTime())
+    ) {
+      return NextResponse.json({
+        dagens_sol_kwh: 0,
+        dagens_load_kwh: 0,
+        dagens_grid_kob_kwh: 0,
+        dagens_batteri_ud_kwh: 0,
+        dagens_batteri_ind_kwh: 0,
+        dagens_tesla_kwh: 0,
+        dagens_grid_kob_kr: 0,
+        selvforsyning_i_dag: 0,
+        foer_startdato: true,
+        timestamp: new Date().toISOString(),
+      });
+    }
     const rangeStopClause = rangeStop ? `, stop: time(v: "${rangeStop}")` : '';
 
     // Sol produktion i dag (kWh)
@@ -254,13 +274,10 @@ export async function GET(request: Request) {
       dagens_sol_kwh: parseFloat(solKwh.toFixed(2)),
       dagens_load_kwh: parseFloat(loadKwh.toFixed(2)),
       dagens_grid_kob_kwh: parseFloat(gridKobKwh.toFixed(2)),
-      dagens_grid_solgt_kwh: parseFloat(gridSolgtKwh.toFixed(2)),
-      indtjent_salg_kr: parseFloat(indtjentSalgKr.toFixed(2)),
       dagens_batteri_ud_kwh: parseFloat(batUdKwh.toFixed(2)),
       dagens_batteri_ind_kwh: parseFloat(batIndKwh.toFixed(2)),
       dagens_tesla_kwh: parseFloat(teslaKwh.toFixed(2)),
       dagens_grid_kob_kr: gridKobKrTotal,
-      sparet_i_dag: sparetIDag,
       selvforsyning_i_dag: selvforsyningIDag,
       midnight_brugt: midnight,
       range_start_brugt: rangeStart,

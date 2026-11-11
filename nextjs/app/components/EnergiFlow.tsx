@@ -240,7 +240,7 @@ export default function EnergiFlow({ data, dagensTal, vejr, tabNegativKr }: {
         vaerdi={`${Math.abs(grid)} W`}
         stats={[
           { label: 'Købt i dag', value: d ? `${d.dagens_grid_kob_kwh} kWh` : '–', farve: '#ef4444' },
-          { label: 'Solgt i dag', value: d ? `${d.dagens_grid_solgt_kwh} kWh` : '–', farve: '#22c55e' },
+          { label: 'Købt i dag', value: d ? `${d.dagens_grid_kob_kwh} kWh` : '–', farve: '#ef4444' },
           { label: 'Betalt', value: d ? `${d.dagens_grid_kob_kr} kr` : '–', farve: '#f59e0b' },
           ...(tabNegativKr && tabNegativKr < 0 ? [{ label: 'Solgt v. negativ pris', value: `${tabNegativKr.toFixed(2)} kr`, farve: '#ef4444' }] : []),
         ]} />
@@ -250,7 +250,7 @@ export default function EnergiFlow({ data, dagensTal, vejr, tabNegativKr }: {
         stats={[
           { label: 'Forbrug i dag', value: d ? `${d.dagens_load_kwh} kWh` : '–', farve: '#8b5cf6' },
           { label: 'Selvforsyning', value: d ? `${d.selvforsyning_i_dag}%` : '–', farve: '#22c55e' },
-          { label: 'Netto', value: d ? `${d.sparet_i_dag} kr` : '–', farve: d && d.sparet_i_dag >= 0 ? '#22c55e' : '#ef4444' },
+          { label: 'Købt for (ca.)', value: d ? `${d.dagens_grid_kob_kr} kr` : '–', farve: '#f59e0b' },
         ]} />
 
       <Node cx={BAT[0]} cy={BAT[1]} w={L.nodeW.bat} h={isMobile?210:150} farve={batFarve} aktiv={batLaderAktiv || batAfladesAktiv} compact={isMobile}

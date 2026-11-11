@@ -98,50 +98,57 @@ export async function GET(req: NextRequest) {
     }
 
     const rangeStart = getRangeStart(periode);
+    // Nulstilling: energi-statistik starter 2026-11-11 00:00 dansk tid (= 2026-11-10T23:00:00Z).
+    // Køkken-temperaturer bruger stadig rangeStart og påvirkes ikke.
+    const NULSTIL_START = '2026-11-10T23:00:00.000Z';
+    const energiStart = new Date(rangeStart).getTime() < new Date(NULSTIL_START).getTime() ? NULSTIL_START : rangeStart;
+    const energiFremtid = new Date(energiStart).getTime() >= Date.now();
+    const energiQuery = (q: string): Promise<any[]> => (energiFremtid ? Promise.resolve([]) : fluxQuery(q));
+
 
     const solFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "sol_power")
         |> integral(unit: 1h, column: "_value")
     `;
     const loadFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "load_power")
         |> integral(unit: 1h, column: "_value")
     `;
     const gridKobFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "grid_power")
         |> map(fn: (r) => ({ r with _value: if r._value > 0.0 then r._value else 0.0 }))
         |> integral(unit: 1h, column: "_value")
     `;
     const gridSolgtFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "grid_power")
         |> map(fn: (r) => ({ r with _value: if r._value < 0.0 then -r._value else 0.0 }))
         |> integral(unit: 1h, column: "_value")
     `;
     const batUdFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "batteri_power")
         |> map(fn: (r) => ({ r with _value: if r._value > 0.0 then r._value else 0.0 }))
         |> integral(unit: 1h, column: "_value")
     `;
     const batIndFlux = `
       from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and r._field == "batteri_power")
         |> map(fn: (r) => ({ r with _value: if r._value < 0.0 then -r._value else 0.0 }))
         |> integral(unit: 1h, column: "_value")
     `;
     const gridKobKrFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "grid_power" or r._field == "pris"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
@@ -150,7 +157,7 @@ export async function GET(req: NextRequest) {
     `;
     const teslaFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "tesla_amp" or r._field == "tesla_lad"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
@@ -162,7 +169,7 @@ export async function GET(req: NextRequest) {
     // spotprisen for solgt strøm, ikke tariffer/afgifter oveni)
     const gridSolgtKrFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "grid_power" or r._field == "spotpris"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
@@ -175,7 +182,7 @@ export async function GET(req: NextRequest) {
     // (i stedet for en hardkodet gennemsnitspris, som var markant unøjagtig).
     const teoretiskFuldPrisFlux = `
       data = from(bucket: "${INFLUX_BUCKET}")
-        |> range(start: time(v: "${rangeStart}"))
+        |> range(start: time(v: "${energiStart}"))
         |> filter(fn: (r) => r._measurement == "energi" and (r._field == "load_power" or r._field == "pris"))
         |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
       data
@@ -209,16 +216,16 @@ export async function GET(req: NextRequest) {
     `;
 
     const [sol, load, gridKob, gridSolgt, batUd, batInd, tesla, gridKobKr, gridSolgtKr, teoretiskFuldPris, tempMean, tempMin, tempMax, fugtMean] = await Promise.all([
-      fluxQuery(solFlux),
-      fluxQuery(loadFlux),
-      fluxQuery(gridKobFlux),
-      fluxQuery(gridSolgtFlux),
-      fluxQuery(batUdFlux),
-      fluxQuery(batIndFlux),
-      fluxQuery(teslaFlux),
-      fluxQuery(gridKobKrFlux),
-      fluxQuery(gridSolgtKrFlux).catch(() => []),
-      fluxQuery(teoretiskFuldPrisFlux).catch(() => []),
+      energiQuery(solFlux),
+      energiQuery(loadFlux),
+      energiQuery(gridKobFlux),
+      energiQuery(gridSolgtFlux),
+      energiQuery(batUdFlux),
+      energiQuery(batIndFlux),
+      energiQuery(teslaFlux),
+      energiQuery(gridKobKrFlux),
+      energiQuery(gridSolgtKrFlux).catch(() => []),
+      energiQuery(teoretiskFuldPrisFlux).catch(() => []),
       fluxQuery(tempMeanFlux).catch(() => []),
       fluxQuery(tempMinFlux).catch(() => []),
       fluxQuery(tempMaxFlux).catch(() => []),
@@ -244,6 +251,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       periode,
       range_start_brugt: rangeStart,
+        energi_start_brugt: energiStart,
       koekken_temp_gennemsnit: tempMean.length > 0 ? parseFloat(tempMean[0].toFixed(1)) : null,
       koekken_temp_min: tempMin.length > 0 ? parseFloat(tempMin[0].toFixed(1)) : null,
       koekken_temp_max: tempMax.length > 0 ? parseFloat(tempMax[0].toFixed(1)) : null,
@@ -251,13 +259,10 @@ export async function GET(req: NextRequest) {
       sol_kwh: parseFloat(solKwh.toFixed(2)),
       load_kwh: parseFloat(loadKwh.toFixed(2)),
       grid_kob_kwh: parseFloat(gridKobKwh.toFixed(2)),
-      grid_solgt_kwh: parseFloat(gridSolgtKwh.toFixed(2)),
       batteri_ud_kwh: parseFloat(batUdKwh.toFixed(2)),
       batteri_ind_kwh: parseFloat(batIndKwh.toFixed(2)),
       tesla_kwh: parseFloat(teslaKwh.toFixed(2)),
       grid_kob_kr: gridKobKrTotal,
-      grid_solgt_kr: gridSolgtKrTotal,
-      sparet: sparetIPeriode,
       selvforsyning: selvforsyningIPeriode,
       timestamp: new Date().toISOString(),
     });

@@ -15,5 +15,19 @@
         "2026-07-03T14:30:00.000Z"
     ],
     "depot_lys_sidste_state": 0,
-    "koekken_freshness_alarm": true
+    "koekken_freshness_alarm": true,
+    "vagt": {
+        "priser": {
+            "fejl": 0,
+            "alarm": false
+        },
+        "influx": {
+            "fejl": 0,
+            "alarm": false
+        },
+        "goe": {
+            "fejl": 0,
+            "alarm": false
+        }
+    }
 }

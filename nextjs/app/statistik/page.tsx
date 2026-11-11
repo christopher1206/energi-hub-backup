@@ -49,7 +49,6 @@ interface ApparatForbrug {
   kwh: number;
 }
 
-interface SalgMaaned { solgt_kwh: number; indtjent_kr: number; gns_pris: number; maaned: string; }
 
 function StatKort({ icon, titel, value, unit, farve }: { icon: string; titel: string; value: string | number; unit?: string; farve?: string }) {
   return (
@@ -70,7 +69,6 @@ export default function StatistikSide() {
   const [periodeData, setPeriodeData] = useState<PeriodeData | null>(null);
   const [periodeLoading, setPeriodeLoading] = useState(false);
   const [apparater, setApparater] = useState<ApparatForbrug[]>([]);
-  const [salg, setSalg] = useState<SalgMaaned | null>(null);
 
   useEffect(() => {
     const hent = async () => {
@@ -114,7 +112,6 @@ export default function StatistikSide() {
 
   useEffect(() => {
     const hentSalg = async () => {
-      try { const r = await fetch('/api/salg-maaned'); const d = await r.json(); if (!d.fejl) setSalg(d); } catch (e) {}
     };
     hentSalg();
     const i = setInterval(hentSalg, 60000);
@@ -165,12 +162,10 @@ export default function StatistikSide() {
               <StatKort icon="☀️" titel="Sol produceret" value={periodeData.sol_kwh} unit=" kWh" farve="#f59e0b" />
               <StatKort icon="🏠" titel="Hus forbrug" value={periodeData.load_kwh} unit=" kWh" />
               <StatKort icon="🔌" titel="Købt fra net" value={periodeData.grid_kob_kwh} unit=" kWh" farve="#ef4444" />
-              <StatKort icon="📤" titel="Solgt til net" value={periodeData.grid_solgt_kwh} unit=" kWh" farve="#22c55e" />
               <StatKort icon="⬆️" titel="Batteri ladet ind" value={periodeData.batteri_ind_kwh} unit=" kWh" farve="#22c55e" />
               <StatKort icon="⬇️" titel="Batteri afladet" value={periodeData.batteri_ud_kwh} unit=" kWh" farve="#f59e0b" />
               <StatKort icon="🚗" titel="Tesla ladet" value={periodeData.tesla_kwh} unit=" kWh" farve="#3b82f6" />
-              <StatKort icon="💰" titel="Betalt for strøm" value={periodeData.grid_kob_kr} unit=" kr" farve="#ef4444" />
-              <StatKort icon="💵" titel="Sparet (est.)" value={periodeData.sparet} unit=" kr" farve="#22c55e" />
+              <StatKort icon="💰" titel="Købt for (ca.)" value={periodeData.grid_kob_kr} unit=" kr" farve="#ef4444" />
               <StatKort icon="📊" titel="Selvforsyning" value={periodeData.selvforsyning} unit="%" farve="#22c55e" />
               {periodeData.koekken_temp_gennemsnit !== null && (
                 <StatKort icon="🌡️" titel="Køkken temp (snit)" value={periodeData.koekken_temp_gennemsnit} unit="°C" farve="#f97316" />
@@ -190,12 +185,10 @@ export default function StatistikSide() {
 
       {/* Besparelser */}
       <div className="stat-sektion">
-        <h2>💰 Besparelser</h2>
+        <h2>💡 Pris og selvforsyning</h2>
         <div className="stat-grid">
-          <StatKort icon="💰" titel="Sparet total (est.)" value={data.sparet_total} unit=" kr" farve="#22c55e" />
           <StatKort icon="📊" titel="Selvforsyningsgrad" value={data.selvforsyning} unit="%" farve="#22c55e" />
           <StatKort icon="💡" titel="Nuværende pris" value={data.pris_nu.toFixed(2)} unit=" kr/kWh" />
-          <StatKort icon="📤" titel="Netto salg til net" value={nettoGrid} unit=" kWh" farve={nettoGrid > 0 ? '#22c55e' : '#ef4444'} />
         </div>
       </div>
 
@@ -211,17 +204,6 @@ export default function StatistikSide() {
         </div>
       )}
 
-      {/* Salg af strøm */}
-      {salg && (
-        <div className="stat-sektion">
-          <h2>💰 Salg af strøm ({salg.maaned})</h2>
-          <div className="stat-grid">
-            <StatKort icon="💰" titel="Indtjent" value={salg.indtjent_kr.toFixed(2)} unit=" kr" farve="#22c55e" />
-            <StatKort icon="📤" titel="Solgt" value={salg.solgt_kwh.toFixed(1)} unit=" kWh" farve="#38bdf8" />
-            <StatKort icon="🏷️" titel="Gns. salgspris" value={salg.gns_pris.toFixed(2)} unit=" kr/kWh" farve="#eab308" />
-          </div>
-        </div>
-      )}
 
       {/* Sol */}
       <div className="stat-sektion">
